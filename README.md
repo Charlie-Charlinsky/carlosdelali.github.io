@@ -1,2 +1,2 @@
-# carloslopez.github.io
-Game Designer Portfolio - Carlos López
+# carlosdelali.github.io
+Game Designer Portfolio - Carlos J. L. Sánchez
