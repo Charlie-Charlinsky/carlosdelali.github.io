@@ -83,6 +83,10 @@ v0.1.0 established the first complete visual prototype and the initial visual la
 **Date:** 18 August 2026  
 **Status:** Architecture in development.
 
+### Infrastructure
+
+The root `.gitattributes` file normalises repository text files to LF while excluding binary portfolio and media files from text normalisation; SVG remains text. This prevents inconsistent Windows CRLF / LF behaviour as the portfolio grows.
+
 ### Typography
 
 Planned body typography:
