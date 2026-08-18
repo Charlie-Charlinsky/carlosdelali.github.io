@@ -1,0 +1,48 @@
+{
+  "profile": {
+    "name": "Carlos Lopez",
+    "title": "Game Designer"
+  },
+  "workExperience": [
+    {
+      "company": "Genera Games",
+      "location": "Sevilla, Spain",
+      "role": "Junior Game Designer",
+      "start": "2015-10",
+      "end": "2017-06"
+    },
+    {
+      "company": "TWS Inventors of Play",
+      "location": "Malaga, Spain",
+      "role": "Game Designer",
+      "start": "2017-12",
+      "end": "2020-06"
+    },
+    {
+      "company": "EA Sports",
+      "location": "Madrid, Spain",
+      "role": "Senior Game Designer",
+      "start": "2021-07",
+      "end": "2026-07"
+    }
+  ],
+  "education": [
+    {
+      "name": "Level Design Mastery",
+      "type": "Certificate of Completion",
+      "instructor": "Stefan Zamfir",
+      "start": "2026-02",
+      "end": "2026-05"
+    },
+    {
+      "name": "ESI: Escuela Superior Internacional",
+      "start": "2012",
+      "end": "2016"
+    },
+    {
+      "name": "IES Ingeniero de la Cierva",
+      "start": "2010",
+      "end": "2012"
+    }
+  ]
+}

@@ -1,3 +1,174 @@
 {
-  "games": []
+  "games": [
+    {
+      "id": "the-little-prince",
+      "title": "The Little Prince",
+      "studio": "Genera Games",
+      "studioId": "genera-games",
+      "category": "mobile",
+      "detailStatus": "content-pending",
+      "assetsStatus": "pending",
+      "published": true
+    },
+    {
+      "id": "runbot",
+      "title": "Runbot",
+      "studio": "Genera Games",
+      "studioId": "genera-games",
+      "category": "mobile",
+      "detailStatus": "content-pending",
+      "assetsStatus": "pending",
+      "published": true
+    },
+    {
+      "id": "xtreme-racing-2",
+      "title": "Xtreme Racing 2",
+      "studio": "Genera Games",
+      "studioId": "genera-games",
+      "category": "mobile",
+      "detailStatus": "content-pending",
+      "assetsStatus": "pending",
+      "published": true
+    },
+    {
+      "id": "skull-towers",
+      "title": "Skull Towers",
+      "studio": "Genera Games",
+      "studioId": "genera-games",
+      "category": "mobile",
+      "detailStatus": "content-pending",
+      "assetsStatus": "pending",
+      "published": true
+    },
+    {
+      "id": "gold-rush-gus",
+      "title": "Gold Rush Gus",
+      "studio": "TWS Inventors of Play",
+      "studioId": "tws-inventors-of-play",
+      "category": "casino",
+      "detailStatus": "research-pending",
+      "assetsStatus": "research-pending",
+      "published": true
+    },
+    {
+      "id": "777-deluxe",
+      "title": "777 Deluxe",
+      "studio": "TWS Inventors of Play",
+      "studioId": "tws-inventors-of-play",
+      "category": "casino",
+      "detailStatus": "research-pending",
+      "assetsStatus": "research-pending",
+      "published": true
+    },
+    {
+      "id": "cyberpunk-city",
+      "title": "Cyberpunk City",
+      "studio": "TWS Inventors of Play",
+      "studioId": "tws-inventors-of-play",
+      "category": "casino",
+      "detailStatus": "research-pending",
+      "assetsStatus": "research-pending",
+      "published": true
+    },
+    {
+      "id": "gods-of-luxor",
+      "title": "Gods Of Luxor",
+      "studio": "TWS Inventors of Play",
+      "studioId": "tws-inventors-of-play",
+      "category": "casino",
+      "detailStatus": "research-pending",
+      "assetsStatus": "research-pending",
+      "published": true
+    },
+    {
+      "id": "teen-patti",
+      "title": "Teen Patti",
+      "studio": "TWS Inventors of Play",
+      "studioId": "tws-inventors-of-play",
+      "category": "casino",
+      "detailStatus": "research-pending",
+      "assetsStatus": "research-pending",
+      "published": true
+    },
+    {
+      "id": "andar-bahar",
+      "title": "Andar Bahar",
+      "studio": "TWS Inventors of Play",
+      "studioId": "tws-inventors-of-play",
+      "category": "casino",
+      "detailStatus": "research-pending",
+      "assetsStatus": "research-pending",
+      "published": true
+    },
+    {
+      "id": "wheel-of-fortune",
+      "title": "Wheel of Fortune",
+      "studio": "TWS Inventors of Play",
+      "studioId": "tws-inventors-of-play",
+      "category": "casino",
+      "detailStatus": "research-pending",
+      "assetsStatus": "research-pending",
+      "published": true
+    },
+    {
+      "id": "cricket-legends",
+      "title": "Cricket Legends",
+      "studio": "TWS Inventors of Play",
+      "studioId": "tws-inventors-of-play",
+      "category": "casino",
+      "detailStatus": "research-pending",
+      "assetsStatus": "research-pending",
+      "published": true
+    },
+    {
+      "id": "zombie-soccer",
+      "title": "Zombie Soccer",
+      "studio": "TWS Inventors of Play",
+      "studioId": "tws-inventors-of-play",
+      "category": "casino",
+      "detailStatus": "research-pending",
+      "assetsStatus": "research-pending",
+      "published": true
+    },
+    {
+      "id": "ea-sports-pga-tour",
+      "title": "EA SPORTS PGA TOUR",
+      "studio": "EA Sports",
+      "studioId": "ea-sports",
+      "category": "aaa",
+      "detailStatus": "content-pending",
+      "assetsStatus": "pending",
+      "published": true
+    },
+    {
+      "id": "madden-nfl-25",
+      "title": "Madden NFL 25",
+      "studio": "EA Sports",
+      "studioId": "ea-sports",
+      "category": "aaa",
+      "detailStatus": "content-pending",
+      "assetsStatus": "pending",
+      "published": true
+    },
+    {
+      "id": "madden-nfl-26",
+      "title": "Madden NFL 26",
+      "studio": "EA Sports",
+      "studioId": "ea-sports",
+      "category": "aaa",
+      "detailStatus": "content-pending",
+      "assetsStatus": "pending",
+      "published": true
+    },
+    {
+      "id": "madden-nfl-27",
+      "title": "Madden NFL 27",
+      "studio": "EA Sports",
+      "studioId": "ea-sports",
+      "category": "aaa",
+      "detailStatus": "content-pending",
+      "assetsStatus": "pending",
+      "published": true
+    }
+  ]
 }

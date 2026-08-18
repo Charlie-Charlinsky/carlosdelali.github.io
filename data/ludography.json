@@ -1,3 +1,42 @@
 {
-  "entries": []
+  "studios": [
+    {
+      "id": "genera-games",
+      "name": "Genera Games",
+      "complete": true,
+      "games": [
+        "the-little-prince",
+        "runbot",
+        "xtreme-racing-2",
+        "skull-towers"
+      ]
+    },
+    {
+      "id": "tws-inventors-of-play",
+      "name": "TWS Inventors of Play",
+      "complete": false,
+      "games": [
+        "gold-rush-gus",
+        "777-deluxe",
+        "cyberpunk-city",
+        "gods-of-luxor",
+        "teen-patti",
+        "andar-bahar",
+        "wheel-of-fortune",
+        "cricket-legends",
+        "zombie-soccer"
+      ]
+    },
+    {
+      "id": "ea-sports",
+      "name": "EA Sports",
+      "complete": true,
+      "games": [
+        "ea-sports-pga-tour",
+        "madden-nfl-25",
+        "madden-nfl-26",
+        "madden-nfl-27"
+      ]
+    }
+  ]
 }

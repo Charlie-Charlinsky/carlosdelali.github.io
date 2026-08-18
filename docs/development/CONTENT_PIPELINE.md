@@ -16,13 +16,13 @@ Browsers do not natively render DOCX as semantic portfolio content. DOCX files s
 
 The public website should consume semantic HTML and structured metadata. It should not attempt to display Word documents directly.
 
-## Planned Separation
+## Content Separation
 
-These responsibilities define the planned separation. `local-content/`, `content/`, and `data/` do not exist yet and must not be created until implementation begins. The repository already contains empty `assets/documents/`, `assets/images/`, and `assets/videos/` directories from the v0.1.0 structure; they remain untouched in this documentation phase.
+The v0.2 scaffolding phase established these directory layers. `local-content/` exists locally and is ignored by Git. `content/`, `data/`, and `assets/` exist as the public semantic-content, structured metadata/index, and media/download layers respectively.
 
 | Path | Responsibility |
 | --- | --- |
-| `local-content/` | Private/local Word files, drafts, and other authoring sources. This directory must eventually be ignored by Git. |
+| `local-content/` | Private/local Word files, drafts, and other authoring sources. This directory is ignored by Git. |
 | `content/` | Public, transformed semantic HTML content. |
 | `data/` | Public structured metadata, indexes, ordering, and relationships. |
 | `assets/` | Public images, videos, and downloadable files. |
@@ -102,4 +102,4 @@ Prototype videos are public media assets. A project page may display a maximum o
 - Bilingual documents should preserve a stable relationship between equivalent entries.
 - Structured indexes should own titles, slugs, dates, order, language availability, and cross-entry navigation.
 - Generated HTML should remain reviewable and accessible.
-- Public content and assets may be versioned; private authoring sources must remain outside public version control once `local-content/` is introduced.
+- Public content and assets may be versioned; private authoring sources in the ignored `local-content/` directory remain outside public version control.

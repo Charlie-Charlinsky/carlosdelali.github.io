@@ -87,6 +87,15 @@ v0.1.0 established the first complete visual prototype and the initial visual la
 
 The root `.gitattributes` file normalises repository text files to LF while excluding binary portfolio and media files from text normalisation; SVG remains text. This prevents inconsistent Windows CRLF / LF behaviour as the portfolio grows.
 
+### Professional Data Layer
+
+Professional data layer introduced:
+
+- Canonical game registry.
+- Reference-based ludography.
+- Structured CV metadata.
+- Incomplete historical game lists can be explicitly flagged rather than guessed.
+
 ### Typography
 
 Planned body typography:
