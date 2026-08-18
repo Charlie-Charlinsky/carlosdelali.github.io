@@ -96,6 +96,16 @@ Professional data layer introduced:
 - Structured CV metadata.
 - Incomplete historical game lists can be explicitly flagged rather than guessed.
 
+### Game Detail Architecture
+
+Game Detail architecture introduced:
+
+- Canonical metadata remains in `games.json`.
+- Long-form contribution content is separated into semantic HTML.
+- Game media is separated into dedicated asset structures.
+- The shared Game Detail model supports multiple feature/system contribution sections.
+- The visible gallery is capped at six images.
+
 ### Typography
 
 Planned body typography:

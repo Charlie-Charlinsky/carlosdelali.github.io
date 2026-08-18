@@ -8,7 +8,15 @@
       "category": "mobile",
       "detailStatus": "content-pending",
       "assetsStatus": "pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "runbot",
@@ -18,7 +26,15 @@
       "category": "mobile",
       "detailStatus": "content-pending",
       "assetsStatus": "pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "xtreme-racing-2",
@@ -28,7 +44,15 @@
       "category": "mobile",
       "detailStatus": "content-pending",
       "assetsStatus": "pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "skull-towers",
@@ -38,7 +62,15 @@
       "category": "mobile",
       "detailStatus": "content-pending",
       "assetsStatus": "pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "gold-rush-gus",
@@ -48,7 +80,15 @@
       "category": "casino",
       "detailStatus": "research-pending",
       "assetsStatus": "research-pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "777-deluxe",
@@ -58,7 +98,15 @@
       "category": "casino",
       "detailStatus": "research-pending",
       "assetsStatus": "research-pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "cyberpunk-city",
@@ -68,7 +116,15 @@
       "category": "casino",
       "detailStatus": "research-pending",
       "assetsStatus": "research-pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "gods-of-luxor",
@@ -78,7 +134,15 @@
       "category": "casino",
       "detailStatus": "research-pending",
       "assetsStatus": "research-pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "teen-patti",
@@ -88,7 +152,15 @@
       "category": "casino",
       "detailStatus": "research-pending",
       "assetsStatus": "research-pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "andar-bahar",
@@ -98,7 +170,15 @@
       "category": "casino",
       "detailStatus": "research-pending",
       "assetsStatus": "research-pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "wheel-of-fortune",
@@ -108,7 +188,15 @@
       "category": "casino",
       "detailStatus": "research-pending",
       "assetsStatus": "research-pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "cricket-legends",
@@ -118,7 +206,15 @@
       "category": "casino",
       "detailStatus": "research-pending",
       "assetsStatus": "research-pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "zombie-soccer",
@@ -128,7 +224,15 @@
       "category": "casino",
       "detailStatus": "research-pending",
       "assetsStatus": "research-pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "ea-sports-pga-tour",
@@ -138,7 +242,15 @@
       "category": "aaa",
       "detailStatus": "content-pending",
       "assetsStatus": "pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "madden-nfl-25",
@@ -148,7 +260,15 @@
       "category": "aaa",
       "detailStatus": "content-pending",
       "assetsStatus": "pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "madden-nfl-26",
@@ -158,7 +278,15 @@
       "category": "aaa",
       "detailStatus": "content-pending",
       "assetsStatus": "pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     },
     {
       "id": "madden-nfl-27",
@@ -168,7 +296,15 @@
       "category": "aaa",
       "detailStatus": "content-pending",
       "assetsStatus": "pending",
-      "published": true
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
     }
   ]
 }

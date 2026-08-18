@@ -31,6 +31,30 @@ Source documents and published output must remain distinct even when Codex is us
 
 ## Expected Workflow
 
+### Professional Game
+
+```text
+GAME REGISTRY
+data/games.json
+
+        ↓
+
+GAME CASE-STUDY CONTENT
+content/games/<game-id>/en.html
+content/games/<game-id>/es.html
+
+        +
+
+GAME MEDIA
+assets/games/<game-id>/
+
+        ↓
+
+GAME DETAIL PAGE
+```
+
+`data/games.json` stores canonical game identity, metadata, and references to content and media. Semantic HTML stores the long-form professional contribution content, while `assets/games/<game-id>/` stores the supporting visual evidence. The Game Detail presentation consumes all three layers. Long-form professional text must not be duplicated inside `games.json`. The visible Game Detail gallery is limited to a maximum of six images.
+
 ### Example Story
 
 ```text

@@ -1,6 +1,6 @@
 # Portfolio Website Architecture
 
-This document defines the planned information architecture for v0.2.0. It is a design specification only; none of these routes exist yet.
+This document defines the planned information architecture for v0.2.0. The bilingual `/en/` and `/es/` route trees listed below already exist in the current repository as placeholder HTML pages and form the current physical scaffold. Their final layouts, components, content integration, navigation behaviour, and visual design are not implemented yet.
 
 ## Active Main Navigation
 
@@ -96,6 +96,29 @@ The webpage is the native presentation. Downloadable files are supporting resour
 - Explanation of role and contribution
 - Maximum of six gallery images
 - Previous/next gallery navigation
+
+#### Content Architecture
+
+A Game Detail page presents:
+
+1. Game identity / overview
+2. Professional contribution
+3. Systems, features, or design areas worked on
+4. Supporting image gallery
+
+A single game may contain multiple professional contribution subsections. The conceptual content structure is:
+
+```text
+Game
+├── Overview
+├── My Contribution
+│   ├── Feature / System A
+│   ├── Feature / System B
+│   └── Feature / System C
+└── Gallery
+```
+
+On desktop, the visual gallery is positioned alongside the written content. A maximum of six gallery images may be available for the visible page, while game metadata and professional contribution remain the primary information. The layout becomes responsive on tablet and mobile. Final CSS dimensions are intentionally undefined at this architecture stage.
 
 ### PROJECTS (I+D+I)
 
