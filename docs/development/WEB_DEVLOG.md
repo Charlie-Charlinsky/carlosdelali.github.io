@@ -132,6 +132,13 @@ First professional Game Detail content introduced:
 - The Little Prince asset references were reconciled after its manually supplied source set changed.
 - The four Genera Games records in `games.json` now reference their current public content and visual assets.
 
+### Professional Game Source / Asset Scaffold Completed
+
+- Authoring directories were pre-created for the remaining TWS Inventors of Play and EA Sports games, giving every professional game a predictable `local-content` source location.
+- Each remaining game now has dedicated public `cover/` and `gallery/` asset directories.
+- The scaffold removes repetitive manual directory creation from future content batches.
+- Public semantic content will still be generated only when each game batch is integrated.
+
 ### Typography
 
 Planned body typography:

@@ -34,15 +34,25 @@ Source documents and published output must remain distinct even when Codex is us
 ### Game Authoring Source
 
 ```text
+LOCAL AUTHORING
 local-content/games/<game-id>/content.docx
+
+PUBLIC ASSETS
+assets/games/<game-id>/cover/
+assets/games/<game-id>/gallery/
+
         ↓
 Codex transforms the authored language sections
         ↓
+
+PUBLIC GENERATED CONTENT
 content/games/<game-id>/en.html
 content/games/<game-id>/es.html
 ```
 
-The DOCX file is the authoritative literary source for a game's public copy and remains local because `local-content/` is ignored by Git. Codex must preserve the approved wording: source metadata and integration instructions guide the transformation but must not appear in the public content. The generated output is semantic HTML, not a public copy of the authoring document.
+Local authoring and public asset directories are prepared ahead of integration. Carlos manually supplies `content.docx` and the visual assets; no placeholder DOCX or image files are generated. The DOCX file is the authoritative literary source for a game's public copy and remains local because `local-content/` is ignored by Git. Codex later transforms the authored language sections into public semantic HTML during the corresponding content-integration batch.
+
+Codex must preserve the approved wording: source metadata and integration instructions guide the transformation but must not appear in the public content. The generated output is semantic HTML, not a public copy of the authoring document. Empty public `cover/` and `gallery/` directories may contain `.gitkeep` solely so the scaffold can be versioned; the marker must be removed when real assets are integrated.
 
 Visual assets are supplied manually under `assets/games/<game-id>/` and connected through `data/games.json`. Public asset filenames are normalised to lowercase kebab-case without changing their formats or binary contents. A Game Detail record may reference no more than six gallery images.
 
