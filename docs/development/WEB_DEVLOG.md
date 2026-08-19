@@ -139,6 +139,13 @@ First professional Game Detail content introduced:
 - The scaffold removes repetitive manual directory creation from future content batches.
 - Public semantic content will still be generated only when each game batch is integrated.
 
+### TWS Professional Catalogue Expanded
+
+- The known TWS professional-game catalogue expanded with Mystic Elements and A Night with Cleo.
+- Both titles were added to the canonical game and ludography registries, bringing TWS to 11 known professional titles in the portfolio data layer.
+- Local authoring directories and public `cover/` and `gallery/` asset scaffolds were prepared for both games.
+- Their semantic content remains pending the upcoming TWS batch integration.
+
 ### Typography
 
 Planned body typography:

@@ -257,6 +257,42 @@
       }
     },
     {
+      "id": "mystic-elements",
+      "title": "Mystic Elements",
+      "studio": "TWS Inventors of Play",
+      "studioId": "tws-inventors-of-play",
+      "category": "casino",
+      "detailStatus": "research-pending",
+      "assetsStatus": "pending",
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
+    },
+    {
+      "id": "a-night-with-cleo",
+      "title": "A Night with Cleo",
+      "studio": "TWS Inventors of Play",
+      "studioId": "tws-inventors-of-play",
+      "category": "casino",
+      "detailStatus": "research-pending",
+      "assetsStatus": "pending",
+      "published": true,
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "gallery": []
+      }
+    },
+    {
       "id": "ea-sports-pga-tour",
       "title": "EA SPORTS PGA TOUR",
       "studio": "EA Sports",
