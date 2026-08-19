@@ -117,7 +117,12 @@ First professional Game Detail content introduced:
 - Game Mode Design.
 - `games.json` content references connected.
 - Dedicated asset structure created.
-- Visual assets remain pending.
+- First Game Detail visual asset set integrated.
+- One dedicated cover image.
+- Three gallery images.
+- Asset filenames normalised to lowercase kebab-case.
+- `games.json` asset references connected.
+- `assetsStatus` changed to `ready`.
 
 ### Typography
 

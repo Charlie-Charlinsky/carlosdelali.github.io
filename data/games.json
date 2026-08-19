@@ -7,15 +7,19 @@
       "studioId": "genera-games",
       "category": "mobile",
       "detailStatus": "content-ready",
-      "assetsStatus": "pending",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
         "en": "content/games/the-little-prince/en.html",
         "es": "content/games/the-little-prince/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/the-little-prince/cover/the-little-prince-cover.jpg",
+        "gallery": [
+          "assets/games/the-little-prince/gallery/the-little-prince-01.png",
+          "assets/games/the-little-prince/gallery/the-little-prince-02.png",
+          "assets/games/the-little-prince/gallery/the-little-prince-03.png"
+        ]
       }
     },
     {
