@@ -6,12 +6,12 @@
       "studio": "Genera Games",
       "studioId": "genera-games",
       "category": "mobile",
-      "detailStatus": "content-pending",
+      "detailStatus": "content-ready",
       "assetsStatus": "pending",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/the-little-prince/en.html",
+        "es": "content/games/the-little-prince/es.html"
       },
       "assets": {
         "cover": null,

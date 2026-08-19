@@ -106,6 +106,19 @@ Game Detail architecture introduced:
 - The shared Game Detail model supports multiple feature/system contribution sections.
 - The visible gallery is capped at six images.
 
+### First Professional Game Detail Content
+
+First professional Game Detail content introduced:
+
+- The Little Prince.
+- Bilingual EN / ES semantic case study.
+- Overview.
+- Level Design.
+- Game Mode Design.
+- `games.json` content references connected.
+- Dedicated asset structure created.
+- Visual assets remain pending.
+
 ### Typography
 
 Planned body typography:
