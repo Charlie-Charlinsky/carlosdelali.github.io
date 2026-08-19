@@ -31,6 +31,21 @@ Source documents and published output must remain distinct even when Codex is us
 
 ## Expected Workflow
 
+### Game Authoring Source
+
+```text
+local-content/games/<game-id>/content.docx
+        ↓
+Codex transforms the authored language sections
+        ↓
+content/games/<game-id>/en.html
+content/games/<game-id>/es.html
+```
+
+The DOCX file is the authoritative literary source for a game's public copy and remains local because `local-content/` is ignored by Git. Codex must preserve the approved wording: source metadata and integration instructions guide the transformation but must not appear in the public content. The generated output is semantic HTML, not a public copy of the authoring document.
+
+Visual assets are supplied manually under `assets/games/<game-id>/` and connected through `data/games.json`. Public asset filenames are normalised to lowercase kebab-case without changing their formats or binary contents. A Game Detail record may reference no more than six gallery images.
+
 ### Professional Game
 
 ```text

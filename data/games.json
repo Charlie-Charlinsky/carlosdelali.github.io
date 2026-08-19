@@ -16,9 +16,10 @@
       "assets": {
         "cover": "assets/games/the-little-prince/cover/the-little-prince-cover.jpg",
         "gallery": [
-          "assets/games/the-little-prince/gallery/the-little-prince-01.png",
+          "assets/games/the-little-prince/gallery/the-little-prince-01.jpg",
           "assets/games/the-little-prince/gallery/the-little-prince-02.png",
-          "assets/games/the-little-prince/gallery/the-little-prince-03.png"
+          "assets/games/the-little-prince/gallery/the-little-prince-03.png",
+          "assets/games/the-little-prince/gallery/the-little-prince-04.png"
         ]
       }
     },
@@ -28,16 +29,22 @@
       "studio": "Genera Games",
       "studioId": "genera-games",
       "category": "mobile",
-      "detailStatus": "content-pending",
-      "assetsStatus": "pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/runbot/en.html",
+        "es": "content/games/runbot/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/runbot/cover/runbot-cover.png",
+        "gallery": [
+          "assets/games/runbot/gallery/runbot-01.jpeg",
+          "assets/games/runbot/gallery/runbot-02.png",
+          "assets/games/runbot/gallery/runbot-03.png",
+          "assets/games/runbot/gallery/runbot-04.png",
+          "assets/games/runbot/gallery/runbot-05.png"
+        ]
       }
     },
     {
@@ -46,16 +53,21 @@
       "studio": "Genera Games",
       "studioId": "genera-games",
       "category": "mobile",
-      "detailStatus": "content-pending",
-      "assetsStatus": "pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/xtreme-racing-2/en.html",
+        "es": "content/games/xtreme-racing-2/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/xtreme-racing-2/cover/xtreme-racing-2-cover.png",
+        "gallery": [
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-01.jpg",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-02.jpg",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-03.png",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-04.png"
+        ]
       }
     },
     {
@@ -64,16 +76,22 @@
       "studio": "Genera Games",
       "studioId": "genera-games",
       "category": "mobile",
-      "detailStatus": "content-pending",
-      "assetsStatus": "pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/skull-towers/en.html",
+        "es": "content/games/skull-towers/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/skull-towers/cover/skull-towers-cover.jpeg",
+        "gallery": [
+          "assets/games/skull-towers/gallery/skull-towers-01.png",
+          "assets/games/skull-towers/gallery/skull-towers-02.png",
+          "assets/games/skull-towers/gallery/skull-towers-03.png",
+          "assets/games/skull-towers/gallery/skull-towers-04.png",
+          "assets/games/skull-towers/gallery/skull-towers-05.png"
+        ]
       }
     },
     {

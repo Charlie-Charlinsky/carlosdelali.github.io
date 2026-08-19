@@ -124,6 +124,14 @@ First professional Game Detail content introduced:
 - `games.json` asset references connected.
 - `assetsStatus` changed to `ready`.
 
+### Genera Games Batch Content Integration
+
+- The DOCX-driven authoring pipeline is now in use, with `local-content/games/<game-id>/content.docx` as the canonical local source convention.
+- Runbot, Xtreme Racing 2, and Skull Towers received bilingual EN / ES semantic content generated from their local authoring sources.
+- Complete Genera Games visual sets were connected through `games.json`; public filenames use lowercase kebab-case.
+- The Little Prince asset references were reconciled after its manually supplied source set changed.
+- The four Genera Games records in `games.json` now reference their current public content and visual assets.
+
 ### Typography
 
 Planned body typography:
