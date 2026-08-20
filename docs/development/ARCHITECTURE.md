@@ -72,6 +72,29 @@ On mobile, the header must:
 
 About is the default landing page for each language tree.
 
+#### Authoring Architecture
+
+`local-content/about/content.docx` is the authoritative editable source for the bilingual identity, biography / About copy, and contact text. A future content-integration pass will transform it into:
+
+```text
+local-content/about/content.docx
+        ↓
+content/about/en.html
+content/about/es.html
+```
+
+The future semantic fragment follows this conceptual model:
+
+```html
+<article data-page-id="about">
+    identity
+    biography / about-copy
+    contact
+</article>
+```
+
+About owns one separately supplied profile image under `assets/about/profile/`. When integrated, its canonical public filename is `carlos-lopez-profile.<original-extension>`; the source binary and extension must be preserved. The profile image is composed by the future page renderer and is not embedded in the authoring DOCX. The semantic fragment does not duplicate the global page shell or navigation.
+
 ### CV
 
 - Education
@@ -81,6 +104,43 @@ About is the default landing page for each language tree.
 - Download Portfolio
 
 The webpage is the native presentation. Downloadable files are supporting resources.
+
+#### Authoring Architecture
+
+`local-content/cv/content.docx` is the authoritative editable source for bilingual Education, Work Experience, and section / download-action copy. A future content-integration pass will transform it into:
+
+```text
+local-content/cv/content.docx
+        ↓
+content/cv/en.html
+content/cv/es.html
+```
+
+The CV has three permanent main content regions:
+
+1. Education
+2. Work Experience
+3. Ludography
+
+Education and Work Experience are DOCX-authored. Ludography remains data-driven from `data/ludography.json` and `data/games.json`; it must be mounted into the future semantic/page composition rather than duplicated as manually maintained CV copy.
+
+The future semantic fragment follows this conceptual model:
+
+```html
+<article data-page-id="cv">
+    education
+    work-experience
+    ludography data mount
+    download actions
+</article>
+```
+
+The public, versioned download assets live separately from the DOCX:
+
+- `assets/downloads/cv/carlos-lopez-cv.pdf`
+- `assets/downloads/portfolio/carlos-lopez-portfolio.pdf`
+
+The future page renderer will compose the semantic content, data-driven Ludography, and download actions without duplicating the global page shell or navigation.
 
 ### GAMES
 

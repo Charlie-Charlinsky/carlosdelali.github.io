@@ -160,6 +160,14 @@ First professional Game Detail content introduced:
 - All four EA Sports games are now `content-ready`; the existing Genera Games and TWS Inventors of Play integrations remained unchanged.
 - All 19 currently registered professional games now have their Game Detail content layer integrated.
 
+### About and CV Content Architecture Scaffold
+
+- The professional Games content architecture is complete at 19 / 19, and About plus CV form the next content-architecture block.
+- Local About authoring and its profile-image asset scaffold were prepared.
+- Local CV authoring and the public CV / Portfolio PDF download scaffold were prepared.
+- CV Ludography remains connected to the canonical `ludography.json` and `games.json` registries rather than duplicated in DOCX copy.
+- Bilingual semantic EN / ES integration and frontend implementation remain pending.
+
 ### Typography
 
 Planned body typography:

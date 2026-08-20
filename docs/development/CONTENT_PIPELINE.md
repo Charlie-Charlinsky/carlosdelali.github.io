@@ -31,6 +31,32 @@ Source documents and published output must remain distinct even when Codex is us
 
 ## Expected Workflow
 
+### Page Authoring Sources
+
+About uses one private bilingual authoring source:
+
+```text
+local-content/about/content.docx
+        ↓
+future content/about/en.html
+future content/about/es.html
+```
+
+The DOCX owns the editable identity, biography / About copy, and contact text. Its profile photograph is a separately supplied public asset under `assets/about/profile/`, not part of the DOCX content layer.
+
+CV uses one private bilingual authoring source:
+
+```text
+local-content/cv/content.docx
+        ↓
+future content/cv/en.html
+future content/cv/es.html
+```
+
+The CV DOCX owns editable Education, Work Experience, and bilingual section / download-action copy. Ludography is populated from `data/ludography.json` and `data/games.json` and must not be duplicated in the CV authoring source. Downloadable CV and Portfolio PDFs remain separate public assets under `assets/downloads/cv/` and `assets/downloads/portfolio/`.
+
+As with game authoring, DOCX metadata, research notes, and integration instructions must never appear in public semantic content. `local-content/` remains private/local and ignored by Git. Carlos manually supplies profile and download binaries; a later integration pass normalises their public filenames without modifying binary contents or changing extensions.
+
 ### Game Authoring Source
 
 ```text
