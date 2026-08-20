@@ -100,16 +100,23 @@
       "studio": "TWS Inventors of Play",
       "studioId": "tws-inventors-of-play",
       "category": "casino",
-      "detailStatus": "research-pending",
-      "assetsStatus": "research-pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/gold-rush-gus/en.html",
+        "es": "content/games/gold-rush-gus/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/gold-rush-gus/cover/gold-rush-gus-cover.jpg",
+        "gallery": [
+          "assets/games/gold-rush-gus/gallery/gold-rush-gus-01.jpg",
+          "assets/games/gold-rush-gus/gallery/gold-rush-gus-02.png",
+          "assets/games/gold-rush-gus/gallery/gold-rush-gus-03.png",
+          "assets/games/gold-rush-gus/gallery/gold-rush-gus-04.jpg",
+          "assets/games/gold-rush-gus/gallery/gold-rush-gus-05.png",
+          "assets/games/gold-rush-gus/gallery/gold-rush-gus-06.png"
+        ]
       }
     },
     {
@@ -118,16 +125,23 @@
       "studio": "TWS Inventors of Play",
       "studioId": "tws-inventors-of-play",
       "category": "casino",
-      "detailStatus": "research-pending",
-      "assetsStatus": "research-pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/777-deluxe/en.html",
+        "es": "content/games/777-deluxe/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/777-deluxe/cover/777-deluxe-cover.png",
+        "gallery": [
+          "assets/games/777-deluxe/gallery/777-deluxe-01.png",
+          "assets/games/777-deluxe/gallery/777-deluxe-02.png",
+          "assets/games/777-deluxe/gallery/777-deluxe-03.png",
+          "assets/games/777-deluxe/gallery/777-deluxe-04.png",
+          "assets/games/777-deluxe/gallery/777-deluxe-05.png",
+          "assets/games/777-deluxe/gallery/777-deluxe-06.png"
+        ]
       }
     },
     {
@@ -136,16 +150,21 @@
       "studio": "TWS Inventors of Play",
       "studioId": "tws-inventors-of-play",
       "category": "casino",
-      "detailStatus": "research-pending",
-      "assetsStatus": "research-pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/cyberpunk-city/en.html",
+        "es": "content/games/cyberpunk-city/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/cyberpunk-city/cover/cyberpunk-city-cover.png",
+        "gallery": [
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-01.png",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-02.png",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-03.png",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-04.png"
+        ]
       }
     },
     {
@@ -154,16 +173,23 @@
       "studio": "TWS Inventors of Play",
       "studioId": "tws-inventors-of-play",
       "category": "casino",
-      "detailStatus": "research-pending",
-      "assetsStatus": "research-pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/gods-of-luxor/en.html",
+        "es": "content/games/gods-of-luxor/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/gods-of-luxor/cover/gods-of-luxor-cover.jpg",
+        "gallery": [
+          "assets/games/gods-of-luxor/gallery/gods-of-luxor-01.jpg",
+          "assets/games/gods-of-luxor/gallery/gods-of-luxor-02.jpg",
+          "assets/games/gods-of-luxor/gallery/gods-of-luxor-03.jpg",
+          "assets/games/gods-of-luxor/gallery/gods-of-luxor-04.jpg",
+          "assets/games/gods-of-luxor/gallery/gods-of-luxor-05.jpg",
+          "assets/games/gods-of-luxor/gallery/gods-of-luxor-06.jpg"
+        ]
       }
     },
     {
@@ -172,16 +198,20 @@
       "studio": "TWS Inventors of Play",
       "studioId": "tws-inventors-of-play",
       "category": "casino",
-      "detailStatus": "research-pending",
-      "assetsStatus": "research-pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/teen-patti/en.html",
+        "es": "content/games/teen-patti/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/teen-patti/cover/teen-patti-cover.jpg",
+        "gallery": [
+          "assets/games/teen-patti/gallery/teen-patti-01.jpg",
+          "assets/games/teen-patti/gallery/teen-patti-02.jpg",
+          "assets/games/teen-patti/gallery/teen-patti-03.jpg"
+        ]
       }
     },
     {
@@ -190,16 +220,22 @@
       "studio": "TWS Inventors of Play",
       "studioId": "tws-inventors-of-play",
       "category": "casino",
-      "detailStatus": "research-pending",
-      "assetsStatus": "research-pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/andar-bahar/en.html",
+        "es": "content/games/andar-bahar/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/andar-bahar/cover/andar-bahar-cover.png",
+        "gallery": [
+          "assets/games/andar-bahar/gallery/andar-bahar-01.png",
+          "assets/games/andar-bahar/gallery/andar-bahar-02.png",
+          "assets/games/andar-bahar/gallery/andar-bahar-03.png",
+          "assets/games/andar-bahar/gallery/andar-bahar-04.png",
+          "assets/games/andar-bahar/gallery/andar-bahar-05.png"
+        ]
       }
     },
     {
@@ -208,16 +244,20 @@
       "studio": "TWS Inventors of Play",
       "studioId": "tws-inventors-of-play",
       "category": "casino",
-      "detailStatus": "research-pending",
-      "assetsStatus": "research-pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/wheel-of-fortune/en.html",
+        "es": "content/games/wheel-of-fortune/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/wheel-of-fortune/cover/wheel-of-fortune-cover.png",
+        "gallery": [
+          "assets/games/wheel-of-fortune/gallery/wheel-of-fortune-01.png",
+          "assets/games/wheel-of-fortune/gallery/wheel-of-fortune-02.png",
+          "assets/games/wheel-of-fortune/gallery/wheel-of-fortune-03.png"
+        ]
       }
     },
     {
@@ -226,16 +266,22 @@
       "studio": "TWS Inventors of Play",
       "studioId": "tws-inventors-of-play",
       "category": "casino",
-      "detailStatus": "research-pending",
-      "assetsStatus": "research-pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/cricket-legends/en.html",
+        "es": "content/games/cricket-legends/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/cricket-legends/cover/cricket-legends-cover.png",
+        "gallery": [
+          "assets/games/cricket-legends/gallery/cricket-legends-01.png",
+          "assets/games/cricket-legends/gallery/cricket-legends-02.jpg",
+          "assets/games/cricket-legends/gallery/cricket-legends-03.png",
+          "assets/games/cricket-legends/gallery/cricket-legends-04.png",
+          "assets/games/cricket-legends/gallery/cricket-legends-05.png"
+        ]
       }
     },
     {
@@ -244,16 +290,23 @@
       "studio": "TWS Inventors of Play",
       "studioId": "tws-inventors-of-play",
       "category": "casino",
-      "detailStatus": "research-pending",
-      "assetsStatus": "research-pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/zombie-soccer/en.html",
+        "es": "content/games/zombie-soccer/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/zombie-soccer/cover/zombie-soccer-cover.jpg",
+        "gallery": [
+          "assets/games/zombie-soccer/gallery/zombie-soccer-01.jpg",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-02.jpg",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-03.jpg",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-04.jpg",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-05.jpg",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-06.jpg"
+        ]
       }
     },
     {
@@ -262,16 +315,23 @@
       "studio": "TWS Inventors of Play",
       "studioId": "tws-inventors-of-play",
       "category": "casino",
-      "detailStatus": "research-pending",
-      "assetsStatus": "pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/mystic-elements/en.html",
+        "es": "content/games/mystic-elements/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/mystic-elements/cover/mystic-elements-cover.png",
+        "gallery": [
+          "assets/games/mystic-elements/gallery/mystic-elements-01.png",
+          "assets/games/mystic-elements/gallery/mystic-elements-02.jpg",
+          "assets/games/mystic-elements/gallery/mystic-elements-03.png",
+          "assets/games/mystic-elements/gallery/mystic-elements-04.png",
+          "assets/games/mystic-elements/gallery/mystic-elements-05.png",
+          "assets/games/mystic-elements/gallery/mystic-elements-06.png"
+        ]
       }
     },
     {
@@ -280,16 +340,21 @@
       "studio": "TWS Inventors of Play",
       "studioId": "tws-inventors-of-play",
       "category": "casino",
-      "detailStatus": "research-pending",
-      "assetsStatus": "pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/a-night-with-cleo/en.html",
+        "es": "content/games/a-night-with-cleo/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/a-night-with-cleo/cover/a-night-with-cleo-cover.png",
+        "gallery": [
+          "assets/games/a-night-with-cleo/gallery/a-night-with-cleo-01.png",
+          "assets/games/a-night-with-cleo/gallery/a-night-with-cleo-02.png",
+          "assets/games/a-night-with-cleo/gallery/a-night-with-cleo-03.jpg",
+          "assets/games/a-night-with-cleo/gallery/a-night-with-cleo-04.jpg"
+        ]
       }
     },
     {

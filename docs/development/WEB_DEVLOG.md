@@ -146,6 +146,13 @@ First professional Game Detail content introduced:
 - Local authoring directories and public `cover/` and `gallery/` asset scaffolds were prepared for both games.
 - Their semantic content remains pending the upcoming TWS batch integration.
 
+### TWS Inventors of Play Batch Content Integration
+
+- The complete known TWS authoring batch was integrated: 11 authoritative bilingual DOCX Game Detail sources were transformed into semantic English and Spanish HTML.
+- Public cover and gallery assets were normalised and connected, and `games.json` was updated with the final TWS content and asset references.
+- TWS professional content is now `content-ready`; the existing Genera Games integration remained unchanged.
+- EA Sports remains the next professional game-content batch.
+
 ### Typography
 
 Planned body typography:
