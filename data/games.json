@@ -363,16 +363,23 @@
       "studio": "EA Sports",
       "studioId": "ea-sports",
       "category": "aaa",
-      "detailStatus": "content-pending",
-      "assetsStatus": "pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/ea-sports-pga-tour/en.html",
+        "es": "content/games/ea-sports-pga-tour/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/ea-sports-pga-tour/cover/ea-sports-pga-tour-cover.jpeg",
+        "gallery": [
+          "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-01.png",
+          "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-02.png",
+          "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-03.png",
+          "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-04.png",
+          "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-05.png",
+          "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-06.jpg"
+        ]
       }
     },
     {
@@ -381,16 +388,20 @@
       "studio": "EA Sports",
       "studioId": "ea-sports",
       "category": "aaa",
-      "detailStatus": "content-pending",
-      "assetsStatus": "pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/madden-nfl-25/en.html",
+        "es": "content/games/madden-nfl-25/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/madden-nfl-25/cover/madden-nfl-25-cover.png",
+        "gallery": [
+          "assets/games/madden-nfl-25/gallery/madden-nfl-25-01.png",
+          "assets/games/madden-nfl-25/gallery/madden-nfl-25-02.png",
+          "assets/games/madden-nfl-25/gallery/madden-nfl-25-03.png"
+        ]
       }
     },
     {
@@ -399,16 +410,23 @@
       "studio": "EA Sports",
       "studioId": "ea-sports",
       "category": "aaa",
-      "detailStatus": "content-pending",
-      "assetsStatus": "pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/madden-nfl-26/en.html",
+        "es": "content/games/madden-nfl-26/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/madden-nfl-26/cover/madden-nfl-26-cover.jpg",
+        "gallery": [
+          "assets/games/madden-nfl-26/gallery/madden-nfl-26-01.png",
+          "assets/games/madden-nfl-26/gallery/madden-nfl-26-02.png",
+          "assets/games/madden-nfl-26/gallery/madden-nfl-26-03.png",
+          "assets/games/madden-nfl-26/gallery/madden-nfl-26-04.png",
+          "assets/games/madden-nfl-26/gallery/madden-nfl-26-05.png",
+          "assets/games/madden-nfl-26/gallery/madden-nfl-26-06.png"
+        ]
       }
     },
     {
@@ -417,16 +435,22 @@
       "studio": "EA Sports",
       "studioId": "ea-sports",
       "category": "aaa",
-      "detailStatus": "content-pending",
-      "assetsStatus": "pending",
+      "detailStatus": "content-ready",
+      "assetsStatus": "ready",
       "published": true,
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/games/madden-nfl-27/en.html",
+        "es": "content/games/madden-nfl-27/es.html"
       },
       "assets": {
-        "cover": null,
-        "gallery": []
+        "cover": "assets/games/madden-nfl-27/cover/madden-nfl-27-cover.jpeg",
+        "gallery": [
+          "assets/games/madden-nfl-27/gallery/madden-nfl-27-01.png",
+          "assets/games/madden-nfl-27/gallery/madden-nfl-27-02.png",
+          "assets/games/madden-nfl-27/gallery/madden-nfl-27-03.png",
+          "assets/games/madden-nfl-27/gallery/madden-nfl-27-04.png",
+          "assets/games/madden-nfl-27/gallery/madden-nfl-27-05.png"
+        ]
       }
     }
   ]

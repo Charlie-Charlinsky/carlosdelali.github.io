@@ -153,6 +153,13 @@ First professional Game Detail content introduced:
 - TWS professional content is now `content-ready`; the existing Genera Games integration remained unchanged.
 - EA Sports remains the next professional game-content batch.
 
+### EA Sports Batch Content Integration
+
+- The complete EA Sports professional-game authoring batch was integrated: four authoritative bilingual DOCX sources were transformed into eight semantic English and Spanish HTML fragments.
+- EA cover and gallery assets were normalised and connected, and `games.json` was updated with the final EA content and asset paths.
+- All four EA Sports games are now `content-ready`; the existing Genera Games and TWS Inventors of Play integrations remained unchanged.
+- All 19 currently registered professional games now have their Game Detail content layer integrated.
+
 ### Typography
 
 Planned body typography:
