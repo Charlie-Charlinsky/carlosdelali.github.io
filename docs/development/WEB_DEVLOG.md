@@ -168,6 +168,13 @@ First professional Game Detail content introduced:
 - CV Ludography remains connected to the canonical `ludography.json` and `games.json` registries rather than duplicated in DOCX copy.
 - Bilingual semantic EN / ES integration and frontend implementation remain pending.
 
+### About and CV Semantic Content Integration
+
+- Bilingual About and CV semantic content was integrated from the authoritative DOCX sources.
+- The canonical About profile asset and the downloadable CV / Portfolio PDFs were validated and connected architecturally.
+- CV Education and Work Experience remain DOCX-authored, while Ludography remains data-driven from the canonical `ludography.json` and `games.json` registries.
+- Frontend implementation remains pending.
+
 ### Typography
 
 Planned body typography:
