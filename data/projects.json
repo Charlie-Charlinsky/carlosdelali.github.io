@@ -1,3 +1,23 @@
 {
-  "projects": []
+  "projects": [
+    {
+      "id": "project-1",
+      "order": 1,
+      "title": {
+        "en": null,
+        "es": null
+      },
+      "contentStatus": "authoring-pending",
+      "content": {
+        "en": null,
+        "es": null
+      },
+      "assets": {
+        "cover": null,
+        "conceptualProcess": []
+      },
+      "gdds": [],
+      "prototypeVideos": []
+    }
+  ]
 }

@@ -106,56 +106,45 @@ GAME DETAIL PAGE
 
 `data/games.json` stores canonical game identity, metadata, and references to content and media. Semantic HTML stores the long-form professional contribution content, while `assets/games/<game-id>/` stores the supporting visual evidence. The Game Detail presentation consumes all three layers. Long-form professional text must not be duplicated inside `games.json`. The visible Game Detail gallery is limited to a maximum of six images.
 
-### Example Story
+### Project Authoring Sources
 
 ```text
-local-content/writing/story-name/story.es.docx
+local-content/projects/<project-id>/content.docx
         ↓
-Codex reads source
+content/projects/<project-id>/en.html
+content/projects/<project-id>/es.html
+
+local-content/projects/<project-id>/gdds/<gdd-id>/content.docx
         ↓
-content/writing/story-name/es.html
-        ↓
-data/stories.json indexes the entry
-        ↓
-Writing Reader displays it
+content/projects/<project-id>/gdds/<gdd-id>/en.html
+content/projects/<project-id>/gdds/<gdd-id>/es.html
 ```
 
-The index should contain the public metadata needed to locate, order, label, and present each story without extracting metadata from rendered markup at runtime.
+The project-level DOCX is the authoritative source for the overall Project Detail. A project may own zero, one, or many child GDD DOCX sources. Once child sources exist, their full prose must not also be maintained in the master document. `data/projects.json` stores metadata, paths, status, asset references, and child relationships only. Cover, conceptual-process, GDD, and prototype assets remain separate manually supplied binaries. Public semantic content is generated in a later integration task.
 
-### Example Dream
+### Writing Authoring Sources
 
 ```text
-local-content/dreams/YYYY-MM-DD/
-    dream.es.docx
-    dream.en.docx
-    analysis.es.docx
-    analysis.en.docx
-
+local-content/writing/<story-id>/content.docx
         ↓
-
-semantic HTML + metadata + optional concept assets
+content/writing/<story-id>/en.html
+content/writing/<story-id>/es.html
 ```
 
-The transformed output must keep dream text and analysis as distinct semantic fields. Metadata should identify the date, entry number, language, available concepts, and previous/next relationships.
+Writing uses one independent bilingual DOCX per story and never one monolithic source for the section. `data/stories.json` indexes identity, order, labels, status, content paths, and optional assets without storing story prose. Transformation must preserve source paragraph boundaries, intentional spacing, order, emphasis, literary pacing, and authored headings as far as practical; it must not invent headings. Public semantic content is generated in a later integration task.
 
-### Example Project
+### Oniric Journal Authoring Sources
 
 ```text
-local-content/projects/project-name/
-    brief.*
-    gdd.*
-
-assets/projects/project-name/
-    hero/
-    concepts/
-    prototype/
-
+local-content/oniric-journal/<entry-id>/content.docx
         ↓
-
-Project detail website
+content/oniric-journal/<entry-id>/en.html
+content/oniric-journal/<entry-id>/es.html
 ```
 
-The project pipeline combines transformed textual content, structured project metadata, and public media assets. The resulting page must remain a native website rather than a wrapper around source documents.
+Oniric Journal uses one independent bilingual DOCX per entry, normally keyed by its ISO date, and never one monolithic source for the journal. The single journal registry stores identity, date, order, bilingual labels, status, content paths, and optional assets without storing dream or analysis prose. Display numbering and previous/next relationships derive from registry order. Public semantic content is generated in a later integration task.
+
+For all three families, DOCX is the authoritative source for authored prose, JSON is registry metadata only, and manually supplied assets remain separate. Authoring metadata and integration-contract instructions guide transformation but must never appear in public output. `local-content/` remains ignored by Git.
 
 ## Content Rules
 

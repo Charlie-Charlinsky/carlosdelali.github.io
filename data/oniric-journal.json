@@ -1,11 +1,12 @@
 {
-  "stories": [
+  "entries": [
     {
-      "id": "ecos-de-sangre",
+      "id": "2026-07-17",
+      "date": "2026-07-17",
       "order": 1,
       "title": {
-        "en": "Echoes of Blood",
-        "es": "Ecos de Sangre"
+        "en": "Dream - Friday 17 July 2026",
+        "es": "Sueño - Viernes 17 de Julio de 2026"
       },
       "contentStatus": "authoring-pending",
       "content": {
@@ -17,11 +18,12 @@
       }
     },
     {
-      "id": "sinapsis",
+      "id": "2026-08-12",
+      "date": "2026-08-12",
       "order": 2,
       "title": {
-        "en": "Synapse",
-        "es": "Sinapsis"
+        "en": "Dreams - 12 August 2026",
+        "es": "Sueños - 12 de Agosto de 2026"
       },
       "contentStatus": "authoring-pending",
       "content": {

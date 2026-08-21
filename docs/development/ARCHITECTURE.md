@@ -188,11 +188,33 @@ On desktop, the visual gallery is positioned alongside the written content. A ma
 - Black/white palette inversion on hover.
 - Clicking an entry opens its project detail page.
 
-### PROJECT DETAIL
+#### Content Architecture
+
+Each project owns one master authoring source at `local-content/projects/<project-id>/content.docx`. It defines the overall Project Detail hierarchy: Brief, Conceptual Process, GDD / Design Documentation, and Prototype. A project may also own zero, one, or many child GDD sources at `local-content/projects/<project-id>/gdds/<gdd-id>/content.docx`. When child GDDs exist, the master source acts as their overview or index and must not duplicate their complete authored copy.
+
+Project and child-GDD sources are transformed independently into bilingual semantic fragments:
+
+```text
+local-content/projects/<project-id>/content.docx
+        ↓
+content/projects/<project-id>/en.html
+content/projects/<project-id>/es.html
+
+local-content/projects/<project-id>/gdds/<gdd-id>/content.docx
+        ↓
+content/projects/<project-id>/gdds/<gdd-id>/en.html
+content/projects/<project-id>/gdds/<gdd-id>/es.html
+```
+
+Public project assets remain separate from authored prose. `assets/projects/<project-id>/cover/` owns an optional cover, `conceptual-process/` owns ordered sketches, scans, diagrams, process images, and concept sheets, `gdds/<gdd-id>/images/` provides optional child-GDD assets, and `prototype/videos/` owns prototype media. A Project Detail page may highlight no more than four prototype videos even when additional source videos exist.
+
+`data/projects.json` is the metadata-only project registry. It owns identity, order, bilingual labels, status, content and asset paths, child-GDD relationships, and prototype references; it must not contain long Project or GDD prose.
+
+#### Future Project Detail
 
 - Brief
 - Conceptual Process
-- GDD
+- GDD / Design Documentation
 - Prototype
 - Vertical reading structure
 - Local project submenu
@@ -206,18 +228,38 @@ On desktop, the visual gallery is positioned alongside the written content. A ma
 - Independent scrolling for the story list.
 - Clickable story entries.
 - Paginated reading area on the right.
-- Source formatting preserved from the original document as far as practical in semantic HTML.
+- Reader presentation remains a frontend concern and must not introduce layout markup into semantic story content.
 
-### DREAM JOURNAL
+#### Content Architecture
+
+Writing uses one independent authoritative source per story: `local-content/writing/<story-id>/content.docx`. Stories are individually editable, translatable, integratable, and versionable; no monolithic Writing DOCX is permitted. Each source is transformed into independent bilingual semantic targets at `content/writing/<story-id>/en.html` and `content/writing/<story-id>/es.html`.
+
+The transformation preserves authored paragraph boundaries, intentional spacing, source order, emphasis, literary pacing, and headings that actually exist as far as practical. It must not invent literary headings. Optional story images live under `assets/writing/<story-id>/images/`; an image is not required.
+
+`data/stories.json` remains the single metadata-only Writing registry. It owns story identity, order, bilingual display title, status, content paths, and optional asset references, never story prose.
+
+### ONIRIC JOURNAL / DIARIO ONÍRICO
+
+`ONIRIC JOURNAL` and `DIARIO ONÍRICO` are the canonical English and Spanish display names. Existing `/dream-journal/` routes are legacy paths and remain unchanged until the future frontend migration.
 
 - Introductory description.
 - List of dream entries.
 - Compact rows derived from the Projects interaction model.
 - Scale response and colour inversion on hover.
-- Entry number.
+- Registry-derived entry number.
 - Dream date.
 
-### DREAM DETAIL
+#### Content Architecture
+
+Each entry is one independent authoritative source at `local-content/oniric-journal/<entry-id>/content.docx`; known dates use an ISO date as the entry ID. No monolithic journal DOCX is permitted. Each source is transformed into bilingual semantic targets at `content/oniric-journal/<entry-id>/en.html` and `content/oniric-journal/<entry-id>/es.html`.
+
+Entry content may contain a date or identity region, Dream, Analysis, optional authored subsections, tables or glossaries, and Concepts. The source remains authoritative and optional structures are not required. Public images are optional and live under `assets/oniric-journal/<entry-id>/images/`.
+
+`data/oniric-journal.json` is the single metadata-only registry after migration from the unused `data/dreams.json` placeholder. Registry order drives display numbering and previous/next relationships; those values must not be hard-coded into DOCX prose. The future UI may highlight no more than four concepts per entry.
+
+Legacy `data/dreams.json`, `assets/dreams/`, `local-content/dreams/`, and `content/dreams/` paths must be audited before migration. Unused placeholders may move to the canonical structure, but any path used by a runtime consumer must remain until the related frontend migration, and real content must never be deleted. Two active registries are not permitted.
+
+#### Future Entry Detail
 
 - Date heading
 - Dream text
@@ -231,7 +273,7 @@ On desktop, the visual gallery is positioned alongside the written content. A ma
 
 ### Desktop
 
-The full fixed header and permanently accessible main navigation are visible. Games may use up to four columns. Writing uses its side-by-side bibliography and reading layout. Project and dream rows retain their full horizontal form.
+The full fixed header and permanently accessible main navigation are visible. Games may use up to four columns. Writing uses its side-by-side bibliography and reading layout. Project and journal rows retain their full horizontal form.
 
 ### Tablet
 
@@ -239,6 +281,6 @@ At approximately `900px`, layouts reduce columns, spacing, and display scale. Na
 
 ### Mobile
 
-At approximately `640px`, content becomes predominantly single-column. The main navigation uses an accessible collapsed menu. Game grids, galleries, Writing, project entries, and dream entries adapt without removing content or language controls.
+At approximately `640px`, content becomes predominantly single-column. The main navigation uses an accessible collapsed menu. Game grids, galleries, Writing, project entries, and journal entries adapt without removing content or language controls.
 
 These widths are architectural targets, not final token values. Breakpoints may be refined during implementation based on content behavior.

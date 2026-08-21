@@ -175,6 +175,14 @@ First professional Game Detail content introduced:
 - CV Education and Work Experience remain DOCX-authored, while Ludography remains data-driven from the canonical `ludography.json` and `games.json` registries.
 - Frontend implementation remains pending.
 
+### Projects, Writing, and Oniric Journal Content Scaffold
+
+- The Games, About, and CV content layers remain complete.
+- Project 1 now has project-level and reusable multi-GDD authoring scaffolds ready for a manually supplied placeholder Project / GDD source.
+- Writing now has independent per-story authoring scaffolds for Ecos de Sangre and Sinapsis.
+- Oniric Journal now has independent per-entry authoring scaffolds for `2026-07-17` and `2026-08-12` under the canonical section name.
+- Semantic integration for Projects, Writing, and Oniric Journal remains pending; frontend implementation also remains pending.
+
 ### Typography
 
 Planned body typography:
