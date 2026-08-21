@@ -183,6 +183,14 @@ First professional Game Detail content introduced:
 - Oniric Journal now has independent per-entry authoring scaffolds for `2026-07-17` and `2026-08-12` under the canonical section name.
 - Semantic integration for Projects, Writing, and Oniric Journal remains pending; frontend implementation also remains pending.
 
+### Final Content Integration Batch
+
+- Project 1 placeholder semantic content, Ecos de Sangre, Sinapsis, and the Oniric Journal entries `2026-07-17` and `2026-08-12` were integrated.
+- Five authoritative DOCX sources produced ten bilingual English and Spanish semantic fragments.
+- The initial Projects, Writing, and Oniric Journal records moved from `authoring-pending` to `content-ready`.
+- Project 1 still has no real visual assets, child GDDs, or prototype videos.
+- All major v0.2 content areas now have an initial integrated content layer; frontend implementation remains pending.
+
 ### Typography
 
 Planned body typography:

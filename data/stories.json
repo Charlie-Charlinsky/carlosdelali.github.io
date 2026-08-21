@@ -7,10 +7,10 @@
         "en": "Echoes of Blood",
         "es": "Ecos de Sangre"
       },
-      "contentStatus": "authoring-pending",
+      "contentStatus": "content-ready",
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/writing/ecos-de-sangre/en.html",
+        "es": "content/writing/ecos-de-sangre/es.html"
       },
       "assets": {
         "images": []
@@ -23,10 +23,10 @@
         "en": "Synapse",
         "es": "Sinapsis"
       },
-      "contentStatus": "authoring-pending",
+      "contentStatus": "content-ready",
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/writing/sinapsis/en.html",
+        "es": "content/writing/sinapsis/es.html"
       },
       "assets": {
         "images": []

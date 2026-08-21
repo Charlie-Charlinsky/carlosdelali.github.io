@@ -8,10 +8,10 @@
         "en": "Dream - Friday 17 July 2026",
         "es": "Sueño - Viernes 17 de Julio de 2026"
       },
-      "contentStatus": "authoring-pending",
+      "contentStatus": "content-ready",
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/oniric-journal/2026-07-17/en.html",
+        "es": "content/oniric-journal/2026-07-17/es.html"
       },
       "assets": {
         "images": []
@@ -25,10 +25,10 @@
         "en": "Dreams - 12 August 2026",
         "es": "Sueños - 12 de Agosto de 2026"
       },
-      "contentStatus": "authoring-pending",
+      "contentStatus": "content-ready",
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/oniric-journal/2026-08-12/en.html",
+        "es": "content/oniric-journal/2026-08-12/es.html"
       },
       "assets": {
         "images": []

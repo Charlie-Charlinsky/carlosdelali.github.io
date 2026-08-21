@@ -7,10 +7,10 @@
         "en": null,
         "es": null
       },
-      "contentStatus": "authoring-pending",
+      "contentStatus": "content-ready",
       "content": {
-        "en": null,
-        "es": null
+        "en": "content/projects/project-1/en.html",
+        "es": "content/projects/project-1/es.html"
       },
       "assets": {
         "cover": null,
