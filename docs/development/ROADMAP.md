@@ -12,7 +12,7 @@ The preserved baseline contains the scrolling homepage, four project-detail expe
 ### v0.2.0
 
 **Personal Archive Architecture**  
-**Status:** In development.
+**Status:** Frontend implementation ready for Visual QA.
 
 Goals:
 
@@ -25,9 +25,13 @@ Goals:
 - Games archive
 - R&D Projects archive
 - Writing reader
-- Dream Journal
+- Oniric Journal / Diario Onírico
 - Content architecture
 - Development documentation
+
+Frontend implementation: **READY FOR VISUAL QA**
+
+Visual QA, final polish, release approval, and the eventual `develop` → `main` integration remain pending.
 
 ## Future Sections
 
@@ -49,17 +53,14 @@ Its internal architecture is deliberately undefined. It is not included in the c
 
 ## Future Technical Work
 
-The following work is recorded for later versions and is not implemented as part of the current documentation phase:
+The following work remains after the first complete v0.2 frontend pass:
 
 - Content import/synchronisation workflow
-- Story reader pagination
-- Bilingual content synchronisation
-- Game gallery system
-- Concept Book improvements
-- GDD navigation
-- Prototype video system
-- Dream archive indexing
-- Responsive refinement
+- Visual QA and final aesthetic polish
+- Story reader pagination refinement after visual testing
+- Concept Book improvements when project media is supplied
+- Prototype media integration when project videos are supplied
+- Responsive refinement after device QA
 - Accessibility review
 - Performance review
 - Eventual custom domain consideration

@@ -239,3 +239,14 @@ Narrative and Drawings are not part of the active v0.2.0 navigation.
 ### Reference Structure
 
 Frank Lantz's personal website is the primary structural reference for simplicity, solidity, and clearly separated pages. The visual language will continue the existing science-fiction and technological direction rather than replacing it with the reference site's visual identity.
+
+### Complete v0.2 Frontend Implementation
+
+- Implemented the complete static bilingual frontend for About, CV, Games, Game Detail, Projects, Project Detail, Writing, Oniric Journal, and Oniric Journal Detail.
+- Added a portable central path resolver derived from the shared module URL, with no dependency on the current GitHub repository name.
+- Added lightweight route shells, a persistent global identity/navigation system, context-preserving ESP / ENG switching, canonical Oniric Journal routes, and portable legacy journal redirects.
+- Connected all collection and detail views to their existing registries, semantic EN / ES fragments, images, galleries, and downloadable PDFs without modifying the completed Content Layer.
+- Added shared visual tokens and reusable geometry for Games, Projects, Writing, and Journal patterns, plus responsive desktop, tablet, and mobile baselines with keyboard, touch, focus, and reduced-motion support.
+- Added HTTP preview and automated technical-QA helpers; route, registry, reference, path-portability, and HTTP smoke validation pass.
+- Browser automation was unavailable in the execution environment, so automated screenshot inspection remains a non-critical Visual QA warning.
+- Frontend implementation is ready for Visual QA. Final aesthetic approval, polish, release, and `develop` → `main` integration remain pending.

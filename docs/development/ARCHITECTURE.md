@@ -1,6 +1,14 @@
 # Portfolio Website Architecture
 
-This document defines the planned information architecture for v0.2.0. The bilingual `/en/` and `/es/` route trees listed below already exist in the current repository as placeholder HTML pages and form the current physical scaffold. Their final layouts, components, content integration, navigation behaviour, and visual design are not implemented yet.
+This document defines the information architecture for v0.2.0. The bilingual `/en/` and `/es/` route trees are implemented as lightweight static shells backed by shared CSS and JavaScript modules. Presentation consumes the completed registries, semantic fragments, and public assets without duplicating authored content.
+
+## v0.2 Frontend Runtime
+
+The site remains a static GitHub Pages application with no build step or server runtime. `js/core/paths.js` derives the site root from `import.meta.url`, so route, data, content, and asset URLs work at a custom-domain root or below any GitHub Pages project path without embedding a repository name. Shared helpers cover route construction, language-context preservation, JSON loading, semantic-fragment loading, internal URL normalisation, error states, and the persistent global shell.
+
+`js/app.js` dispatches each route shell to a page coordinator under `js/pages/`. Collection modules render from their canonical registries, while reusable detail shells resolve the selected item from a query parameter and then load its localized semantic fragment and registered assets. The English and Spanish trees share the same modules and preserve current game, project, story, or journal identity when switching language.
+
+`css/frontend.css` owns the v0.2 design tokens, shared geometry, responsive layout, focus/touch states, reduced-motion behaviour, galleries, reader treatment, and collection patterns. Repeated Games, Projects, Writing, and Journal elements use common component classes rather than item-specific rules, keeping later Visual QA adjustments centralized.
 
 ## Active Main Navigation
 
@@ -9,7 +17,7 @@ This document defines the planned information architecture for v0.2.0. The bilin
 - GAMES
 - PROJECTS
 - WRITING
-- DREAM JOURNAL
+- ONIRIC JOURNAL / DIARIO ONÍRICO
 
 Narrative and Drawings are future sections. They are not current routes and must not appear in the v0.2.0 main navigation.
 
@@ -26,7 +34,12 @@ Narrative and Drawings are future sections. They are not current routes and must
 /en/games/
 /en/projects/
 /en/writing/
-/en/dream-journal/
+/en/oniric-journal/
+
+/en/games/detail/?id=<game-id>
+/en/projects/detail/?id=<project-id>
+/en/oniric-journal/detail/?id=<entry-id>
+/en/writing/?story=<story-id>
 
 /es/
   About
@@ -35,12 +48,17 @@ Narrative and Drawings are future sections. They are not current routes and must
 /es/games/
 /es/projects/
 /es/writing/
-/es/dream-journal/
+/es/oniric-journal/
+
+/es/games/detail/?id=<game-id>
+/es/projects/detail/?id=<project-id>
+/es/oniric-journal/detail/?id=<entry-id>
+/es/writing/?story=<story-id>
 ```
 
-English is intended to be the primary professional version. Spanish will be a full equivalent version, not a reduced secondary site. The exact default-language behavior at `/` remains an implementation decision, but it must lead to the About landing experience and provide a clear path to both language trees.
+English is the default when no explicit language preference exists. The root shell preserves an explicit stored preference and redirects portably to the matching About route. Spanish is a full equivalent version, not a reduced secondary site.
 
-Detail-page route patterns will be defined when content identifiers and URL conventions are established. They must remain descendants of their corresponding language and page family.
+The legacy `/en/dream-journal/` and `/es/dream-journal/` shells redirect to the canonical Oniric Journal routes while preserving query and hash context where present.
 
 ## Global Header
 
@@ -49,7 +67,7 @@ The intended desktop header is fixed while page content scrolls.
 ```text
 Upper left:  ESP / ENG
 Below:       CARLOS J. L. SÁNCHEZ
-Right:       About / CV / Games / Projects / Writing / Dream Journal
+Right:       About / CV / Games / Projects / Writing / Oniric Journal
 ```
 
 The language selector, designer name, and main navigation are global controls. The current language and page must be conveyed accessibly as well as visually.
