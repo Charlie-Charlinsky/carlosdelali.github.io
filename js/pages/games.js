@@ -1,7 +1,13 @@
 import { loadJson } from "../core/loaders.js";
 import { createElement, setPageTitle } from "../core/dom.js";
-import { createMediaImage, createPageHeader } from "../core/components.js";
+import { createMediaImage } from "../core/components.js";
 import { detailUrl } from "../core/routes.js";
+
+const GAMES_STUDIO_ORDER = new Map([
+    ["ea-sports", 0],
+    ["tws-inventors-of-play", 1],
+    ["genera-games", 2]
+]);
 
 function renderGameCard(game, language) {
     const article = createElement("article", { className: "game-card" });
@@ -24,13 +30,13 @@ export async function render({ language, target }) {
     ]);
     const gameMap = new Map(registry.games.filter((game) => game.published).map((game) => [game.id, game]));
     const page = createElement("div", { className: "collection-page games-page" });
-    page.append(createPageHeader(
-        language === "es" ? "ARCHIVO PROFESIONAL" : "PROFESSIONAL ARCHIVE",
-        language === "es" ? "Juegos" : "Games",
-        language === "es" ? "Trabajo profesional organizado por estudio." : "Professional work organised by studio."
-    ));
+    const orderedStudios = [...ludography.studios].sort((first, second) => {
+        const firstOrder = GAMES_STUDIO_ORDER.get(first.id) ?? Number.MAX_SAFE_INTEGER;
+        const secondOrder = GAMES_STUDIO_ORDER.get(second.id) ?? Number.MAX_SAFE_INTEGER;
+        return firstOrder - secondOrder;
+    });
 
-    ludography.studios.forEach((studio) => {
+    orderedStudios.forEach((studio) => {
         const section = createElement("section", { className: "studio-section" });
         const heading = createElement("header", { className: "section-heading" });
         const count = studio.games.filter((id) => gameMap.has(id)).length;
