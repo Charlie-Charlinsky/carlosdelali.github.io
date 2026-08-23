@@ -93,12 +93,11 @@ export function buildShell(language, page) {
         attributes: { id: "primary-navigation", "aria-label": strings.navigation }
     });
 
-    NAVIGATION.forEach((route, index) => {
-        const link = createElement("a", { attributes: { href: resolveRoute(language, route) } });
-        link.append(
-            createElement("span", { className: "site-nav__index", text: String(index + 1).padStart(2, "0") }),
-            createElement("span", { text: strings.pages[route] })
-        );
+    NAVIGATION.forEach((route) => {
+        const link = createElement("a", {
+            text: strings.pages[route],
+            attributes: { href: resolveRoute(language, route) }
+        });
         if (route === activePage) link.setAttribute("aria-current", "page");
         navigation.append(link);
     });

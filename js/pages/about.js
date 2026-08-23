@@ -11,6 +11,12 @@ export async function render({ language, target }) {
     const authoredName = identity?.querySelector("h2")?.textContent.trim() || "Carlos J. L. Sánchez";
     setPageTitle(language === "es" ? `Sobre mí | ${authoredName}` : `About | ${authoredName}`);
 
+    if (identity) identity.hidden = true;
+    ["#about-copy > h2", "#contact > h2"].forEach((selector) => {
+        const heading = article.querySelector(selector);
+        if (heading) heading.hidden = true;
+    });
+
     const page = createElement("div", { className: "about-layout" });
     const portrait = createElement("figure", { className: "about-portrait" });
     portrait.append(createMediaImage(
@@ -18,6 +24,6 @@ export async function render({ language, target }) {
         language === "es" ? "Retrato de Carlos J. L. Sánchez" : "Portrait of Carlos J. L. Sánchez",
         "about-portrait__image"
     ));
-    page.append(article, portrait);
+    page.append(portrait, article);
     target.replaceChildren(page);
 }
