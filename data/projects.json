@@ -7,15 +7,25 @@
         "en": null,
         "es": null
       },
+      "genre": {
+        "en": null,
+        "es": null
+      },
+      "platform": null,
+      "creationDate": null,
+      "playPrototypeUrl": null,
       "contentStatus": "content-ready",
       "content": {
         "en": "content/projects/project-1/en.html",
         "es": "content/projects/project-1/es.html"
       },
       "assets": {
+        "icon": "assets/projects/project-1/icon/icon.jpg",
+        "background": "assets/projects/project-1/background/background.jpg",
         "cover": null,
         "conceptualProcess": []
       },
+      "media": [],
       "gdds": [],
       "prototypeVideos": []
     }

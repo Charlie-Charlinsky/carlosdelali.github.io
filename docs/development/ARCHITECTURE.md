@@ -224,21 +224,18 @@ content/projects/<project-id>/gdds/<gdd-id>/en.html
 content/projects/<project-id>/gdds/<gdd-id>/es.html
 ```
 
-Public project assets remain separate from authored prose. `assets/projects/<project-id>/cover/` owns an optional cover, `conceptual-process/` owns ordered sketches, scans, diagrams, process images, and concept sheets, `gdds/<gdd-id>/images/` provides optional child-GDD assets, and `prototype/videos/` owns prototype media. A Project Detail page may highlight no more than four prototype videos even when additional source videos exist.
+Public project assets remain separate from authored prose. Each project supports an optional index icon at `assets/projects/<project-id>/icon/` and an optional index background at `assets/projects/<project-id>/background/`; their paths are stored as `assets.icon` and `assets.background` in the project registry. The Project Detail showcase uses one ordered `media` registry collection backed by `assets/projects/<project-id>/media/images/` and `assets/projects/<project-id>/media/videos/`, with at most 12 registered images, four registered videos, and 16 total items. Existing assets remain independent: `cover/` owns an optional cover, `conceptual-process/` owns ordered sketches, scans, diagrams, process images, and concept sheets, `gdds/<gdd-id>/images/` provides optional child-GDD assets, and the retired `prototype/videos/` source directory is preserved without driving a standalone public section.
 
-`data/projects.json` is the metadata-only project registry. It owns identity, order, bilingual labels, status, content and asset paths, child-GDD relationships, and prototype references; it must not contain long Project or GDD prose.
+`data/projects.json` is the metadata-only project registry. It owns identity, order, bilingual labels, genre, platform, creation date, status, content and asset paths, ordered showcase media, child-GDD relationships, and the optional `playPrototypeUrl`. Genre, platform, creation date, media references, and the playable-prototype URL belong in this registry, not in GDD prose; the registry must not contain long Project or GDD prose.
 
-#### Future Project Detail
+#### Project Detail
 
-- Brief
-- Conceptual Process
-- GDD / Design Documentation
-- Prototype
-- Vertical reading structure
-- Local project submenu
-- Concept Book
-- Native HTML GDD
-- Maximum of four prototype videos
+- Mixed image/video showcase with a maximum of 12 images and four videos
+- Project icon and authored Brief in the showcase side panel
+- Optional registry-driven Play Prototype link
+- Local navigation for Brief, Conceptual Process, and GDD
+- Concept Book and native HTML GDD
+- No duplicated Brief or standalone Prototype section in the presentation
 
 ### WRITING
 

@@ -120,7 +120,7 @@ content/projects/<project-id>/gdds/<gdd-id>/en.html
 content/projects/<project-id>/gdds/<gdd-id>/es.html
 ```
 
-The project-level DOCX is the authoritative source for the overall Project Detail. A project may own zero, one, or many child GDD DOCX sources. Once child sources exist, their full prose must not also be maintained in the master document. `data/projects.json` stores metadata, paths, status, asset references, and child relationships only. Cover, conceptual-process, GDD, and prototype assets remain separate manually supplied binaries. Public semantic content is generated in a later integration task.
+The project-level DOCX is the authoritative source for the overall Project Detail. A project may own zero, one, or many child GDD DOCX sources. Once child sources exist, their full prose must not also be maintained in the master document. `data/projects.json` stores metadata, paths, status, asset references, ordered showcase media, optional playable-prototype URLs, and child relationships only; structured genre, platform, and creation-date values belong there rather than in GDD prose. Project-index icons and backgrounds are manually supplied under `assets/projects/<project-id>/icon/` and `assets/projects/<project-id>/background/` and referenced by `assets.icon` and `assets.background`. The Project Detail showcase reads up to 12 image references from `assets/projects/<project-id>/media/images/` and four video references from `assets/projects/<project-id>/media/videos/`, preserving registry order and a 16-item total limit. The authored Brief is moved into the showcase side panel without duplication; the standalone Prototype section is retired from presentation while legacy `prototype/videos/` source files remain preserved. Cover, conceptual-process, GDD, and other manually supplied binaries remain separate from authored prose. Public semantic content is generated in a later integration task.
 
 ### Writing Authoring Sources
 
@@ -156,9 +156,9 @@ GDDs must ultimately be presented as native semantic HTML, not as embedded PDFs.
 
 Conceptual Process scans are public visual assets. Project pages display them through the Concept Book component, with semantic captions, ordering metadata, alternative text, and keyboard/touch navigation where appropriate.
 
-### Prototype Media
+### Project Showcase Media
 
-Prototype videos are public media assets. A project page may display a maximum of four highlighted prototype videos. Metadata should identify poster images, captions, formats, and accessibility requirements independently from the page template.
+Project showcase images and videos are public media assets referenced in one ordered registry collection. The top viewer may display at most 12 images and four videos, with 16 items total. Metadata identifies media type, source, optional video poster, localized labels or alternative text, ordering, formats, and accessibility requirements independently from the page template. Legacy `prototype/videos/` files remain preserved but do not populate a standalone Prototype section.
 
 ## Synchronisation Expectations
 

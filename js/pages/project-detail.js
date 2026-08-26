@@ -2,22 +2,7 @@ import { loadJson, loadSemanticFragment } from "../core/loaders.js";
 import { createElement, setPageTitle } from "../core/dom.js";
 import { createBackLink, createMediaImage, localizedValue } from "../core/components.js";
 import { resolveRoute } from "../core/paths.js";
-
-const SECTION_IDS = ["brief", "conceptual-process", "gdd", "prototype"];
-
-function buildLocalNavigation(article, language) {
-    const nav = createElement("nav", {
-        className: "local-nav",
-        attributes: { "aria-label": language === "es" ? "Secciones del proyecto" : "Project sections" }
-    });
-    SECTION_IDS.forEach((id) => {
-        const section = article.querySelector(`#${id}`);
-        if (!section) return;
-        const label = section.querySelector(":scope > h2")?.textContent.trim() || id;
-        nav.append(createElement("a", { text: label, attributes: { href: `#${id}` } }));
-    });
-    return nav;
-}
+import { createProjectMediaGallery } from "./project-media-gallery.js";
 
 function decorateGdd(article, language) {
     const gdd = article.querySelector("#gdd");
@@ -41,7 +26,7 @@ function decorateGdd(article, language) {
     gdd.append(layout);
 }
 
-function appendProjectMedia(article, project, language) {
+function appendConceptualProcessMedia(article, project, language) {
     const conceptual = article.querySelector("#conceptual-process");
     if (conceptual && project.assets.conceptualProcess.length) {
         const gallery = createElement("div", { className: "concept-gallery" });
@@ -52,18 +37,43 @@ function appendProjectMedia(article, project, language) {
         });
         conceptual.append(gallery);
     }
+}
 
-    const prototype = article.querySelector("#prototype");
-    if (prototype && project.prototypeVideos.length) {
-        const videos = createElement("div", { className: "prototype-grid" });
-        project.prototypeVideos.slice(0, 4).forEach((video) => {
-            const element = createElement("video", {
-                attributes: { controls: "", preload: "metadata", src: video.path || video.src, poster: video.poster }
-            });
-            videos.append(element);
-        });
-        prototype.append(videos);
+function createBriefPanel(project, brief, title, language) {
+    const heading = brief.querySelector(":scope > h2");
+    const panel = createElement("aside", {
+        className: "project-showcase__panel",
+        attributes: { "aria-label": heading?.textContent.trim() || "Brief" }
+    });
+    heading?.remove();
+    if (project.assets.icon) {
+        const icon = createElement("figure", { className: "project-showcase__icon" });
+        icon.append(createMediaImage(
+            project.assets.icon,
+            language === "es" ? `Icono de ${title}` : `${title} icon`,
+            "project-showcase__icon-image"
+        ));
+        panel.append(icon);
     }
+    brief.classList.add("project-showcase__brief");
+    panel.append(brief);
+
+    if (project.playPrototypeUrl) {
+        const play = createElement("p", { className: "project-showcase__play" });
+        play.append(
+            createElement("span", { text: language === "es" ? "Jugar prototipo: " : "Play Prototype: " }),
+            createElement("a", {
+                text: language === "es" ? "Abrir ↗" : "Open ↗",
+                attributes: {
+                    href: project.playPrototypeUrl,
+                    target: "_blank",
+                    rel: "noopener noreferrer"
+                }
+            })
+        );
+        panel.append(play);
+    }
+    return panel;
 }
 
 export async function render({ language, target }) {
@@ -85,19 +95,23 @@ export async function render({ language, target }) {
     article.classList.add("semantic-content", "project-content");
     const authoredTitle = article.querySelector("header h1, header h2")?.textContent.trim();
     const title = localizedValue(project.title, language, authoredTitle || project.id);
+    const brief = article.querySelector("#brief");
+    if (!brief) throw new Error(`Project ${project.id} has no Brief section.`);
+    article.querySelector("#project-identity")?.remove();
+    article.querySelector("#prototype")?.remove();
     decorateGdd(article, language);
-    appendProjectMedia(article, project, language);
+    appendConceptualProcessMedia(article, project, language);
 
     const page = createElement("div", { className: "detail-page project-detail" });
-    const heading = createElement("header", { className: "project-detail__header" });
-    heading.append(
-        createBackLink(resolveRoute(language, "projects"), language === "es" ? "Proyectos" : "Projects"),
-        createElement("p", { className: "eyebrow", text: "I+D+I / R&D" }),
-        createElement("h1", { text: title })
+    const showcase = createElement("section", {
+        className: "project-showcase",
+        attributes: { "aria-label": language === "es" ? "Presentación del proyecto" : "Project showcase" }
+    });
+    showcase.append(
+        createProjectMediaGallery(project.media, { language, title }),
+        createBriefPanel(project, brief, title, language)
     );
-    const identity = article.querySelector("#project-identity");
-    if (identity) identity.hidden = true;
-    page.append(heading, buildLocalNavigation(article, language), article);
+    page.append(showcase, article);
     setPageTitle(title);
     target.replaceChildren(page);
 }
