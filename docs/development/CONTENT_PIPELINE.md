@@ -65,7 +65,8 @@ local-content/games/<game-id>/content.docx
 
 PUBLIC ASSETS
 assets/games/<game-id>/cover/
-assets/games/<game-id>/gallery/
+assets/games/<game-id>/media/images/
+assets/games/<game-id>/media/videos/
 
         ↓
 Codex transforms the authored language sections
@@ -76,11 +77,11 @@ content/games/<game-id>/en.html
 content/games/<game-id>/es.html
 ```
 
-Local authoring and public asset directories are prepared ahead of integration. Carlos manually supplies `content.docx` and the visual assets; no placeholder DOCX or image files are generated. The DOCX file is the authoritative literary source for a game's public copy and remains local because `local-content/` is ignored by Git. Codex later transforms the authored language sections into public semantic HTML during the corresponding content-integration batch.
+Local authoring and public asset directories are prepared ahead of integration. Carlos manually supplies `content.docx` and the visual assets; no placeholder DOCX or media files are generated. The DOCX file is the authoritative literary source for a game's public copy and remains local because `local-content/` is ignored by Git. Codex later transforms the authored language sections into public semantic HTML during the corresponding content-integration batch.
 
-Codex must preserve the approved wording: source metadata and integration instructions guide the transformation but must not appear in the public content. The generated output is semantic HTML, not a public copy of the authoring document. Empty public `cover/` and `gallery/` directories may contain `.gitkeep` solely so the scaffold can be versioned; the marker must be removed when real assets are integrated.
+Codex must preserve the approved wording: source metadata and integration instructions guide the transformation but must not appear in the public content. The generated output is semantic HTML, not a public copy of the authoring document. Empty public media directories may contain `.gitkeep` solely so the scaffold can be versioned; markers are never registered as media. Existing `gallery/` paths remain valid legacy sources until an intentional migration.
 
-Visual assets are supplied manually under `assets/games/<game-id>/` and connected through `data/games.json`. Public asset filenames are normalised to lowercase kebab-case without changing their formats or binary contents. A Game Detail record may reference no more than six gallery images.
+Visual assets are supplied manually under `assets/games/<game-id>/` and connected through `data/games.json`. Public asset filenames are normalised to lowercase kebab-case without changing their formats or binary contents. Each ordered Game `media` collection may reference at most 12 images, four videos, and 16 total items.
 
 ### Professional Game
 
@@ -104,7 +105,7 @@ assets/games/<game-id>/
 GAME DETAIL PAGE
 ```
 
-`data/games.json` stores canonical game identity, metadata, and references to content and media. Semantic HTML stores the long-form professional contribution content, while `assets/games/<game-id>/` stores the supporting visual evidence. The Game Detail presentation consumes all three layers. Long-form professional text must not be duplicated inside `games.json`. The visible Game Detail gallery is limited to a maximum of six images.
+`data/games.json` stores canonical game identity, metadata, and ordered mixed-media references. Semantic HTML stores the long-form professional contribution content, while `assets/games/<game-id>/` stores the supporting visual evidence. The Game Detail presentation consumes all three layers. Long-form professional text must not be duplicated inside `games.json`. Games and Projects use the same `js/core/media-gallery.js` interaction engine and the same 12-image, four-video, 16-item limits; their page CSS independently owns viewer geometry.
 
 ### Project Authoring Sources
 
@@ -156,9 +157,9 @@ GDDs must ultimately be presented as native semantic HTML, not as embedded PDFs.
 
 Conceptual Process scans are public visual assets. Project pages display them through the Concept Book component, with semantic captions, ordering metadata, alternative text, and keyboard/touch navigation where appropriate.
 
-### Project Showcase Media
+### Shared Detail Media
 
-Project showcase images and videos are public media assets referenced in one ordered registry collection. The top viewer may display at most 12 images and four videos, with 16 items total. Metadata identifies media type, source, optional video poster, localized labels or alternative text, ordering, formats, and accessibility requirements independently from the page template. Legacy `prototype/videos/` files remain preserved but do not populate a standalone Prototype section.
+Project and Game images/videos are public media assets referenced through the same ordered registry item contract and rendered by one shared engine. Each viewer may display at most 12 images and four videos, with 16 items total. Project files use `assets/projects/<project-id>/media/images/` and `media/videos/`; new Game files use `assets/games/<game-id>/media/images/` and `media/videos/`. Metadata identifies media type, source, optional video poster, localized labels or alternative text, ordering, formats, and accessibility requirements independently from page templates. Legacy Project `prototype/videos/`, Game `gallery/`, and their registered paths remain preserved without creating separate viewer implementations.
 
 ## Synchronisation Expectations
 

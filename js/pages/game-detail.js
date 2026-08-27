@@ -1,6 +1,7 @@
 import { loadJson, loadSemanticFragment } from "../core/loaders.js";
 import { createElement, setPageTitle } from "../core/dom.js";
 import { createBackLink, createMediaImage } from "../core/components.js";
+import { createMediaGallery } from "../core/media-gallery.js";
 import { resolveRoute } from "../core/paths.js";
 
 const METADATA_LABELS = {
@@ -24,38 +25,6 @@ function createGameMetadata(game, language) {
     appendMetadataRow(metadata, labels.company, [game.studio || "?"]);
     appendMetadataRow(metadata, labels.platform, ["?"]);
     return metadata;
-}
-
-function createGallery(game, language) {
-    const galleryPaths = game.assets.gallery.slice(0, 6);
-    const region = createElement("section", {
-        className: "media-gallery",
-        attributes: { "aria-label": language === "es" ? "Galería" : "Gallery" }
-    });
-    const stage = createElement("figure", { className: "media-gallery__stage" });
-    const stageImage = createMediaImage(galleryPaths[0], `${game.title} — 1`, "media-gallery__image");
-    stageImage.loading = "eager";
-    stage.append(stageImage);
-    const controls = createElement("div", { className: "media-gallery__controls" });
-    galleryPaths.forEach((path, index) => {
-        const button = createElement("button", {
-            className: "media-gallery__thumb",
-            attributes: {
-                type: "button",
-                "aria-label": `${language === "es" ? "Ver imagen" : "View image"} ${index + 1}`,
-                "aria-pressed": index === 0 ? "true" : "false"
-            }
-        });
-        button.append(createMediaImage(path, "", "media-gallery__thumbnail"));
-        button.addEventListener("click", () => {
-            stageImage.src = button.querySelector("img").src;
-            stageImage.alt = `${game.title} — ${index + 1}`;
-            controls.querySelectorAll("button").forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-        });
-        controls.append(button);
-    });
-    region.append(stage, controls);
-    return region;
 }
 
 function renderNotFound(target, language) {
@@ -94,7 +63,7 @@ export async function render({ language, target }) {
     hero.append(cover, heroCopy);
 
     const body = createElement("div", { className: "game-detail__body" });
-    body.append(createGallery(game, language), article);
+    body.append(createMediaGallery(game.media, { language, title: game.title, context: "game" }), article);
     page.append(hero, body);
     setPageTitle(game.title);
     target.replaceChildren(page);

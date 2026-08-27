@@ -172,8 +172,8 @@ The future page renderer will compose the semantic content, data-driven Ludograp
 - Game overview
 - Metadata
 - Explanation of role and contribution
-- Maximum of six gallery images
-- Previous/next gallery navigation
+- Shared mixed-media viewer with at most 12 images, four videos, and 16 total items
+- Thumbnail carousel, previous/next, Theater, Fullscreen, and keyboard navigation
 
 #### Content Architecture
 
@@ -182,7 +182,7 @@ A Game Detail page presents:
 1. Game identity / overview
 2. Professional contribution
 3. Systems, features, or design areas worked on
-4. Supporting image gallery
+4. Supporting mixed image/video evidence
 
 A single game may contain multiple professional contribution subsections. The conceptual content structure is:
 
@@ -193,8 +193,10 @@ Game
 │   ├── Feature / System A
 │   ├── Feature / System B
 │   └── Feature / System C
-└── Gallery
+└── Media
 ```
+
+`data/games.json` owns one ordered `media` collection per Game using the same item contract as Projects. New Game media belongs under `assets/games/<game-id>/media/images/` and `assets/games/<game-id>/media/videos/`. Existing registered screenshots may remain in the legacy `gallery/` directory until a deliberate asset migration; registry paths, rather than folder discovery, determine what the viewer displays. Game Detail and Project Detail both consume the single interaction engine at `js/core/media-gallery.js`, while page-scoped CSS controls their independent size and placement.
 
 On desktop, the visual gallery is positioned alongside the written content. A maximum of six gallery images may be available for the visible page, while game metadata and professional contribution remain the primary information. The layout becomes responsive on tablet and mobile. Final CSS dimensions are intentionally undefined at this architecture stage.
 
@@ -233,7 +235,7 @@ Public project assets remain separate from authored prose. Each project supports
 - Mixed image/video showcase with a maximum of 12 images and four videos
 - Project icon and authored Brief in the showcase side panel
 - Optional registry-driven Play Prototype link
-- Local navigation for Brief, Conceptual Process, and GDD
+- Natural document flow from the showcase into Conceptual Process and GDD
 - Concept Book and native HTML GDD
 - No duplicated Brief or standalone Prototype section in the presentation
 

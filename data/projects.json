@@ -25,7 +25,88 @@
         "cover": null,
         "conceptualProcess": []
       },
-      "media": [],
+      "media": [
+        {
+          "type": "video",
+          "src": "assets/projects/project-1/media/videos/2026-08-27 16-40-50.mp4",
+          "label": {
+            "en": "Project 1 video 1",
+            "es": "Vídeo 1 del Proyecto 1"
+          }
+        },
+        {
+          "type": "image",
+          "src": "assets/projects/project-1/media/images/Doom-1.jpg",
+          "alt": {
+            "en": "Project 1 screenshot 1",
+            "es": "Captura 1 del Proyecto 1"
+          }
+        },
+        {
+          "type": "image",
+          "src": "assets/projects/project-1/media/images/Doom-2.jpg",
+          "alt": {
+            "en": "Project 1 screenshot 2",
+            "es": "Captura 2 del Proyecto 1"
+          }
+        },
+        {
+          "type": "image",
+          "src": "assets/projects/project-1/media/images/Doom-3.jpg",
+          "alt": {
+            "en": "Project 1 screenshot 3",
+            "es": "Captura 3 del Proyecto 1"
+          }
+        },
+        {
+          "type": "image",
+          "src": "assets/projects/project-1/media/images/Doom-4.jpg",
+          "alt": {
+            "en": "Project 1 screenshot 4",
+            "es": "Captura 4 del Proyecto 1"
+          }
+        },
+        {
+          "type": "image",
+          "src": "assets/projects/project-1/media/images/Doom-5.jpg",
+          "alt": {
+            "en": "Project 1 screenshot 5",
+            "es": "Captura 5 del Proyecto 1"
+          }
+        },
+        {
+          "type": "image",
+          "src": "assets/projects/project-1/media/images/Doom-6.jpg",
+          "alt": {
+            "en": "Project 1 screenshot 6",
+            "es": "Captura 6 del Proyecto 1"
+          }
+        },
+        {
+          "type": "image",
+          "src": "assets/projects/project-1/media/images/Doom-7.jpg",
+          "alt": {
+            "en": "Project 1 screenshot 7",
+            "es": "Captura 7 del Proyecto 1"
+          }
+        },
+        {
+          "type": "image",
+          "src": "assets/projects/project-1/media/images/Doom-8.jpg",
+          "alt": {
+            "en": "Project 1 screenshot 8",
+            "es": "Captura 8 del Proyecto 1"
+          }
+        },
+        {
+          "type": "image",
+          "src": "assets/projects/project-1/media/images/Doom-9.jpg",
+          "alt": {
+            "en": "Project 1 screenshot 9",
+            "es": "Captura 9 del Proyecto 1"
+          }
+        }
+      ],
       "gdds": [],
       "prototypeVideos": []
     }

@@ -773,55 +773,14 @@ body[data-page="game-detail"] .page-shell {
     margin-top: 0;
 }
 
-.media-gallery {
+.media-viewer.media-viewer--game {
+    --media-viewer-stage-aspect: 16 / 10;
+    --media-viewer-thumbnail-aspect: 16 / 10;
+}
+
+.game-detail__body > .media-viewer--game {
     position: sticky;
     top: calc(var(--header-height) + var(--space-md));
-}
-
-.media-gallery__stage {
-    margin: 0;
-    border: 1px solid var(--line-strong);
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    background: #000;
-}
-
-.media-gallery__image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.media-gallery__controls {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: var(--space-xs);
-    margin-top: var(--space-xs);
-}
-
-.media-gallery__thumb {
-    padding: 0;
-    border: 1px solid var(--line);
-    aspect-ratio: 16 / 10;
-    overflow: hidden;
-    background: #000;
-    cursor: pointer;
-}
-
-.media-gallery__thumb[aria-pressed="true"] {
-    border-color: var(--text-primary);
-}
-
-.media-gallery__thumbnail {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.58;
-}
-
-.media-gallery__thumb:hover .media-gallery__thumbnail,
-.media-gallery__thumb[aria-pressed="true"] .media-gallery__thumbnail {
-    opacity: 1;
 }
 
 /* PROJECTS */
@@ -1013,7 +972,7 @@ body[data-page="project-detail"] .page-shell {
     padding-top: calc(var(--header-height) + var(--page-top-gap));
 }
 
-body.has-project-theater {
+body.has-media-theater {
     overflow: hidden;
 }
 
@@ -1024,55 +983,57 @@ body.has-project-theater {
     align-items: start;
 }
 
-.project-media {
+.media-viewer {
+    --media-viewer-stage-aspect: 16 / 9;
+    --media-viewer-thumbnail-aspect: 16 / 9;
     min-width: 0;
 }
 
-.project-media__anchor {
+.media-viewer__anchor {
     display: none;
 }
 
-.project-media__stage {
+.media-viewer__stage {
     position: relative;
     border: 1px solid var(--line-strong);
-    aspect-ratio: 16 / 9;
+    aspect-ratio: var(--media-viewer-stage-aspect);
     overflow: hidden;
     background: #000;
 }
 
-.project-media__viewport,
-.project-media__image-button,
-.project-media__image,
-.project-media__video {
+.media-viewer__viewport,
+.media-viewer__image-button,
+.media-viewer__image,
+.media-viewer__video {
     width: 100%;
     height: 100%;
 }
 
-.project-media__viewport {
+.media-viewer__viewport {
     display: grid;
     place-items: center;
 }
 
-.project-media__image-button {
+.media-viewer__image-button {
     padding: 0;
     border: 0;
     background: #000;
     cursor: zoom-in;
 }
 
-.project-media__image,
-.project-media__video {
+.media-viewer__image,
+.media-viewer__video {
     object-fit: contain;
 }
 
-.project-media__empty {
+.media-viewer__empty {
     margin: 0;
     color: var(--text-muted);
     font-size: 1rem;
     text-align: center;
 }
 
-.project-media__actions {
+.media-viewer__actions {
     position: absolute;
     z-index: 3;
     top: var(--space-xs);
@@ -1081,9 +1042,9 @@ body.has-project-theater {
     gap: var(--space-xs);
 }
 
-.project-media__actions button,
-.project-media__carousel > button,
-.project-media-theater__close {
+.media-viewer__actions button,
+.media-viewer__carousel > button,
+.media-viewer-theater__close {
     min-width: 2.75rem;
     min-height: 2.75rem;
     padding: 0 var(--space-sm);
@@ -1093,41 +1054,41 @@ body.has-project-theater {
     cursor: pointer;
 }
 
-.project-media__actions button:hover:not(:disabled),
-.project-media__actions button:focus-visible:not(:disabled),
-.project-media__carousel > button:hover:not(:disabled),
-.project-media__carousel > button:focus-visible:not(:disabled),
-.project-media-theater__close:hover,
-.project-media-theater__close:focus-visible {
+.media-viewer__actions button:hover:not(:disabled),
+.media-viewer__actions button:focus-visible:not(:disabled),
+.media-viewer__carousel > button:hover:not(:disabled),
+.media-viewer__carousel > button:focus-visible:not(:disabled),
+.media-viewer-theater__close:hover,
+.media-viewer-theater__close:focus-visible {
     color: var(--inverse-text);
     background: var(--inverse-bg);
 }
 
-.project-media__actions button:disabled,
-.project-media__carousel > button:disabled {
+.media-viewer__actions button:disabled,
+.media-viewer__carousel > button:disabled {
     color: var(--text-muted);
     cursor: default;
 }
 
-.project-media__theater-button {
+.media-viewer__theater-button {
     font-size: 0.75rem;
     font-weight: 700;
 }
 
-.project-media__fullscreen-button,
-.project-media__carousel > button,
-.project-media-theater__close {
+.media-viewer__fullscreen-button,
+.media-viewer__carousel > button,
+.media-viewer-theater__close {
     font-size: 1.25rem;
 }
 
-.project-media__carousel {
+.media-viewer__carousel {
     display: grid;
     grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
     gap: var(--space-xs);
     margin-top: var(--space-xs);
 }
 
-.project-media__strip {
+.media-viewer__strip {
     display: flex;
     min-width: 0;
     gap: var(--space-xs);
@@ -1138,37 +1099,37 @@ body.has-project-theater {
     scrollbar-color: var(--text-muted) var(--surface);
 }
 
-.project-media__thumbnail {
+.media-viewer__thumbnail {
     position: relative;
     flex: 0 0 clamp(7rem, 13vw, 10rem);
     padding: 0;
     border: 1px solid var(--line);
-    aspect-ratio: 16 / 9;
+    aspect-ratio: var(--media-viewer-thumbnail-aspect);
     overflow: hidden;
     background: var(--surface);
     cursor: pointer;
     scroll-snap-align: center;
 }
 
-.project-media__thumbnail[aria-pressed="true"] {
+.media-viewer__thumbnail[aria-pressed="true"] {
     border-color: var(--text-primary);
     box-shadow: inset 0 0 0 1px var(--text-primary);
 }
 
-.project-media__thumbnail-image {
+.media-viewer__thumbnail-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     opacity: 0.62;
 }
 
-.project-media__thumbnail:hover .project-media__thumbnail-image,
-.project-media__thumbnail:focus-visible .project-media__thumbnail-image,
-.project-media__thumbnail[aria-pressed="true"] .project-media__thumbnail-image {
+.media-viewer__thumbnail:hover .media-viewer__thumbnail-image,
+.media-viewer__thumbnail:focus-visible .media-viewer__thumbnail-image,
+.media-viewer__thumbnail[aria-pressed="true"] .media-viewer__thumbnail-image {
     opacity: 1;
 }
 
-.project-media__video-badge {
+.media-viewer__video-badge {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -1241,7 +1202,7 @@ body.has-project-theater {
     font-size: 1rem;
 }
 
-.project-media-theater {
+.media-viewer-theater {
     position: fixed;
     z-index: 1000;
     inset: 0;
@@ -1253,21 +1214,21 @@ body.has-project-theater {
     background: rgba(0, 0, 0, 0.96);
 }
 
-.project-media-theater__close {
+.media-viewer-theater__close {
     justify-self: end;
 }
 
-.project-media-theater .project-media {
+.media-viewer-theater .media-viewer {
     width: min(94vw, 100rem);
     margin: auto;
 }
 
-.project-media-theater .project-media__stage {
+.media-viewer-theater .media-viewer__stage {
     height: min(72vh, 56rem);
     aspect-ratio: auto;
 }
 
-.project-media:fullscreen {
+.media-viewer:fullscreen {
     display: grid;
     width: 100%;
     height: 100%;
@@ -1277,7 +1238,7 @@ body.has-project-theater {
     background: #000;
 }
 
-.project-media:fullscreen .project-media__stage {
+.media-viewer:fullscreen .media-viewer__stage {
     height: 100%;
     min-height: 0;
     aspect-ratio: auto;
@@ -1751,7 +1712,7 @@ body.has-project-theater {
         margin: 0;
     }
 
-    .media-gallery {
+    .game-detail__body > .media-viewer--game {
         position: static;
     }
 
@@ -1859,10 +1820,6 @@ body.has-project-theater {
         gap: 0.8rem;
     }
 
-    .media-gallery__controls {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-
     .project-card__link {
         grid-template-columns: 1fr;
         min-height: 0;
@@ -1892,23 +1849,23 @@ body.has-project-theater {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .project-media__carousel {
+    .media-viewer__carousel {
         grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
     }
 
-    .project-media__thumbnail {
+    .media-viewer__thumbnail {
         flex-basis: 8rem;
     }
 
-    .project-media-theater {
+    .media-viewer-theater {
         padding: var(--space-xs);
     }
 
-    .project-media-theater .project-media {
+    .media-viewer-theater .media-viewer {
         width: 100%;
     }
 
-    .project-media-theater .project-media__stage {
+    .media-viewer-theater .media-viewer__stage {
         height: min(68vh, 38rem);
     }
 

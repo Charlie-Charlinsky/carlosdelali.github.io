@@ -1,8 +1,8 @@
 import { loadJson, loadSemanticFragment } from "../core/loaders.js";
 import { createElement, setPageTitle } from "../core/dom.js";
 import { createBackLink, createMediaImage, localizedValue } from "../core/components.js";
+import { createMediaGallery } from "../core/media-gallery.js";
 import { resolveRoute } from "../core/paths.js";
-import { createProjectMediaGallery } from "./project-media-gallery.js";
 
 function decorateGdd(article, language) {
     const gdd = article.querySelector("#gdd");
@@ -108,7 +108,7 @@ export async function render({ language, target }) {
         attributes: { "aria-label": language === "es" ? "Presentación del proyecto" : "Project showcase" }
     });
     showcase.append(
-        createProjectMediaGallery(project.media, { language, title }),
+        createMediaGallery(project.media, { language, title, context: "project" }),
         createBriefPanel(project, brief, title, language)
     );
     page.append(showcase, article);

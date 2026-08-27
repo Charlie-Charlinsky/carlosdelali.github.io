@@ -21,7 +21,25 @@
           "assets/games/the-little-prince/gallery/the-little-prince-03.png",
           "assets/games/the-little-prince/gallery/the-little-prince-04.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/the-little-prince/gallery/the-little-prince-01.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/the-little-prince/gallery/the-little-prince-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/the-little-prince/gallery/the-little-prince-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/the-little-prince/gallery/the-little-prince-04.png"
+        }
+      ]
     },
     {
       "id": "runbot",
@@ -45,7 +63,29 @@
           "assets/games/runbot/gallery/runbot-04.png",
           "assets/games/runbot/gallery/runbot-05.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/runbot/gallery/runbot-01.jpeg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/runbot/gallery/runbot-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/runbot/gallery/runbot-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/runbot/gallery/runbot-04.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/runbot/gallery/runbot-05.png"
+        }
+      ]
     },
     {
       "id": "xtreme-racing-2",
@@ -68,7 +108,25 @@
           "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-03.png",
           "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-04.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-01.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-02.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-04.png"
+        }
+      ]
     },
     {
       "id": "skull-towers",
@@ -92,7 +150,29 @@
           "assets/games/skull-towers/gallery/skull-towers-04.png",
           "assets/games/skull-towers/gallery/skull-towers-05.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/skull-towers/gallery/skull-towers-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/skull-towers/gallery/skull-towers-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/skull-towers/gallery/skull-towers-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/skull-towers/gallery/skull-towers-04.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/skull-towers/gallery/skull-towers-05.png"
+        }
+      ]
     },
     {
       "id": "gold-rush-gus",
@@ -117,7 +197,33 @@
           "assets/games/gold-rush-gus/gallery/gold-rush-gus-05.png",
           "assets/games/gold-rush-gus/gallery/gold-rush-gus-06.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/gold-rush-gus/gallery/gold-rush-gus-01.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/gold-rush-gus/gallery/gold-rush-gus-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/gold-rush-gus/gallery/gold-rush-gus-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/gold-rush-gus/gallery/gold-rush-gus-04.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/gold-rush-gus/gallery/gold-rush-gus-05.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/gold-rush-gus/gallery/gold-rush-gus-06.png"
+        }
+      ]
     },
     {
       "id": "777-deluxe",
@@ -142,7 +248,33 @@
           "assets/games/777-deluxe/gallery/777-deluxe-05.png",
           "assets/games/777-deluxe/gallery/777-deluxe-06.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/777-deluxe/gallery/777-deluxe-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/777-deluxe/gallery/777-deluxe-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/777-deluxe/gallery/777-deluxe-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/777-deluxe/gallery/777-deluxe-04.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/777-deluxe/gallery/777-deluxe-05.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/777-deluxe/gallery/777-deluxe-06.png"
+        }
+      ]
     },
     {
       "id": "cyberpunk-city",
@@ -165,7 +297,25 @@
           "assets/games/cyberpunk-city/gallery/cyberpunk-city-03.png",
           "assets/games/cyberpunk-city/gallery/cyberpunk-city-04.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-04.png"
+        }
+      ]
     },
     {
       "id": "gods-of-luxor",
@@ -190,7 +340,33 @@
           "assets/games/gods-of-luxor/gallery/gods-of-luxor-05.jpg",
           "assets/games/gods-of-luxor/gallery/gods-of-luxor-06.jpg"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/gods-of-luxor/gallery/gods-of-luxor-01.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/gods-of-luxor/gallery/gods-of-luxor-02.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/gods-of-luxor/gallery/gods-of-luxor-03.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/gods-of-luxor/gallery/gods-of-luxor-04.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/gods-of-luxor/gallery/gods-of-luxor-05.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/gods-of-luxor/gallery/gods-of-luxor-06.jpg"
+        }
+      ]
     },
     {
       "id": "teen-patti",
@@ -212,7 +388,21 @@
           "assets/games/teen-patti/gallery/teen-patti-02.jpg",
           "assets/games/teen-patti/gallery/teen-patti-03.jpg"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/teen-patti/gallery/teen-patti-01.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/teen-patti/gallery/teen-patti-02.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/teen-patti/gallery/teen-patti-03.jpg"
+        }
+      ]
     },
     {
       "id": "andar-bahar",
@@ -236,7 +426,29 @@
           "assets/games/andar-bahar/gallery/andar-bahar-04.png",
           "assets/games/andar-bahar/gallery/andar-bahar-05.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-04.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-05.png"
+        }
+      ]
     },
     {
       "id": "wheel-of-fortune",
@@ -258,7 +470,21 @@
           "assets/games/wheel-of-fortune/gallery/wheel-of-fortune-02.png",
           "assets/games/wheel-of-fortune/gallery/wheel-of-fortune-03.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/wheel-of-fortune/gallery/wheel-of-fortune-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/wheel-of-fortune/gallery/wheel-of-fortune-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/wheel-of-fortune/gallery/wheel-of-fortune-03.png"
+        }
+      ]
     },
     {
       "id": "cricket-legends",
@@ -282,7 +508,29 @@
           "assets/games/cricket-legends/gallery/cricket-legends-04.png",
           "assets/games/cricket-legends/gallery/cricket-legends-05.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-02.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-04.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-05.png"
+        }
+      ]
     },
     {
       "id": "zombie-soccer",
@@ -307,7 +555,33 @@
           "assets/games/zombie-soccer/gallery/zombie-soccer-05.jpg",
           "assets/games/zombie-soccer/gallery/zombie-soccer-06.jpg"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-01.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-02.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-03.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-04.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-05.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-06.jpg"
+        }
+      ]
     },
     {
       "id": "mystic-elements",
@@ -332,7 +606,33 @@
           "assets/games/mystic-elements/gallery/mystic-elements-05.png",
           "assets/games/mystic-elements/gallery/mystic-elements-06.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/mystic-elements/gallery/mystic-elements-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/mystic-elements/gallery/mystic-elements-02.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/mystic-elements/gallery/mystic-elements-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/mystic-elements/gallery/mystic-elements-04.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/mystic-elements/gallery/mystic-elements-05.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/mystic-elements/gallery/mystic-elements-06.png"
+        }
+      ]
     },
     {
       "id": "a-night-with-cleo",
@@ -355,7 +655,25 @@
           "assets/games/a-night-with-cleo/gallery/a-night-with-cleo-03.jpg",
           "assets/games/a-night-with-cleo/gallery/a-night-with-cleo-04.jpg"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/a-night-with-cleo/gallery/a-night-with-cleo-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/a-night-with-cleo/gallery/a-night-with-cleo-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/a-night-with-cleo/gallery/a-night-with-cleo-03.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/a-night-with-cleo/gallery/a-night-with-cleo-04.jpg"
+        }
+      ]
     },
     {
       "id": "ea-sports-pga-tour",
@@ -380,7 +698,33 @@
           "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-05.png",
           "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-06.jpg"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-04.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-05.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/ea-sports-pga-tour/gallery/ea-sports-pga-tour-06.jpg"
+        }
+      ]
     },
     {
       "id": "madden-nfl-25",
@@ -402,7 +746,21 @@
           "assets/games/madden-nfl-25/gallery/madden-nfl-25-02.png",
           "assets/games/madden-nfl-25/gallery/madden-nfl-25-03.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-25/gallery/madden-nfl-25-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-25/gallery/madden-nfl-25-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-25/gallery/madden-nfl-25-03.png"
+        }
+      ]
     },
     {
       "id": "madden-nfl-26",
@@ -427,7 +785,33 @@
           "assets/games/madden-nfl-26/gallery/madden-nfl-26-05.png",
           "assets/games/madden-nfl-26/gallery/madden-nfl-26-06.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-26/gallery/madden-nfl-26-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-26/gallery/madden-nfl-26-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-26/gallery/madden-nfl-26-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-26/gallery/madden-nfl-26-04.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-26/gallery/madden-nfl-26-05.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-26/gallery/madden-nfl-26-06.png"
+        }
+      ]
     },
     {
       "id": "madden-nfl-27",
@@ -451,7 +835,29 @@
           "assets/games/madden-nfl-27/gallery/madden-nfl-27-04.png",
           "assets/games/madden-nfl-27/gallery/madden-nfl-27-05.png"
         ]
-      }
+      },
+      "media": [
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-27/gallery/madden-nfl-27-01.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-27/gallery/madden-nfl-27-02.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-27/gallery/madden-nfl-27-03.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-27/gallery/madden-nfl-27-04.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/madden-nfl-27/gallery/madden-nfl-27-05.png"
+        }
+      ]
     }
   ]
 }
