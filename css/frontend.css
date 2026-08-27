@@ -1331,11 +1331,14 @@ body.has-media-theater {
 }
 
 /* WRITING */
+body[data-page="writing"] .page-shell {
+    padding-top: calc(var(--header-height) + var(--page-top-gap));
+}
+
 .reader-layout {
     display: grid;
     grid-template-columns: minmax(13rem, 0.34fr) minmax(0, 1.66fr);
     gap: var(--space-lg);
-    padding-top: var(--space-xl);
 }
 
 .story-navigation {
@@ -1383,68 +1386,36 @@ body.has-media-theater {
     min-width: 0;
 }
 
-.reader-controls {
-    display: grid;
-    grid-template-columns: 3rem 1fr 3rem;
-    align-items: center;
-    margin-bottom: var(--space-sm);
-    border: 1px solid var(--line);
-}
-
-.reader-controls button {
-    min-height: 3rem;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    cursor: pointer;
-}
-
-.reader-controls button:hover:not(:disabled),
-.reader-controls button:focus-visible:not(:disabled) {
-    color: var(--inverse-text);
-    background: var(--inverse-bg);
-}
-
-.reader-controls button:disabled {
-    color: var(--text-muted);
-    cursor: default;
-}
-
-.reader-controls__status {
-    color: var(--text-muted);
-    font-size: 0.72rem;
-    text-align: center;
-}
-
 .reader-viewport {
     height: min(68rem, calc(100vh - var(--header-height) - 8rem));
     min-height: 36rem;
-    overflow-x: auto;
-    overflow-y: hidden;
-    border: 1px solid var(--line-strong);
+    overflow-x: hidden;
+    overflow-y: auto;
     scroll-behavior: smooth;
-    scroll-snap-type: x mandatory;
+    scrollbar-gutter: stable;
 }
 
 .story-content {
+    --story-text-measure: 66ch;
+    width: 100%;
     max-width: none;
-    height: 100%;
+    min-height: 100%;
     padding: clamp(2rem, 5vw, 5rem);
-    column-gap: clamp(4rem, 9vw, 10rem);
-    column-rule: 1px solid var(--line);
-    column-width: min(60vw, 46rem);
 }
 
 .story-content > header,
-.story-content > section > p,
-.story-content > section > h2,
-.story-content > section > h3 {
-    break-inside: avoid;
+.story-content > section {
+    width: min(100%, var(--story-text-measure));
+    margin-right: auto;
+    margin-left: auto;
 }
 
 .story-content > header h2 {
-    margin-top: 0;
+    margin: 0 0 var(--space-xl);
     font-size: 3.5rem;
+    font-style: normal;
+    font-weight: 400;
+    text-align: center;
 }
 
 .story-content > section {
@@ -1453,8 +1424,10 @@ body.has-media-theater {
 }
 
 .story-content p {
-    max-width: 68ch;
-    line-height: 1.65;
+    max-width: none;
+    margin: 0 0 1.5em;
+    line-height: 1.7;
+    text-align: left;
 }
 
 /* ONIRIC JOURNAL */
@@ -1880,22 +1853,14 @@ body.has-media-theater {
         grid-template-columns: 1fr;
     }
 
-    .reader-controls {
-        display: none;
-    }
-
     .reader-viewport {
-        height: auto;
-        min-height: 0;
-        overflow: visible;
-        border-right: 0;
-        border-left: 0;
+        height: min(60rem, calc(100vh - var(--header-height) - var(--space-lg)));
+        min-height: 28rem;
     }
 
     .story-content {
-        height: auto;
-        padding: var(--space-lg) 0;
-        columns: auto;
+        min-height: 100%;
+        padding: var(--space-lg) var(--space-sm);
     }
 
     .journal-entry a {
