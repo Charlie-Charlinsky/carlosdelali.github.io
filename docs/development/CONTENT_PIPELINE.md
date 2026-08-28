@@ -83,6 +83,10 @@ Codex must preserve the approved wording: source metadata and integration instru
 
 Visual assets are supplied manually under `assets/games/<game-id>/` and connected through `data/games.json`. Public asset filenames are normalised to lowercase kebab-case without changing their formats or binary contents. Each ordered Game `media` collection may reference at most 12 images, four videos, and 16 total items.
 
+The registry also owns optional presentation and metadata fields. `coverPosition` adjusts an individual Games Index cover focal point inside the shared `1112 / 628` frame and defaults to `50% 50%`. `accessUrl` stores a legitimate purchase, play, or access URL; omit it when no verified local source exists. `engineId` and `engineName` identify an explicitly documented development engine; omit them when the engine is unknown rather than inferring a value.
+
+Engine logos are supplied once under the global `assets/engines/` directory using the canonical `assets/engines/<engine-id>.png` contract. Game Detail derives this path from `engineId`, allowing every Game with the same engine to reuse one transparent PNG. Do not add engine icon paths to individual Game records or duplicate engine assets under `assets/games/`.
+
 ### Professional Game
 
 ```text
@@ -106,6 +110,8 @@ GAME DETAIL PAGE
 ```
 
 `data/games.json` stores canonical game identity, metadata, and ordered mixed-media references. Semantic HTML stores the long-form professional contribution content, while `assets/games/<game-id>/` stores the supporting visual evidence. The Game Detail presentation consumes all three layers. Long-form professional text must not be duplicated inside `games.json`. Games and Projects use the same `js/core/media-gallery.js` interaction engine and the same 12-image, four-video, 16-item limits; their page CSS independently owns viewer geometry.
+
+The Games Index and Game Detail share one canonical ordering helper. Game Detail flattens the visible company groups and game lists from that source for circular Previous/Next navigation, including last-to-first and first-to-last wrapping.
 
 ### Project Authoring Sources
 

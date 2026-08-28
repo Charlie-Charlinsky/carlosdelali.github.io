@@ -1,13 +1,8 @@
 import { loadJson } from "../core/loaders.js";
 import { createElement, setPageTitle } from "../core/dom.js";
 import { createMediaImage } from "../core/components.js";
+import { getOrderedGameStudios } from "../core/game-order.js";
 import { detailUrl } from "../core/routes.js";
-
-const GAMES_STUDIO_ORDER = new Map([
-    ["ea-sports", 0],
-    ["tws-inventors-of-play", 1],
-    ["genera-games", 2]
-]);
 
 function renderGameCard(game, language) {
     const article = createElement("article", { className: "game-card" });
@@ -16,7 +11,9 @@ function renderGameCard(game, language) {
         attributes: { href: detailUrl(language, "games", game.id) }
     });
     const figure = createElement("figure", { className: "game-card__media" });
-    figure.append(createMediaImage(game.assets.cover, game.title, "game-card__cover"));
+    const cover = createMediaImage(game.assets.cover, game.title, "game-card__cover");
+    cover.style.objectPosition = game.coverPosition || "50% 50%";
+    figure.append(cover);
     const title = createElement("h3", { text: game.title });
     link.append(figure, title);
     article.append(link);
@@ -30,11 +27,7 @@ export async function render({ language, target }) {
     ]);
     const gameMap = new Map(registry.games.filter((game) => game.published).map((game) => [game.id, game]));
     const page = createElement("div", { className: "collection-page games-page" });
-    const orderedStudios = [...ludography.studios].sort((first, second) => {
-        const firstOrder = GAMES_STUDIO_ORDER.get(first.id) ?? Number.MAX_SAFE_INTEGER;
-        const secondOrder = GAMES_STUDIO_ORDER.get(second.id) ?? Number.MAX_SAFE_INTEGER;
-        return firstOrder - secondOrder;
-    });
+    const orderedStudios = getOrderedGameStudios(ludography);
 
     orderedStudios.forEach((studio) => {
         const section = createElement("section", { className: "studio-section" });

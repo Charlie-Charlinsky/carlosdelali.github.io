@@ -167,6 +167,8 @@ The future page renderer will compose the semantic content, data-driven Ludograp
 - Responsive reduction in columns for tablet and mobile.
 - Each game links to its own detail page.
 
+Every Games Index media frame uses `aspect-ratio: 1112 / 628`. Cover images fill that shared frame with proportional `object-fit: cover` cropping. The optional `coverPosition` field in `data/games.json` provides a per-game focal position when the default `50% 50%` crop would obscure the game title or logo; grid columns, company grouping, and visible ordering remain unchanged.
+
 ### GAME DETAIL
 
 - Game overview
@@ -197,6 +199,10 @@ Game
 ```
 
 `data/games.json` owns one ordered `media` collection per Game using the same item contract as Projects. New Game media belongs under `assets/games/<game-id>/media/images/` and `assets/games/<game-id>/media/videos/`. Existing registered screenshots may remain in the legacy `gallery/` directory until a deliberate asset migration; registry paths, rather than folder discovery, determine what the viewer displays. Game Detail and Project Detail both consume the single interaction engine at `js/core/media-gallery.js`, while page-scoped CSS controls their independent size and placement.
+
+Game metadata may include optional `year`, `platform`, `engineId`, `engineName`, and `accessUrl` values. Missing values render as `?`. `accessUrl` is the single structured purchase/play/access target and is rendered as a safe external link when present. Engine icons are global reusable assets, resolved automatically from `engineId` using `assets/engines/<engine-id>.png`; icon paths are never duplicated per Game. A known engine with a missing PNG keeps its metadata text, omits the broken image, and reports a warning.
+
+Game Detail Previous/Next controls are circular. Both Games Index grouping and Game Detail navigation consume the same ordered studio/game helper, so the flattened navigation sequence always follows the visible Games Index order without a second ordering rule.
 
 On desktop, the visual gallery is positioned alongside the written content. A maximum of six gallery images may be available for the visible page, while game metadata and professional contribution remain the primary information. The layout becomes responsive on tablet and mobile. Final CSS dimensions are intentionally undefined at this architecture stage.
 

@@ -9,6 +9,9 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
+      "engineId": "unity",
+      "engineName": "Unity",
       "content": {
         "en": "content/games/the-little-prince/en.html",
         "es": "content/games/the-little-prince/es.html"
@@ -50,6 +53,9 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
+      "engineId": "unity",
+      "engineName": "Unity",
       "content": {
         "en": "content/games/runbot/en.html",
         "es": "content/games/runbot/es.html"
@@ -96,6 +102,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
+      "engineId": "unity",
+      "engineName": "Unity",
+      "coverPosition": "50% 10%",
       "content": {
         "en": "content/games/xtreme-racing-2/en.html",
         "es": "content/games/xtreme-racing-2/es.html"
@@ -137,6 +147,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
+      "engineId": "unity",
+      "engineName": "Unity",
+      "coverPosition": "50% 0%",
       "content": {
         "en": "content/games/skull-towers/en.html",
         "es": "content/games/skull-towers/es.html"
@@ -183,6 +197,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/gold-rush-gus/en.html",
         "es": "content/games/gold-rush-gus/es.html"
@@ -234,6 +249,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/777-deluxe/en.html",
         "es": "content/games/777-deluxe/es.html"
@@ -285,6 +301,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/cyberpunk-city/en.html",
         "es": "content/games/cyberpunk-city/es.html"
@@ -326,6 +343,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/gods-of-luxor/en.html",
         "es": "content/games/gods-of-luxor/es.html"
@@ -377,6 +395,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/teen-patti/en.html",
         "es": "content/games/teen-patti/es.html"
@@ -413,6 +432,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/andar-bahar/en.html",
         "es": "content/games/andar-bahar/es.html"
@@ -459,6 +479,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/wheel-of-fortune/en.html",
         "es": "content/games/wheel-of-fortune/es.html"
@@ -495,6 +516,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/cricket-legends/en.html",
         "es": "content/games/cricket-legends/es.html"
@@ -541,6 +563,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/zombie-soccer/en.html",
         "es": "content/games/zombie-soccer/es.html"
@@ -592,6 +615,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/mystic-elements/en.html",
         "es": "content/games/mystic-elements/es.html"
@@ -643,6 +667,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/a-night-with-cleo/en.html",
         "es": "content/games/a-night-with-cleo/es.html"
@@ -684,6 +709,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/ea-sports-pga-tour/en.html",
         "es": "content/games/ea-sports-pga-tour/es.html"
@@ -735,6 +761,8 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
+      "coverPosition": "50% 0%",
       "content": {
         "en": "content/games/madden-nfl-25/en.html",
         "es": "content/games/madden-nfl-25/es.html"
@@ -771,6 +799,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
       "content": {
         "en": "content/games/madden-nfl-26/en.html",
         "es": "content/games/madden-nfl-26/es.html"
@@ -822,6 +851,8 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "accessUrl": null,
+      "coverPosition": "50% 20%",
       "content": {
         "en": "content/games/madden-nfl-27/en.html",
         "es": "content/games/madden-nfl-27/es.html"

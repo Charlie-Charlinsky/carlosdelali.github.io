@@ -1,16 +1,12 @@
 import { loadJson } from "../core/loaders.js";
 import { createElement, padIndex, setPageTitle } from "../core/dom.js";
-import { createPageHeader, localizedValue } from "../core/components.js";
+import { localizedValue } from "../core/components.js";
 import { detailUrl } from "../core/routes.js";
 
 export async function render({ language, target }) {
     const registry = await loadJson("data/oniric-journal.json");
     const entries = [...registry.entries].sort((a, b) => a.order - b.order);
     const page = createElement("div", { className: "collection-page journal-page" });
-    page.append(createPageHeader(
-        language === "es" ? "ARCHIVO DE SUEÑOS" : "DREAM ARCHIVE",
-        language === "es" ? "Diario Onírico" : "Oniric Journal"
-    ));
     const list = createElement("ol", { className: "journal-list" });
     entries.forEach((entry, index) => {
         const item = createElement("li", { className: "journal-entry" });
