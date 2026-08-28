@@ -2,6 +2,7 @@ import { buildShell } from "./core/shell.js";
 import { getPageContext } from "./core/routes.js";
 import { renderError, renderLoading } from "./core/dom.js";
 import { storeLanguage } from "./core/language.js";
+import { isPagePublished } from "./core/publication.js";
 
 const PAGE_MODULES = {
     about: () => import("./pages/about.js"),
@@ -21,6 +22,11 @@ async function initialize() {
     document.documentElement.lang = context.language;
     storeLanguage(context.language);
     buildShell(context.language, context.page);
+    if (!isPagePublished(context.page)) {
+        renderError(target, { resource: context.page }, context.language);
+        document.body.classList.add("is-ready");
+        return;
+    }
     renderLoading(target, context.language === "es" ? "Cargando..." : "Loading...");
 
     try {

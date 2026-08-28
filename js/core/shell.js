@@ -2,6 +2,7 @@ import { alternateLanguage, storeLanguage } from "./language.js";
 import { resolveRoute } from "./paths.js";
 import { getEquivalentLanguageUrl } from "./routes.js";
 import { createElement } from "./dom.js";
+import { getSectionForPage, isSectionPublished } from "./publication.js";
 
 const LABELS = {
     en: {
@@ -37,15 +38,10 @@ const LABELS = {
 };
 
 const NAVIGATION = ["about", "cv", "games", "projects", "writing", "oniric-journal"];
-const PAGE_FAMILY = {
-    "game-detail": "games",
-    "project-detail": "projects",
-    "oniric-journal-detail": "oniric-journal"
-};
 
 export function buildShell(language, page) {
     const strings = LABELS[language];
-    const activePage = PAGE_FAMILY[page] ?? page;
+    const activePage = getSectionForPage(page);
     const headerMount = document.querySelector("#site-header");
     const skipLink = document.querySelector(".skip-link");
     if (skipLink) skipLink.textContent = strings.skip;
@@ -93,7 +89,7 @@ export function buildShell(language, page) {
         attributes: { id: "primary-navigation", "aria-label": strings.navigation }
     });
 
-    NAVIGATION.forEach((route) => {
+    NAVIGATION.filter(isSectionPublished).forEach((route) => {
         const link = createElement("a", {
             text: strings.pages[route],
             attributes: { href: resolveRoute(language, route) }

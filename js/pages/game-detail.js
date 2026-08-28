@@ -11,15 +11,15 @@ const METADATA_LABELS = {
         year: "Year",
         company: "Company",
         platform: "Platform",
-        engine: "Development Engine",
-        access: "Access"
+        access: "Access",
+        engine: "Development Engine"
     },
     es: {
         year: "Año",
         company: "Compañía",
         platform: "Plataforma",
-        engine: "Motor de desarrollo",
-        access: "Acceso"
+        access: "Acceso",
+        engine: "Motor de desarrollo"
     }
 };
 
@@ -53,8 +53,8 @@ function createGameMetadata(game, language) {
     appendMetadataRow(metadata, labels.year, [metadataValue(game.year)]);
     appendMetadataRow(metadata, labels.company, [metadataValue(game.studio)]);
     appendMetadataRow(metadata, labels.platform, [metadataValue(game.platform)]);
-    appendMetadataRow(metadata, labels.engine, [metadataValue(game.engineName)]);
     appendMetadataRow(metadata, labels.access, [access]);
+    appendMetadataRow(metadata, labels.engine, [metadataValue(game.engineName)]);
     return metadata;
 }
 
@@ -95,12 +95,12 @@ function createGameNavigation(games, currentIndex, language) {
     navigation.append(
         createElement("a", {
             className: "back-link game-detail__navigation-link",
-            text: language === "es" ? "Anterior" : "Previous",
+            text: language === "es" ? "← Anterior" : "← Previous",
             attributes: { href: detailUrl(language, "games", previous.id) }
         }),
         createElement("a", {
             className: "back-link game-detail__navigation-link",
-            text: language === "es" ? "Siguiente" : "Next",
+            text: language === "es" ? "Siguiente →" : "Next →",
             attributes: { href: detailUrl(language, "games", next.id) }
         })
     );
@@ -146,7 +146,9 @@ export async function render({ language, target }) {
     if (engineLogo) heroCopy.append(engineLogo);
     if (currentIndex >= 0) heroCopy.append(createGameNavigation(orderedGames, currentIndex, language));
     const cover = createElement("figure", { className: "detail-hero__cover" });
-    cover.append(createMediaImage(game.assets.cover, game.title, "detail-hero__image"));
+    const coverImage = createMediaImage(game.assets.cover, game.title, "detail-hero__image");
+    coverImage.style.objectPosition = game.coverPosition || "50% 50%";
+    cover.append(coverImage);
     hero.append(cover, heroCopy);
 
     const body = createElement("div", { className: "game-detail__body" });

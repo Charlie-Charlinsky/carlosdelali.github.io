@@ -8,6 +8,8 @@ The site remains a static GitHub Pages application with no build step or server 
 
 `js/app.js` dispatches each route shell to a page coordinator under `js/pages/`. Collection modules render from their canonical registries, while reusable detail shells resolve the selected item from a query parameter and then load its localized semantic fragment and registered assets. The English and Spanish trees share the same modules and preserve current game, project, story, or journal identity when switching language.
 
+`js/core/publication.js` is the public allowlist for top-level sections and individually gated UI groups. The global shell creates navigation links only for allowlisted sections, and `js/app.js` checks the page family before dynamically importing its page module. Marked unpublished controls are removed from detached content fragments before those fragments enter the document DOM; publication is never implemented with CSS hiding.
+
 `css/frontend.css` owns the v0.2 design tokens, shared geometry, responsive layout, focus/touch states, reduced-motion behaviour, galleries, reader treatment, and collection patterns. Repeated Games, Projects, Writing, and Journal elements use common component classes rather than item-specific rules, keeping later Visual QA adjustments centralized.
 
 ## Active Main Navigation
@@ -72,6 +74,8 @@ Right:       About / CV / Games / Projects / Writing / Oniric Journal
 
 The language selector, designer name, and main navigation are global controls. The current language and page must be conveyed accessibly as well as visually.
 
+Main-navigation membership derives from the publication allowlist. An unpublished section has no navigation node or reserved gap, and direct access to one of its route shells is stopped before its page coordinator or authored content is loaded.
+
 On mobile, the header must:
 
 - Preserve the ESP / ENG language selector.
@@ -119,7 +123,6 @@ About owns one separately supplied profile image under `assets/about/profile/`. 
 - Work Experience
 - Ludography
 - Download CV
-- Download Portfolio
 
 The webpage is the native presentation. Downloadable files are supporting resources.
 
@@ -158,7 +161,7 @@ The public, versioned download assets live separately from the DOCX:
 - `assets/downloads/cv/carlos-lopez-cv.pdf`
 - `assets/downloads/portfolio/carlos-lopez-portfolio.pdf`
 
-The future page renderer will compose the semantic content, data-driven Ludography, and download actions without duplicating the global page shell or navigation.
+The page renderer composes semantic content, data-driven Ludography, and allowlisted download actions without duplicating the global page shell or navigation. The Portfolio action is currently unpublished, so it is omitted before the CV fragment is mounted. Its PDF remains a deployed public asset and can still be fetched directly by a known URL; removing a UI control is not file-access security.
 
 ### GAMES
 
@@ -167,7 +170,7 @@ The future page renderer will compose the semantic content, data-driven Ludograp
 - Responsive reduction in columns for tablet and mobile.
 - Each game links to its own detail page.
 
-Every Games Index media frame uses `aspect-ratio: 1112 / 628`. Cover images fill that shared frame with proportional `object-fit: cover` cropping. The optional `coverPosition` field in `data/games.json` provides a per-game focal position when the default `50% 50%` crop would obscure the game title or logo; grid columns, company grouping, and visible ordering remain unchanged.
+Games Index cards and Game Detail heroes use one shared cover token with `aspect-ratio: 1112 / 628` and the same physical card width at equivalent desktop layouts. Cover images fill that frame with proportional `object-fit: cover` cropping. The optional `coverPosition` field in `data/games.json` drives both consumers when the default `50% 50%` crop would obscure the game title or logo; grid columns, company grouping, and visible ordering remain unchanged.
 
 ### GAME DETAIL
 
@@ -198,7 +201,7 @@ Game
 └── Media
 ```
 
-`data/games.json` owns one ordered `media` collection per Game using the same item contract as Projects. New Game media belongs under `assets/games/<game-id>/media/images/` and `assets/games/<game-id>/media/videos/`. Existing registered screenshots may remain in the legacy `gallery/` directory until a deliberate asset migration; registry paths, rather than folder discovery, determine what the viewer displays. Game Detail and Project Detail both consume the single interaction engine at `js/core/media-gallery.js`, while page-scoped CSS controls their independent size and placement.
+`data/games.json` owns one ordered `media` collection per Game using the same item contract as Projects. New Game media belongs under `assets/games/<game-id>/media/images/` and `assets/games/<game-id>/media/videos/`. Existing registered screenshots may remain in the legacy `gallery/` directory until a deliberate asset migration; registry paths, rather than folder discovery, determine what the viewer displays. Game Detail and Project Detail both consume the single interaction engine at `js/core/media-gallery.js`, while page-scoped CSS controls their independent geometry. The Game stage uses `1112 / 628`; Game images use `object-fit: cover`, while videos retain safe `contain` fitting and the Project viewer remains unchanged.
 
 Game metadata may include optional `year`, `platform`, `engineId`, `engineName`, and `accessUrl` values. Missing values render as `?`. `accessUrl` is the single structured purchase/play/access target and is rendered as a safe external link when present. Engine icons are global reusable assets, resolved automatically from `engineId` using `assets/engines/<engine-id>.png`; icon paths are never duplicated per Game. A known engine with a missing PNG keeps its metadata text, omits the broken image, and reports a warning.
 

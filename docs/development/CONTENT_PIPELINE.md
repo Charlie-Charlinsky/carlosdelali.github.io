@@ -29,6 +29,12 @@ The v0.2 scaffolding phase established these directory layers. `local-content/` 
 
 Source documents and published output must remain distinct even when Codex is used to keep them synchronised.
 
+### Publication And Deployment
+
+`js/core/publication.js` defines an allowlist of published top-level sections and published items within named UI groups. Renderers omit marked unpublished controls before mounting content, the global shell omits unpublished navigation entries, and the application bootstrap rejects an unpublished page family before importing its page module or loading authored content. CSS hiding, hidden placeholders, and disabled dead links are not publication mechanisms.
+
+Publication policy controls the runtime interface, not static-host confidentiality. Any resource deployed under `content/`, `data/`, or `assets/` remains directly fetchable when its URL is known even if no rendered UI links to it. Truly private or unpublished source material must stay outside the deployed public tree, such as under the ignored `local-content/` authoring directory.
+
 ## Expected Workflow
 
 ### Page Authoring Sources
@@ -53,7 +59,7 @@ future content/cv/en.html
 future content/cv/es.html
 ```
 
-The CV DOCX owns editable Education, Work Experience, and bilingual section / download-action copy. Ludography is populated from `data/ludography.json` and `data/games.json` and must not be duplicated in the CV authoring source. Downloadable CV and Portfolio PDFs remain separate public assets under `assets/downloads/cv/` and `assets/downloads/portfolio/`.
+The CV DOCX owns editable Education, Work Experience, and bilingual section / download-action copy. Ludography is populated from `data/ludography.json` and `data/games.json` and must not be duplicated in the CV authoring source. Downloadable CV and Portfolio PDFs remain separate public assets under `assets/downloads/cv/` and `assets/downloads/portfolio/`. Only the CV download is currently allowlisted for rendered UI; the Portfolio PDF remains publicly addressable until it is deliberately removed from deployment.
 
 As with game authoring, DOCX metadata, research notes, and integration instructions must never appear in public semantic content. `local-content/` remains private/local and ignored by Git. Carlos manually supplies profile and download binaries; a later integration pass normalises their public filenames without modifying binary contents or changing extensions.
 
@@ -83,7 +89,7 @@ Codex must preserve the approved wording: source metadata and integration instru
 
 Visual assets are supplied manually under `assets/games/<game-id>/` and connected through `data/games.json`. Public asset filenames are normalised to lowercase kebab-case without changing their formats or binary contents. Each ordered Game `media` collection may reference at most 12 images, four videos, and 16 total items.
 
-The registry also owns optional presentation and metadata fields. `coverPosition` adjusts an individual Games Index cover focal point inside the shared `1112 / 628` frame and defaults to `50% 50%`. `accessUrl` stores a legitimate purchase, play, or access URL; omit it when no verified local source exists. `engineId` and `engineName` identify an explicitly documented development engine; omit them when the engine is unknown rather than inferring a value.
+The registry also owns optional presentation and metadata fields. `coverPosition` adjusts an individual cover focal point inside the shared `1112 / 628` frame and defaults to `50% 50%`; Games Index and Game Detail consume the same value. `accessUrl` stores a legitimate purchase, play, or access URL; omit it when no verified local source exists. `engineId` and `engineName` identify an explicitly documented development engine; omit them when the engine is unknown rather than inferring a value.
 
 Engine logos are supplied once under the global `assets/engines/` directory using the canonical `assets/engines/<engine-id>.png` contract. Game Detail derives this path from `engineId`, allowing every Game with the same engine to reuse one transparent PNG. Do not add engine icon paths to individual Game records or duplicate engine assets under `assets/games/`.
 
@@ -165,7 +171,7 @@ Conceptual Process scans are public visual assets. Project pages display them th
 
 ### Shared Detail Media
 
-Project and Game images/videos are public media assets referenced through the same ordered registry item contract and rendered by one shared engine. Each viewer may display at most 12 images and four videos, with 16 items total. Project files use `assets/projects/<project-id>/media/images/` and `media/videos/`; new Game files use `assets/games/<game-id>/media/images/` and `media/videos/`. Metadata identifies media type, source, optional video poster, localized labels or alternative text, ordering, formats, and accessibility requirements independently from page templates. Legacy Project `prototype/videos/`, Game `gallery/`, and their registered paths remain preserved without creating separate viewer implementations.
+Project and Game images/videos are public media assets referenced through the same ordered registry item contract and rendered by one shared engine. Each viewer may display at most 12 images and four videos, with 16 items total. Project files use `assets/projects/<project-id>/media/images/` and `media/videos/`; new Game files use `assets/games/<game-id>/media/images/` and `media/videos/`. Metadata identifies media type, source, optional video poster, localized labels or alternative text, ordering, formats, and accessibility requirements independently from page templates. Consumer CSS owns geometry: the Game stage uses `1112 / 628` and fills screenshot images with proportional cover cropping, while video playback uses containment and Project geometry remains independent. Legacy Project `prototype/videos/`, Game `gallery/`, and their registered paths remain preserved without creating separate viewer implementations.
 
 ## Synchronisation Expectations
 

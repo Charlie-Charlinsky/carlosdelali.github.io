@@ -1,6 +1,7 @@
 import { loadJson, loadSemanticFragment } from "../core/loaders.js";
 import { createElement, setPageTitle } from "../core/dom.js";
 import { detailUrl } from "../core/routes.js";
+import { applyPublicationPolicy } from "../core/publication.js";
 
 const LUDOGRAPHY_STUDIO_ORDER = new Map([
     ["ea-sports", 0],
@@ -16,6 +17,7 @@ export async function render({ language, target }) {
     ]);
     const article = fragment.querySelector("article");
     article.classList.add("semantic-content", "cv-content");
+    applyPublicationPolicy(article);
     const ludographySection = article.querySelector("#ludography");
     const gameMap = new Map(gamesRegistry.games.map((game) => [game.id, game]));
     const catalogue = createElement("div", { className: "ludography" });
