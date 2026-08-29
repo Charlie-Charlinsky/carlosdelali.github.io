@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "filenameContract": "<content-type>__<content-id>__ES-EN.docx",
+  "supportedTypes": [
+    "about",
+    "cv",
+    "game",
+    "project",
+    "writing",
+    "oniric-journal"
+  ],
+  "importerVersion": 2,
+  "engineMappings": {
+    "frostbite": "frostbite",
+    "unity": "unity",
+    "unreal engine": "unreal-engine"
+  },
+  "importSchemas": {
+    "about": {
+      "title": {"es": "About", "en": "About"}
+    },
+    "cv": {
+      "sections": {
+        "es": {
+          "Formaci\u00f3n": "education",
+          "Experiencia profesional": "work-experience",
+          "Ludograf\u00eda": "ludography",
+          "Descargas": "downloads"
+        },
+        "en": {
+          "Education": "education",
+          "Professional Experience": "work-experience",
+          "Ludography": "ludography",
+          "Downloads": "downloads"
+        }
+      }
+    },
+    "game": {
+      "metadata": {
+        "es": {
+          "A\u00f1o": "year",
+          "Compa\u00f1\u00eda": "company",
+          "Plataforma": "platform",
+          "Acceso": "access",
+          "Motor de desarrollo": "engine"
+        },
+        "en": {
+          "Year": "year",
+          "Company": "company",
+          "Platform": "platform",
+          "Access": "access",
+          "Engine": "engine",
+          "Development Engine": "engine"
+        }
+      },
+      "sections": {
+        "es": {"Visi\u00f3n general": "overview", "Mi contribuci\u00f3n": "contribution"},
+        "en": {"Overview": "overview", "My Contribution": "contribution"}
+      },
+      "subsections": {
+        "Quests & Challenges": "quests-challenges",
+        "Tournaments": "tournaments",
+        "Event Pass": "event-pass",
+        "Player Progression & Skill Tree": "player-progression-skill-tree",
+        "Skills, Abilities & Ball Striking": "skills-abilities-ball-striking"
+      }
+    }
+  },
+  "contentTypes": {
+    "about": {
+      "fixedIds": ["main"],
+      "registry": null,
+      "publicOutputs": ["content/about/en.html", "content/about/es.html"],
+      "mirror": "local-content/about/content.docx",
+      "docxOwnedFields": ["aboutCopy"],
+      "protectedFields": ["identity", "contact", "profileAsset", "route", "publication"]
+    },
+    "cv": {
+      "fixedIds": ["main"],
+      "registry": null,
+      "publicOutputs": ["content/cv/en.html", "content/cv/es.html"],
+      "mirror": "local-content/cv/content.docx",
+      "docxOwnedFields": ["profile", "workExperience", "education", "sectionCopy"],
+      "protectedFields": ["ludographyRelationships", "downloadAssets", "downloadPublication", "route"]
+    },
+    "game": {
+      "fixedIds": [],
+      "registry": {"path": "data/games.json", "collection": "games", "idField": "id"},
+      "publicOutputs": ["content/games/{id}/en.html", "content/games/{id}/es.html"],
+      "mirror": "local-content/games/{id}/content.docx",
+      "docxOwnedFields": ["title", "studio", "year", "platform", "accessUrl", "engineId", "engineName", "authoredProse"],
+      "protectedFields": ["id", "studioId", "category", "detailStatus", "assetsStatus", "published", "content", "assets", "media", "coverPosition", "registryOrder"]
+    },
+    "project": {
+      "fixedIds": [],
+      "registry": {"path": "data/projects.json", "collection": "projects", "idField": "id"},
+      "publicOutputs": ["content/projects/{id}/en.html", "content/projects/{id}/es.html"],
+      "mirror": "local-content/projects/{id}/content.docx",
+      "docxOwnedFields": ["title", "genre", "platform", "creationDate", "playPrototypeUrl", "authoredProse"],
+      "protectedFields": ["id", "order", "contentStatus", "content", "assets", "media", "gdds", "prototypeVideos", "publication"]
+    },
+    "writing": {
+      "fixedIds": [],
+      "registry": {"path": "data/stories.json", "collection": "stories", "idField": "id"},
+      "publicOutputs": ["content/writing/{id}/en.html", "content/writing/{id}/es.html"],
+      "mirror": "local-content/writing/{id}/content.docx",
+      "docxOwnedFields": ["title", "authoredProse"],
+      "protectedFields": ["id", "order", "contentStatus", "content", "assets", "publication"]
+    },
+    "oniric-journal": {
+      "fixedIds": [],
+      "registry": {"path": "data/oniric-journal.json", "collection": "entries", "idField": "id"},
+      "publicOutputs": ["content/oniric-journal/{id}/en.html", "content/oniric-journal/{id}/es.html"],
+      "mirror": "local-content/oniric-journal/{id}/content.docx",
+      "docxOwnedFields": ["title", "authoredProse"],
+      "protectedFields": ["id", "date", "order", "contentStatus", "content", "assets", "publication"]
+    }
+  },
+  "storageBaseline": {
+    "developMb": 90.09,
+    "mainKb": 133.46,
+    "differenceMb": 89.96,
+    "gitObjectDatabaseMiB": 86.20,
+    "localRepositoryMb": 177.40,
+    "githubPagesBudgetGb": 1,
+    "approximateBudgetUsagePercent": 9
+  }
+}

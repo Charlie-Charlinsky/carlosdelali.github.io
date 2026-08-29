@@ -12,6 +12,22 @@ The site remains a static GitHub Pages application with no build step or server 
 
 `css/frontend.css` owns the v0.2 design tokens, shared geometry, responsive layout, focus/touch states, reduced-motion behaviour, galleries, reader treatment, and collection patterns. Repeated Games, Projects, Writing, and Journal elements use common component classes rather than item-specific rules, keeping later Visual QA adjustments centralized.
 
+## Automated Content Ingestion
+
+`tools/content-pipeline/` is the tracked automation layer for future deterministic DOCX imports. The user edits only complete bilingual master documents and places them in the ignored `local-content/inbox/` workspace. `local-content/canonical/` owns the last accepted source, `local-content/archive/<type>/<id>/` owns older accepted versions, and `local-content/_content-pipeline/` owns the versioned manifest state, logs, and reports. Existing per-item `local-content/.../content.docx` paths become pipeline-managed mirrors after successful imports; Foundation #01 preserves their current files unchanged.
+
+Target discovery follows `<content-type>__<content-id>__ES-EN.docx` and exact registry identity. SHA-256 of raw file bytes, not timestamps or filenames, drives NEW/CHANGED/UNCHANGED detection. Inbox removal does not remove an entity. Future mutation is batch-atomic: all changed/new sources must resolve, parse, pass bilingual structural-parity checks, and produce a complete plan before any website output, canonical source, archive, mirror, or manifest acceptance state changes.
+
+The DOCX owns the complete editorial state and may update values of established editorial fields. Missing prose is removed; a missing value for an established structural field renders as `?` rather than deleting the schema field. The importer is not a copywriter and must not translate, rewrite, correct, summarise, or invent content. Structural field deletion remains explicit work on `develop`.
+
+`tools/content-pipeline/config/content-types.json` records ownership boundaries from the current registries. Stable identity, route/content paths, registry order, status/publication, studio grouping, assets, media ordering, cover focal position, GDD relationships, and navigation/presentation configuration remain system-owned. Public semantic HTML under `content/` and DOCX-owned structured values may be replaced only after validation. Frontend JavaScript and CSS remain presentation/runtime layers and are outside normal content import.
+
+Local authoring state is private because it is excluded from deployment. Conversely, `content/`, `data/`, and `assets/` are public static trees: removing a navigation or UI reference does not make a deployed file confidential.
+
+The operational Import Engine currently supports About, CV, and Game masters. PowerShell/.NET reads DOCX Open XML directly, maps schema-equivalent ES/EN headings, preserves inline emphasis and safe links, and produces complete semantic fragments rather than paragraph patches. The Game compiler merges authored title/company/year/platform/access/engine values into the existing object while preserving IDs, grouping, publication, content paths, media/assets, cover focal position, and registry order. Engine names resolve through the pipeline's deterministic global ID map; icon presentation remains the frontend's `engineId` to `assets/engines/<engine-id>.png` contract.
+
+Public writes are a single rollback-capable transaction. Generated fragments and registries are staged and parsed before replacement, existing destinations are backed up, frontend QA runs against the proposed public state, and canonical/mirror/manifest acceptance occurs only after QA. The manifest hash is therefore evidence of a successful import, not merely a discovered inbox file.
+
 ## Active Main Navigation
 
 - ABOUT

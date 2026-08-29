@@ -29,6 +29,46 @@ The v0.2 scaffolding phase established these directory layers. `local-content/` 
 
 Source documents and published output must remain distinct even when Codex is used to keep them synchronised.
 
+### Automated Ingestion Workspace
+
+The editorial source is a complete bilingual ES+EN master DOCX created by the user, normally exported from Google Drive. The only normal manual entry point is `local-content/inbox/`; existing per-item `content.docx` files are pipeline-managed mirrors after a successful import and are not separate manual inputs.
+
+```text
+local-content/inbox/                  candidate master DOCX files
+local-content/canonical/              last successfully accepted sources
+local-content/archive/<type>/<id>/    older accepted canonical versions
+local-content/_content-pipeline/      manifest, logs, and reports
+
+content/**/*.html                     generated browser-ready prose
+data/*.json                           structured registries
+assets/                               public media and downloads
+js/ + css/                            presentation and runtime behaviour
+```
+
+All `local-content/` paths are ignored local state. A successful future import archives the previous canonical file as `<yyyyMMddTHHmmssZ>__<short-old-hash>.docx`, promotes the accepted inbox file to canonical, and refreshes the established `local-content/<family>/<id>/content.docx` mirror where one exists. Foundation #01 does not populate canonical or rewrite any mirror.
+
+Master filenames use the exact contract `<content-type>__<content-id>__ES-EN.docx`. Supported initial types are `about`, `cv`, `game`, `project`, `writing`, and `oniric-journal`; fixed pages resolve as `about:main` and `cv:main`, while collection IDs must resolve exactly against their current registry. There is no fuzzy target matching. SHA-256 of the raw DOCX bytes determines NEW, CHANGED, and UNCHANGED state; invalid names, unknown targets, and duplicate target keys are INVALID. Removing a file from inbox never deletes or unpublishes its website entity.
+
+Each master DOCX is the complete current editorial state. A future import replaces old authored prose and DOCX-owned structured values in full; prose absent from the new document disappears. The importer does not translate, rewrite, paraphrase, summarise, correct, improve, or invent copy. Spanish and English section trees must have structural parity, and a mismatch stops the batch rather than generating or translating a missing section.
+
+Schema existence remains system-owned. When an established structured field has no value in the new DOCX, the field remains and its visible value becomes `?`; deleting a structural field requires explicit development work on `develop`. DOCX-owned values are distinguished from protected system data in `tools/content-pipeline/config/content-types.json`. Protected data includes stable IDs, route/content paths, registry order, statuses, publication, studio/group relationships, assets and ordered media, cover focal positions, GDD relationships, download/publication configuration, and other presentation or navigation concerns represented by the current registries.
+
+Imports are batch-atomic:
+
+```text
+SCAN -> PREFLIGHT ALL NEW/CHANGED -> VALIDATE ALL -> BUILD PLAN -> APPLY
+```
+
+No public output, canonical file, archive, mirror, or accepted manifest hash may change before the entire candidate batch passes preflight. One invalid changed/new document stops the batch without mutation. The versioned manifest records only successfully accepted imports; current website content is not backfilled with fabricated hashes.
+
+Manifest schema version 1 keys accepted entries by stable `<type>:<id>` identity and records the source filename, raw-byte SHA-256, last successful import time in UTC, canonical location, archive count, and exact generated output list. Foundation starts with an empty `entries` object.
+
+Tracked automation lives under `tools/content-pipeline/`. Bootstrap creates missing ignored state without overwriting existing files, scan is read-only with respect to the website and canonical/archive sources, and Git orchestration is split into explicit PREPARE, SAVE-CONTENT, INTEGRATE-DEVELOP, and PUBLISH-MAIN modes. Publishing `main` is never an automatic consequence of import and must stop when local and remote release history differ.
+
+Import Engine #02 implements deterministic Open XML parsing for the initial About, CV, and Game schemas without external DOCX dependencies. It uses Word paragraph styles, numbering definitions, inline emphasis, and hyperlink relationships; the exact `ENGLISH VERSION` paragraph is the bilingual boundary and is never emitted. About compiles only the authored About copy while preserving the established identity/contact structure. CV compiles Education and Professional Experience, validates the authored Ludography tree while leaving its runtime list registry-owned, and emits only publication-gated authored downloads. Game compiles editorial sections and updates only DOCX-owned values on the existing registry object.
+
+`import-content.ps1` defaults to a dry run. `-Apply` stages all generated HTML and JSON in ignored transaction state, validates the complete batch, replaces all public outputs with rollback backups, and runs frontend QA. Only after QA passes does it archive prior canonical files, promote the current inbox files to canonical, refresh compatibility mirrors, and write manifest acceptance hashes. Failed application restores every touched destination; successful first imports create no archive because no prior canonical version exists.
+
 ### Publication And Deployment
 
 `js/core/publication.js` defines an allowlist of published top-level sections and published items within named UI groups. Renderers omit marked unpublished controls before mounting content, the global shell omits unpublished navigation entries, and the application bootstrap rejects an unpublished page family before importing its page module or loading authored content. CSS hiding, hidden placeholders, and disabled dead links are not publication mechanisms.
@@ -180,3 +220,6 @@ Project and Game images/videos are public media assets referenced through the sa
 - Structured indexes should own titles, slugs, dates, order, language availability, and cross-entry navigation.
 - Generated HTML should remain reviewable and accessible.
 - Public content and assets may be versioned; private authoring sources in the ignored `local-content/` directory remain outside public version control.
+- Inbox deletion is not a content deletion API; removal and unpublication remain explicit structural/publication operations.
+- The importer preserves system-owned registry and presentation metadata while replacing DOCX-owned editorial state.
+- Before final video population, rerun the storage audit and calculate the remaining deployment budget. The Foundation baseline is 90.09 MB on `develop`, approximately 86.20 MiB of Git objects, approximately 177.40 MB locally, and approximately 9% of the 1 GB GitHub Pages budget. Gameplay videos should generally remain around one minute or less and available slots must not be filled automatically.

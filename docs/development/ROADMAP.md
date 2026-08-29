@@ -55,7 +55,7 @@ Its internal architecture is deliberately undefined. It is not included in the c
 
 The following work remains after the first complete v0.2 frontend pass:
 
-- Content import/synchronisation workflow
+- Content import/synchronisation workflow (Foundation #01 and About/CV/Game Import Engine #02 implemented; remaining content schemas pending)
 - Visual QA and final aesthetic polish
 - Story reader pagination refinement after visual testing
 - Concept Book improvements when project media is supplied
