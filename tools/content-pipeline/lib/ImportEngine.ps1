@@ -99,6 +99,7 @@ function Read-DocxDocument {
         }
 
         $blocks = @()
+        $paragraphIndex = 0
         foreach ($node in $document.SelectSingleNode('//w:body', $namespace).ChildNodes) {
             if ($node.LocalName -eq 'tbl') {
                 $blocks += [pscustomobject]@{ Kind = 'table'; Text = $node.InnerText }
@@ -133,6 +134,7 @@ function Read-DocxDocument {
             }
             $blocks += [pscustomobject][ordered]@{
                 Kind = 'paragraph'
+                ParagraphIndex = $paragraphIndex
                 Style = $style
                 Text = (@($runs | ForEach-Object Text) -join '')
                 Runs = $runs
@@ -140,6 +142,7 @@ function Read-DocxDocument {
                 ListLevel = $level
                 ListFormat = $listFormat
             }
+            $paragraphIndex++
         }
         return [pscustomobject]@{ Path = $Path; Blocks = $blocks }
     } finally {
@@ -232,29 +235,109 @@ function Add-SemanticParagraph {
     return $element
 }
 
+function Get-ListElementName {
+    param($Paragraph)
+    return $(if ($Paragraph.ListFormat -eq 'bullet') { 'ul' } else { 'ol' })
+}
+
+function Get-ListTopologySignature {
+    param([Parameter(Mandatory = $true)][System.Xml.XmlNode]$Node)
+
+    if ($Node.Name -notin @('ul', 'ol')) { throw "Cannot create list topology from '$($Node.Name)'." }
+    $items = @()
+    foreach ($item in @($Node.ChildNodes | Where-Object { $_.NodeType -eq [System.Xml.XmlNodeType]::Element })) {
+        if ($item.Name -ne 'li') { throw "List '$($Node.Name)' contains an unexpected '$($item.Name)' element." }
+        $children = @($item.ChildNodes | Where-Object { $_.NodeType -eq [System.Xml.XmlNodeType]::Element -and $_.Name -in @('ul', 'ol') })
+        $childSignature = @($children | ForEach-Object { Get-ListTopologySignature -Node $_ })
+        $items += $(if ($childSignature.Count) { "li[$($childSignature -join ',')]" } else { 'li' })
+    }
+    return "$($Node.Name)[$($items -join ',')]"
+}
+
+function Get-ListParagraphIndex {
+    param($Paragraph, [int]$Fallback)
+    $property = $Paragraph.PSObject.Properties['ParagraphIndex']
+    if ($null -ne $property) { return [int]$property.Value }
+    return $Fallback
+}
+
+function Throw-InvalidListHierarchy {
+    param($Paragraph, [int]$FallbackIndex, [int]$PreviousLevel, [int]$RequestedLevel, [string]$Target, [string]$Language)
+
+    $preview = $Paragraph.Text.Trim()
+    if ($preview.Length -gt 80) { $preview = $preview.Substring(0, 80) + '...' }
+    $paragraphIndex = Get-ListParagraphIndex -Paragraph $Paragraph -Fallback $FallbackIndex
+    throw "INVALID_LIST_HIERARCHY target=$Target language=$Language paragraph=$paragraphIndex text='$preview' previousLevel=$PreviousLevel requestedLevel=$RequestedLevel"
+}
+
+function Add-HierarchicalListSequence {
+    param(
+        $Document,
+        $Parent,
+        [object[]]$Paragraphs,
+        [int]$StartIndex,
+        [string]$Target = 'unknown',
+        [string]$Language = 'unknown'
+    )
+
+    $stack = New-Object System.Collections.ArrayList
+    $roots = @()
+    $index = $StartIndex
+    $previousLevel = -1
+    while ($index -lt $Paragraphs.Count -and $null -ne $Paragraphs[$index].NumberId) {
+        $paragraph = $Paragraphs[$index]
+        $level = if ($null -eq $paragraph.ListLevel) { 0 } else { [int]$paragraph.ListLevel }
+        if ($level -lt 0 -or $level -gt ($previousLevel + 1)) {
+            Throw-InvalidListHierarchy -Paragraph $paragraph -FallbackIndex $index -PreviousLevel $previousLevel -RequestedLevel $level -Target $Target -Language $Language
+        }
+
+        while ($stack.Count -gt ($level + 1)) { $stack.RemoveAt($stack.Count - 1) }
+        $listName = Get-ListElementName -Paragraph $paragraph
+        $numberId = [string]$paragraph.NumberId
+        $context = if ($stack.Count -gt $level) { $stack[$level] } else { $null }
+        $requiresList = $null -eq $context -or $context.Name -cne $listName -or $context.NumberId -cne $numberId
+        if ($requiresList) {
+            while ($stack.Count -gt $level) { $stack.RemoveAt($stack.Count - 1) }
+            if ($level -eq 0) {
+                $listParent = $Parent
+            } else {
+                $parentContext = $stack[$level - 1]
+                if ($null -eq $parentContext -or $null -eq $parentContext.LastItem) {
+                    Throw-InvalidListHierarchy -Paragraph $paragraph -FallbackIndex $index -PreviousLevel $previousLevel -RequestedLevel $level -Target $Target -Language $Language
+                }
+                $listParent = $parentContext.LastItem
+            }
+            $list = Add-HtmlElement -Document $Document -Parent $listParent -Name $listName -Text $null
+            $context = [pscustomobject]@{ Name = $listName; NumberId = $numberId; List = $list; LastItem = $null }
+            [void]$stack.Add($context)
+            if ($level -eq 0) { $roots += $list }
+        }
+
+        $item = Add-HtmlElement -Document $Document -Parent $context.List -Name 'li' -Text $null
+        Add-InlineRuns -Document $Document -Parent $item -Runs @($paragraph.Runs)
+        $context.LastItem = $item
+        $previousLevel = $level
+        $index++
+    }
+
+    return [pscustomobject]@{
+        NextIndex = $index
+        Roots = $roots
+        Signature = @($roots | ForEach-Object { Get-ListTopologySignature -Node $_ })
+    }
+}
+
 function Add-ParagraphSequence {
-    param($Document, $Parent, [object[]]$Paragraphs)
+    param($Document, $Parent, [object[]]$Paragraphs, [string]$Target = 'unknown', [string]$Language = 'unknown')
     $signature = @()
     $index = 0
     while ($index -lt $Paragraphs.Count) {
         $paragraph = $Paragraphs[$index]
         if ($paragraph.Style -match '^Heading') { throw "Unexpected heading in paragraph sequence: $($paragraph.Text)" }
         if ($null -ne $paragraph.NumberId) {
-            if ($paragraph.ListLevel -notin @($null, 0)) { throw 'Nested lists are not supported by the initial schemas.' }
-            $listName = if ($paragraph.ListFormat -eq 'bullet') { 'ul' } else { 'ol' }
-            $list = Add-HtmlElement -Document $Document -Parent $Parent -Name $listName -Text $null
-            $count = 0
-            while ($index -lt $Paragraphs.Count) {
-                $candidate = $Paragraphs[$index]
-                if ($null -eq $candidate.NumberId) { break }
-                $candidateListName = if ($candidate.ListFormat -eq 'bullet') { 'ul' } else { 'ol' }
-                if ($candidateListName -ne $listName) { break }
-                $item = Add-HtmlElement -Document $Document -Parent $list -Name 'li' -Text $null
-                Add-InlineRuns -Document $Document -Parent $item -Runs @($candidate.Runs)
-                $count++
-                $index++
-            }
-            $signature += "${listName}:$count"
+            $listResult = Add-HierarchicalListSequence -Document $Document -Parent $Parent -Paragraphs $Paragraphs -StartIndex $index -Target $Target -Language $Language
+            $signature += @($listResult.Signature)
+            $index = $listResult.NextIndex
             continue
         }
         Add-SemanticParagraph -Document $Document -Parent $Parent -Paragraph $paragraph | Out-Null
@@ -359,8 +442,8 @@ function Get-CvLudographyModel {
     $model = @()
     foreach ($group in $groups) {
         $items = @($group.Items)
-        if ($items.Count -eq 0 -or @($items | Where-Object { $null -eq $_.NumberId }).Count -gt 0) {
-            throw "CV Ludography group '$($group.Heading.Text)' must contain a numbered list."
+        if ($items.Count -eq 0 -or @($items | Where-Object { $null -eq $_.NumberId -or $_.ListLevel -notin @($null, 0) -or $_.ListFormat -eq 'bullet' }).Count -gt 0) {
+            throw "CV Ludography group '$($group.Heading.Text)' must contain a flat ordered list."
         }
         $model += [pscustomobject]@{ Studio = $group.Heading.Text.Trim(); Games = @($items | ForEach-Object { $_.Text.Trim() }) }
     }
@@ -394,7 +477,7 @@ function Convert-CvLanguage {
             foreach ($entry in $entries) {
                 $child = Add-HtmlElement -Document $html.Document -Parent $output -Name 'section' -Text $null
                 Add-HtmlElement -Document $html.Document -Parent $child -Name 'h3' -Text $entry.Heading.Text | Out-Null
-                $bodySignature = @(Add-ParagraphSequence -Document $html.Document -Parent $child -Paragraphs @($entry.Items))
+                $bodySignature = @(Add-ParagraphSequence -Document $html.Document -Parent $child -Paragraphs @($entry.Items) -Target 'cv:main' -Language $Language)
                 $entrySignatures += ($bodySignature -join ',')
             }
             $signature += "$($section.Id):$($entries.Count):$($entrySignatures -join ';')"
@@ -490,12 +573,12 @@ function Convert-GameLanguage {
     foreach ($section in $sections) {
         $output = Add-HtmlElement -Document $html.Document -Parent $html.Article -Name 'section' -Text $null -Attributes @{ id = $section.Id }
         Add-HtmlElement -Document $html.Document -Parent $output -Name 'h2' -Text $section.Heading.Text | Out-Null
-        $direct = @(Add-ParagraphSequence -Document $html.Document -Parent $output -Paragraphs @($section.Paragraphs))
+        $direct = @(Add-ParagraphSequence -Document $html.Document -Parent $output -Paragraphs @($section.Paragraphs) -Target "game:$GameId" -Language $Language)
         $subSignatures = @()
         foreach ($subsection in $section.Subsections) {
             $child = Add-HtmlElement -Document $html.Document -Parent $output -Name 'section' -Text $null -Attributes @{ id = $subsection.Id }
             Add-HtmlElement -Document $html.Document -Parent $child -Name 'h3' -Text $subsection.Heading.Text | Out-Null
-            $body = @(Add-ParagraphSequence -Document $html.Document -Parent $child -Paragraphs @($subsection.Paragraphs))
+            $body = @(Add-ParagraphSequence -Document $html.Document -Parent $child -Paragraphs @($subsection.Paragraphs) -Target "game:$GameId" -Language $Language)
             $subSignatures += "$($subsection.Id):$($body -join ',')"
         }
         $signature += "$($section.Id):$($direct -join ','):$($subSignatures -join ';')"

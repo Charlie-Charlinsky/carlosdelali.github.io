@@ -51,6 +51,8 @@ On acceptance, an existing canonical source is archived under `local-content/arc
 
 Import Engine #02 parses DOCX directly through the Open XML ZIP/XML contract. About, CV, and Game schemas validate the complete ES/EN trees, compile semantic HTML, and update only DOCX-owned structured Game values. A dry run is the default; `-Apply` stages and validates the complete batch, replaces public outputs transactionally, runs frontend QA, then archives/promotes canonical sources, refreshes compatibility mirrors, and writes accepted manifest hashes last. Apply failures restore every touched destination.
 
+Importer version 3 supports deterministic nested ordered and unordered lists. Hierarchy comes only from WordprocessingML numbering metadata (`w:numId`, `w:ilvl`, and `w:numFmt`): list levels become nested `<ul>`/`<ol>` elements inside their owning `<li>`, numbering-ID or list-type changes create semantic list boundaries, and normal paragraphs, headings, and language boundaries close the active list sequence. A level increase may advance by exactly one; skipped levels fail preflight with `INVALID_LIST_HIERARCHY`. ES/EN structural parity includes list type, depth, item order, and topology without comparing translated item text or requiring the languages to reuse the same Word numbering IDs.
+
 `-Rebuild` explicitly recompiles accepted UNCHANGED sources after a compiler/tooling change. Normal imports continue to skip unchanged hashes. Rebuilding an identical canonical source does not create a redundant archive version.
 
 ## Media budget gate

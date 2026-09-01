@@ -9,7 +9,7 @@
     "writing",
     "oniric-journal"
   ],
-  "importerVersion": 2,
+  "importerVersion": 3,
   "engineMappings": {
     "frostbite": "frostbite",
     "unity": "unity",
