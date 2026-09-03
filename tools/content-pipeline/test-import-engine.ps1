@@ -199,7 +199,7 @@ try {
     Assert-ImportEngine ($game.Summary.es.Structure -ceq $game.Summary.en.Structure) 'PGA ES/EN structural parity'
     Assert-ImportEngine ($plan.GameRegistry.Game.year -ceq '2023') 'PGA Year mapping'
     Assert-ImportEngine ($plan.GameRegistry.Game.studio -ceq 'EA Sports') 'PGA Company mapping'
-    Assert-ImportEngine ($plan.GameRegistry.Game.engineId -ceq 'frostbite') 'PGA deterministic engine mapping'
+    Assert-ImportEngine ($plan.GameRegistry.Game.engineName -ceq 'Frostbite') 'PGA textual Engine metadata mapping'
     try { $parsedRegistry = $plan.GameRegistry.Json | ConvertFrom-Json; $jsonValid = $null -ne $parsedRegistry.games } catch { $jsonValid = $false }
     Assert-ImportEngine $jsonValid 'updated Game registry JSON is valid'
     if ($game.Status -eq 'UNCHANGED') {

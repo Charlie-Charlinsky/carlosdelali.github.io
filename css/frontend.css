@@ -751,22 +751,6 @@ body[data-page="game-detail"] .page-shell {
     overflow-wrap: anywhere;
 }
 
-.game-detail__engine-logo {
-    display: flex;
-    width: min(4rem, 100%);
-    align-items: center;
-    justify-content: center;
-    margin: var(--space-md) 0 0;
-    aspect-ratio: 1 / 1;
-    overflow: hidden;
-}
-
-.game-detail__engine-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
 .game-detail__body {
     display: grid;
     grid-template-columns: minmax(20rem, 0.86fr) minmax(0, 1.14fr);

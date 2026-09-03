@@ -3,7 +3,7 @@ import { createElement, setPageTitle } from "../core/dom.js";
 import { createBackLink, createMediaImage } from "../core/components.js";
 import { getOrderedPublishedGames } from "../core/game-order.js";
 import { createMediaGallery } from "../core/media-gallery.js";
-import { resolveAsset, resolveRoute, resolveSiteUrl } from "../core/paths.js";
+import { resolveRoute, resolveSiteUrl } from "../core/paths.js";
 import { detailUrl } from "../core/routes.js";
 
 const METADATA_LABELS = {
@@ -56,33 +56,6 @@ function createGameMetadata(game, language) {
     appendMetadataRow(metadata, labels.access, [access]);
     appendMetadataRow(metadata, labels.engine, [metadataValue(game.engineName)]);
     return metadata;
-}
-
-async function createEngineLogo(game) {
-    if (!game.engineId) return null;
-
-    const path = `assets/engines/${game.engineId}.png`;
-    const image = createElement("img", {
-        className: "game-detail__engine-image",
-        attributes: {
-            alt: `${game.engineName || game.engineId} logo`,
-            decoding: "async"
-        }
-    });
-    const loaded = await new Promise((resolve) => {
-        image.addEventListener("load", () => resolve(true), { once: true });
-        image.addEventListener("error", () => resolve(false), { once: true });
-        image.src = resolveAsset(path);
-    });
-
-    if (!loaded) {
-        console.warn(`[Game Detail] Missing engine icon: ${path}`);
-        return null;
-    }
-
-    const figure = createElement("figure", { className: "game-detail__engine-logo" });
-    figure.append(image);
-    return figure;
 }
 
 function createGameNavigation(games, currentIndex, language) {
@@ -138,12 +111,10 @@ export async function render({ language, target }) {
     const heroCopy = createElement("div", { className: "detail-hero__copy" });
     const orderedGames = getOrderedPublishedGames(registry, ludography);
     const currentIndex = orderedGames.findIndex((item) => item.id === game.id);
-    const engineLogo = await createEngineLogo(game);
     heroCopy.append(
         createElement("h1", { text: game.title }),
         createGameMetadata(game, language)
     );
-    if (engineLogo) heroCopy.append(engineLogo);
     if (currentIndex >= 0) heroCopy.append(createGameNavigation(orderedGames, currentIndex, language));
     const cover = createElement("figure", { className: "detail-hero__cover" });
     const coverImage = createMediaImage(game.assets.cover, game.title, "detail-hero__image");

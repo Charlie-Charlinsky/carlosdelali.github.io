@@ -65,6 +65,46 @@ const games = gamesRegistry.games ?? [];
 if (games.length !== 19) fail(`Games: se esperaban 19 y hay ${games.length}`);
 if (new Set(games.map((game) => game.id)).size !== games.length) fail("Games: IDs duplicados");
 const gameMap = new Map(games.map((game) => [game.id, game]));
+const gameDetailSource = read("js/pages/game-detail.js");
+const obsoleteEngineKey = ["engine", "Id"].join("");
+const obsoleteEnginePresentationTokens = [
+    ["assets", "engines"].join("/"),
+    ["engine", "logo"].join("-"),
+    ["engine", "image"].join("-"),
+    ["engine", "icon"].join("-"),
+    ["engine", "Logo"].join(""),
+    ["engine", "Image"].join(""),
+    ["engine", "Icon"].join(""),
+    ["create", "Engine", "Logo"].join("")
+];
+
+if (gameMap.get("ea-sports-pga-tour")?.engineName !== "Frostbite") {
+    fail("Game Detail: PGA debe conservar el texto de motor Frostbite");
+}
+if (gameMap.get("skull-towers")?.engineName !== "Unity") {
+    fail("Game Detail: Skull Towers debe conservar el texto de motor Unity");
+}
+if (!games.some((game) => !game.engineName)) {
+    fail("Game Detail: falta un caso de motor desconocido para validar el fallback textual");
+}
+if (!gameDetailSource.includes("metadataValue(game.engineName)")) {
+    fail("Game Detail: el motor textual no se renderiza desde engineName");
+}
+if (!gameDetailSource.includes('return value === undefined || value === null || value === "" ? "?" : String(value);')) {
+    fail("Game Detail: el fallback textual de metadatos desconocidos no es válido");
+}
+if (games.some((game) => Object.hasOwn(game, obsoleteEngineKey))) {
+    fail("Games: el identificador visual de motor obsoleto sigue en el registro");
+}
+obsoleteEnginePresentationTokens.forEach((token) => {
+    if (gameDetailSource.includes(token)) fail(`Game Detail: referencia visual de motor obsoleta (${token})`);
+});
+if (!gameDetailSource.includes("createGameNavigation(orderedGames, currentIndex, language)")) {
+    fail("Game Detail: navegación Previous/Next no resuelta");
+}
+if (!gameDetailSource.includes("createMediaGallery(game.media")) {
+    fail("Game Detail: galería de medios no resuelta");
+}
 
 games.forEach((game) => {
     if (game.detailStatus !== "content-ready") fail(`${game.id}: contenido no preparado`);

@@ -131,9 +131,7 @@ Codex must preserve the approved wording: source metadata and integration instru
 
 Visual assets are supplied manually under `assets/games/<game-id>/` and connected through `data/games.json`. Public asset filenames are normalised to lowercase kebab-case without changing their formats or binary contents. Each ordered Game `media` collection may reference at most 12 images, four videos, and 16 total items.
 
-The registry also owns optional presentation and metadata fields. `coverPosition` adjusts an individual cover focal point inside the shared `1112 / 628` frame and defaults to `50% 50%`; Games Index and Game Detail consume the same value. `accessUrl` stores a legitimate purchase, play, or access URL; omit it when no verified local source exists. `engineId` and `engineName` identify an explicitly documented development engine; omit them when the engine is unknown rather than inferring a value.
-
-Engine logos are supplied once under the global `assets/engines/` directory using the canonical `assets/engines/<engine-id>.png` contract. Game Detail derives this path from `engineId`, allowing every Game with the same engine to reuse one transparent PNG. Do not add engine icon paths to individual Game records or duplicate engine assets under `assets/games/`.
+The registry also owns optional presentation and metadata fields. `coverPosition` adjusts an individual cover focal point inside the shared `1112 / 628` frame and defaults to `50% 50%`; Games Index and Game Detail consume the same value. `accessUrl` stores a legitimate purchase, play, or access URL; omit it when no verified local source exists. `engineName` stores an explicitly documented development engine as textual metadata; omit it when the engine is unknown rather than inferring a value.
 
 ### Professional Game
 

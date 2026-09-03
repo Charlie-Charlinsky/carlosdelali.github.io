@@ -657,16 +657,6 @@ function New-UpdatedGameRegistry {
     $accessUrl = if ($metadata.access.Value -eq '?') { $null } elseif ($metadata.access.Url) { $metadata.access.Url } elseif (Test-SafeContentUrl $metadata.access.Value) { $metadata.access.Value } else { throw 'PGA Access must be an authored safe URL.' }
     if ($null -ne $accessUrl -and -not (Test-SafeContentUrl $accessUrl)) { throw 'PGA Access URL is unsafe.' }
     $engineName = if ($metadata.engine.Value -eq '?') { $null } else { $metadata.engine.Value }
-    $engineId = $null
-    $warnings = @()
-    if ($engineName) {
-        $mapping = $Config.engineMappings.PSObject.Properties[$engineName.ToLowerInvariant()]
-        if ($null -ne $mapping) { $engineId = [string]$mapping.Value } else { $warnings += "No deterministic engineId mapping for '$engineName'." }
-    }
-    if ($engineId) {
-        $icon = "assets/engines/$engineId.png"
-        if (-not (Test-Path -LiteralPath (Join-Path $RepositoryRoot $icon.Replace('/', '\')) -PathType Leaf)) { $warnings += "Missing canonical engine icon: $icon" }
-    }
 
     $updates = [ordered]@{
         title = $ParsedGame.en.Title
@@ -674,18 +664,16 @@ function New-UpdatedGameRegistry {
         year = $metadata.year.Value
         platform = $metadata.platform.Value
         accessUrl = $accessUrl
-        engineId = $engineId
         engineName = $engineName
     }
     $updated = [ordered]@{}
     foreach ($property in $current.PSObject.Properties) {
-        if ($property.Name -in @('year', 'platform', 'accessUrl', 'engineId', 'engineName')) { continue }
+        if ($property.Name -in @('year', 'platform', 'accessUrl', 'engineName')) { continue }
         if ($updates.Contains($property.Name)) { $updated[$property.Name] = $updates[$property.Name] } else { $updated[$property.Name] = $property.Value }
         if ($property.Name -eq 'published') {
             $updated.year = $updates.year
             $updated.platform = $updates.platform
             $updated.accessUrl = $updates.accessUrl
-            $updated.engineId = $updates.engineId
             $updated.engineName = $updates.engineName
         }
     }
@@ -705,7 +693,7 @@ function New-UpdatedGameRegistry {
     return [pscustomobject]@{
         Json = (ConvertTo-StableJson $registry) + "`n"
         Game = $updatedGame
-        Warnings = $warnings
+        Warnings = @()
         ProtectedFields = $protected
         MissingFields = @($ParsedGame.en.SourcePresence.PSObject.Properties | Where-Object { -not $_.Value } | ForEach-Object Name)
     }

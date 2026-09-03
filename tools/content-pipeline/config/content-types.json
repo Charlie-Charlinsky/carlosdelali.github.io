@@ -10,11 +10,6 @@
     "oniric-journal"
   ],
   "importerVersion": 3,
-  "engineMappings": {
-    "frostbite": "frostbite",
-    "unity": "unity",
-    "unreal engine": "unreal-engine"
-  },
   "importSchemas": {
     "about": {
       "title": {"es": "About", "en": "About"}
@@ -88,7 +83,7 @@
       "registry": {"path": "data/games.json", "collection": "games", "idField": "id"},
       "publicOutputs": ["content/games/{id}/en.html", "content/games/{id}/es.html"],
       "mirror": "local-content/games/{id}/content.docx",
-      "docxOwnedFields": ["title", "studio", "year", "platform", "accessUrl", "engineId", "engineName", "authoredProse"],
+      "docxOwnedFields": ["title", "studio", "year", "platform", "accessUrl", "engineName", "authoredProse"],
       "protectedFields": ["id", "studioId", "category", "detailStatus", "assetsStatus", "published", "content", "assets", "media", "coverPosition", "registryOrder"]
     },
     "project": {
