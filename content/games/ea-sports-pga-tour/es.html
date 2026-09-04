@@ -1,35 +1,45 @@
 <article data-game-id="ea-sports-pga-tour">
     <section id="overview">
-        <h2>Visión general</h2>
-        <p>EA SPORTS PGA TOUR fue el proyecto en el que mi trabajo de diseño de sistemas se amplió a un ciclo completo de producción AAA. Trabajé en el juego durante tres años en un entorno completamente remoto, con un alto grado de autonomía sobre progresión, pipelines de contenido, sistemas de live service y features de gameplay orientadas al jugador.</p>
-        <p>Mi contribución conectó el crecimiento a largo plazo del golfista con sistemas de contenido repetibles: quests y challenges, tournaments, Event Pass, progresión de XP y niveles, inversión de Skill Points, desbloqueo de abilities y la capa de gameplay/UI relacionada con el ball striking.</p>
+        <h2>El Juego</h2>
+        <p>El último título de golf desarrollado por EA Sports. El juego se centra principalmente en explotar la fantasía deportiva de golf, permitiendo al jugador construir su propio personaje y emprender su propia carrera como golfista profesional.</p>
+        <p>Para poder construir este tipo de experiencia, nos enfocamos en la creación de sistemas RPG narrativos, como sistemas de quests; sistemas de progresión de niveles por xp; sistemas de mejora de atributos por experiencia y sistemas de mejora de habilidades del personaje.</p>
     </section>
     <section id="contribution">
-        <h2>Mi contribución</h2>
-        <section id="quests-challenges">
-            <h3>Quests &amp; Challenges</h3>
-            <p>Ayudé a entregar el sistema utilizado para diseñar e implementar distintos tipos de quests y challenges. El workflow conectaba diseño, implementación y testing mediante un pipeline data-driven construido alrededor de SQL, Excel y herramientas personalizadas, permitiendo authoring consistente y validación antes del lanzamiento.</p>
-            <p>El reto de diseño no consistía únicamente en crear objetivos individuales, sino en construir una estructura reutilizable por los content designers para distintos tipos de quest, manteniendo claros los requisitos, las recompensas y la validación para los equipos encargados de implementar y probar el contenido.</p>
+        <h2>Contribución</h2>
+        <section id="quests">
+            <h3>Quests</h3>
+            <p>Este sistema tiene como objetivo dirigir tu manera de jugar dentro de tu carrera deportiva y centralizar la mayoría de las recompensas del juego. El progreso de los quests está totalmente ligado a todo lo que haces en tu carrera. </p>
+            <p>Para esta feature, el reto fue utilizar un sistema de eventos que permitía trackear todas las acciones del jugador. Para ello, me dediqué a analizar todas las posibles acciones que se nos permitía trackear del jugador, y así poder hacer una lista donde se ponderaba cuales eran las acciones y sucesos que más ocurrían dentro del juego. De esta manera, pude diseñar un sistema de balanceo en excel, donde los objetivos se podrían construir utilizando la gramática de los eventos implementados por código. Dependiendo del objetivo, se asignaba una dificultad al mismo, en base a un sistema de criterios. De esta manera, los paquetes de objetivos (las quests) adquirían una dificultad global. Dependiendo de dicha dificultad el sistema recomendaba una serie de recompensas según su valor monetario real.</p>
+            <p>Tras construir todo el contenido, utilizando un sistema propio programado en excel, este mismo se exportaba a SQL. Finalmente, utilizaba una consola de comandos de Frostbite para subir todo el contenido automáticamente a los distintos servidores de juego. Esto último, permitía el testeo del contenido y de todos los sistemas de juego, para verificar que tanto la quest como sus objetivos, eran completados y las recompensas otorgadas.</p>
+        </section>
+        <section id="challenges">
+            <h3>Challenges</h3>
+            <p>Este sistema de juego permite a los jugadores enfrentarse a retos que les sería difícil encontrar a lo largo de su carrera. La idea, es hacer que el jugador se enfrente a retos de alta dificultad para así desbloquear nuevo equipamiento de golf. Dicho equipamiento, le permite mejorar las stats para sus tiros en el campo.</p>
+            <p>Los challenges, son situaciones específicas creadas a partir de un sistema de reglas que te permite desarrollar infinidad de tipos de situaciones diferentes. Ejemplo: elegir un campo específico; el lugar específico donde spawnea el personaje; el tipo de tiro; el tiempo atmosférico; el número máximo de tiros etc…</p>
+            <p>Cada Challenge tiene tres formas de completarse. Dependiendo de la manera en que lo completes, obtienes de cero a tres estrellas. Esto se consigue definiendo 3 objetivos que puedes cumplir dentro del challenge. Cada objetivo completado te da una estrella. </p>
+            <p>Para craftear los challenges, hacíamos uso de un sistema desarrollado en excel, muy parecido al de Quests. En dicho sistema se definían los objetivos y la cantidad de challenges por capítulo, todo ello teniendo en cuenta la narrativa a través de los challenges y la dificultad incremental cada vez que el jugador desbloqueaba el siguiente en la lista.</p>
         </section>
         <section id="tournaments">
             <h3>Tournaments</h3>
-            <p>Trabajé en el pipeline utilizado para authoring de tournaments a lo largo del calendario de live service, dando soporte a formatos diarios, semanales y estacionales. El sistema debía exponer las reglas y configuraciones necesarias para los equipos de contenido y, al mismo tiempo, ser lo bastante escalable para sostener entregas estacionales repetidas.</p>
-            <p>Este trabajo reforzó mi enfoque hacia la arquitectura de contenido: traducir una feature recurrente para el jugador en una estructura de authoring fiable que otros equipos pudieran poblar, probar y mantener con el tiempo.</p>
+            <p>Live Services me dió la oportunidad de crear todo el nuevo contenido para el sistema de Tournaments. Este sistema estaba enfocado en permitir a los jugadores competir online y así obtener una serie de recompensas dependiendo del ranking que hubieran alcanzado.</p>
+            <p>Para mantener un flujo de contenido contínuo, teníamos una serie de categorías de tournaments: daily, weekly, seasonal y final.  </p>
+            <p>La manera de construir todo este contenido era a través de un sistema en excel conectado a SQL. A través del mismo, se diseñaba la experiencia completa de cada torneo; desde el campo de juego y el comportamiento atmosférico hasta las reglas de juego. Dependiendo de la dificultad, se creaba automáticamente una batería de recompensas para todo el leaderboard.</p>
         </section>
-        <section id="event-pass">
-            <h3>Event Pass</h3>
-            <p>Contribuí al sistema de Event Pass utilizado para centralizar recompensas estacionales y conectar la actividad de live service con la progresión general. La feature proporcionaba una estructura clara para distribuir recompensas mediante progresión ligada a eventos y permitía diferentes configuraciones por temporada.</p>
-            <p>El trabajo de diseño requería alinear el pacing de recompensas, los objetivos del jugador, el estado de progresión y la presentación UI del pass para que el sistema se sintiera conectado con el resto del juego y no como una pista de recompensas aislada.</p>
+        <section id="pro-pass">
+            <h3>Pro Pass</h3>
+            <p>Antes de la salida de Live Services, fue clave el desarrollo de un sistema para centralizar todos los rewards de cada temporada. Para ello, diseñé e implementé un sistema completo de Event Pass basado en una progresión a través de un tipo específico de currency.</p>
+            <p>El trabajo de diseño, requería en este caso, conectar y balancear todos los sistemas de juego afectados por el propio pacing del player sobre el contenido del juego: quests, challenges, tournaments, la tienda y career. De esta manera, teníamos un mapa de comportamiento de todos los sistemas, pudiendo así verificar cual sería el progreso del Pro pass y en cuanto tiempo los jugadores serían capaces de completarlo.</p>
+            <p>La obtención de todos estos datos nos permitía decidir con mayor criterio toda la planificación de contenido de cada season para todos estos sistemas de juego, siendo el pro pass el sistema central de live services.</p>
         </section>
         <section id="player-progression-skill-tree">
             <h3>Player Progression &amp; Skill Tree</h3>
-            <p>Fui responsable de la estructura de progresión de niveles del golfista y construí la tabla completa de progresión y las fórmulas utilizadas para balancear XP, niveles y crecimiento del personaje a largo plazo. Este trabajo conectaba curvas numéricas de progresión con el ritmo al que el jugador desarrollaba su golfista.</p>
-            <p>También trabajé en la relación entre inversión de Skill Points, atributos y player abilities, buscando que las decisiones de crecimiento se tradujeran en builds diferenciadas y no en una simple acumulación lineal de mejoras numéricas.</p>
+            <p>Este sistema RPG es el pilar central que impulsa a los jugadores a progresar a través de su carrera y sentir que obtienen un progreso y una mejora en el tiempo a través del propio gameplay.</p>
+            <p>Mi responsabilidad fue desarrollar toda la estructura de progresión de niveles para el golfista. Para ello construí en excel un sistema de balanceo con fórmulas propias para crear curvas de progresión a través de 50 niveles.</p>
+            <p>Todo esta arquitectura definía el pacing del sistema de mejoras: el árbol de habilidades del jugador. Esto me hizo trabajar en la relación entre inversión de Skill Points, atributos y player abilities, buscando que las decisiones de crecimiento se tradujeran en builds diferenciadas, y no en una simple acumulación lineal de mejoras numéricas.</p>
         </section>
-        <section id="skills-abilities-ball-striking">
-            <h3>Skills, Abilities &amp; Ball Striking</h3>
-            <p>Amplié el sistema de abilities del golfista diseñando nuevos desbloqueos alrededor del framework existente de Skill Points, vinculando las decisiones de progresión con la especialización del jugador.</p>
-            <p>Junto a la progresión, diseñé sistemas de gameplay y UI para ball striking, definiendo cómo funcionaban nuevas interacciones de golpeo durante el juego y cómo se comunicaban al jugador su estado, feedback y opciones disponibles. Esto conectó el diseño sistémico directamente con el gameplay momento a momento y la legibilidad de la interfaz.</p>
+        <section id="ball-striking">
+            <h3>Ball Striking</h3>
+            <p>Junto a la progresión, diseñé sistemas de gameplay y UI para el golpeo de la bola. En este caso, definí cómo funcionaban nuevas interacciones de golpeo durante el juego y cómo se comunicaban al jugador su estado, feedback y opciones disponibles. Esto le otorgó mayor legibilidad al player, de la calidad de ejecución del tiro en el campo.</p>
         </section>
     </section>
 </article>

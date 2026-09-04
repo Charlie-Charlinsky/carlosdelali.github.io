@@ -53,6 +53,8 @@ Import Engine #02 parses DOCX directly through the Open XML ZIP/XML contract. Ab
 
 Importer version 3 supports deterministic nested ordered and unordered lists. Hierarchy comes only from WordprocessingML numbering metadata (`w:numId`, `w:ilvl`, and `w:numFmt`): list levels become nested `<ul>`/`<ol>` elements inside their owning `<li>`, numbering-ID or list-type changes create semantic list boundaries, and normal paragraphs, headings, and language boundaries close the active list sequence. A level increase may advance by exactly one; skipped levels fail preflight with `INVALID_LIST_HIERARCHY`. ES/EN structural parity includes list type, depth, item order, and topology without comparing translated item text or requiring the languages to reuse the same Word numbering IDs.
 
+Importer version 4 preserves Game editorial heading hierarchy directly from Word paragraph styles. Game main sections must be `Heading2` and compile to semantic `<h2>` elements; authored child subsections must be `Heading3` and compile to semantic `<h3>` elements. Subsection titles are unrestricted editorial text and receive deterministic HTML fragment IDs without title-specific mappings. ES/EN parity compares heading and content-block topology rather than translated heading text. A batch may update any number of Game registry entries transactionally while preserving every protected field.
+
 `-Rebuild` explicitly recompiles accepted UNCHANGED sources after a compiler/tooling change. Normal imports continue to skip unchanged hashes. Rebuilding an identical canonical source does not create a redundant archive version.
 
 ## Media budget gate

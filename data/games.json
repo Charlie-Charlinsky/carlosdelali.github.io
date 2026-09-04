@@ -760,7 +760,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2024",
+      "platform": "PC Steam/PS5/XBOX Series X|S",
+      "accessUrl": "https://store.steampowered.com/app/2582560/EA_SPORTS_Madden_NFL_25/?l=english",
+      "engineName": "Frostbite",
       "coverPosition": "50% 0%",
       "content": {
         "en": "content/games/madden-nfl-25/en.html",
@@ -798,7 +801,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2025",
+      "platform": "PC Steam/PS5/XBOX Series X|S",
+      "accessUrl": "https://store.steampowered.com/app/3230400/EA_SPORTS_Madden_NFL_26/?l=english",
+      "engineName": "Frostbite",
       "content": {
         "en": "content/games/madden-nfl-26/en.html",
         "es": "content/games/madden-nfl-26/es.html"
@@ -850,7 +856,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2026",
+      "platform": "PC Steam/PS5/XBOX Series X|S",
+      "accessUrl": "https://store.steampowered.com/app/3940610/EA_SPORTS_Madden_NFL_27/?l=english",
+      "engineName": "Frostbite",
       "coverPosition": "50% 20%",
       "content": {
         "en": "content/games/madden-nfl-27/en.html",

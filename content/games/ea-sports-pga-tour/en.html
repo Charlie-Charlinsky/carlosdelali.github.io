@@ -1,35 +1,45 @@
 <article data-game-id="ea-sports-pga-tour">
     <section id="overview">
-        <h2>Overview</h2>
-        <p>EA SPORTS PGA TOUR was the project where my systems design work expanded into a full AAA production cycle. I worked on the game for three years in a fully remote environment, with a high degree of autonomy across progression, content pipelines, live-service systems and player-facing gameplay features.</p>
-        <p>My contribution connected the golfer's long-term growth with repeatable content systems: quests and challenges, tournaments, Event Pass, XP and level progression, Skill Point investment, ability unlocks, and the gameplay/UI layer around ball striking.</p>
+        <h2>The Game</h2>
+        <p>The latest golf title developed by EA Sports. The game focuses on delivering the fantasy of professional golf, allowing players to create their own character and embark on a career as a professional golfer.</p>
+        <p>To build this experience, we focused on creating narrative RPG systems: Quest systems; XP-based level progression; attribute improvement through experience; and systems for developing player abilities.</p>
     </section>
     <section id="contribution">
-        <h2>My Contribution</h2>
-        <section id="quests-challenges">
-            <h3>Quests &amp; Challenges</h3>
-            <p>I helped deliver the system used to design and implement different types of quests and challenges. The workflow connected design, implementation and testing through a data-driven pipeline built around SQL, Excel and custom tools, enabling consistent authoring and validation before release.</p>
-            <p>The design challenge was not simply to create individual objectives, but to build a reusable structure that content designers could use across different quest types while keeping requirements, rewards and validation clear for the teams responsible for implementing and testing the content.</p>
+        <h2>Contribution</h2>
+        <section id="quests">
+            <h3>Quests</h3>
+            <p>This system is designed to guide how players engage with their career and centralize most of the game's rewards. Quest progress is fully connected to everything players do throughout their career.</p>
+            <p>For this feature, the challenge was to use an event system capable of tracking every supported player action. I analyzed the full set of trackable actions and built a weighted list based on how frequently each action or event occurred during play. From there, I designed an Excel-based balancing system that allowed objectives to be authored using the grammar of events implemented in code. Each objective was assigned a difficulty rating according to a defined set of criteria, giving each objective package - the Quest - an overall difficulty. Based on that rating, the system recommended a range of rewards according to their real-money value.</p>
+            <p>Once the content had been authored using a custom system I programmed in Excel, it was exported to SQL. I then used Frostbite's command console to upload the content automatically to the different game servers. This enabled us to test both the content and its underlying systems, verifying that Quests and objectives completed correctly and that rewards were granted as intended.</p>
+        </section>
+        <section id="challenges">
+            <h3>Challenges</h3>
+            <p>This system lets players take on scenarios they would be unlikely to encounter during their career. The goal is to present high-difficulty Challenges that unlock new golf equipment, which in turn improves the stats applied to shots on the course.</p>
+            <p>Challenges are specific scenarios built from a rule system capable of producing countless variations. Parameters included the course, the player's exact spawn location, shot type, weather conditions, maximum number of shots, and more.</p>
+            <p>Each Challenge offers three completion goals. Depending on performance, players earn between zero and three stars. Each of the three objectives within the Challenge awards one star when completed.</p>
+            <p>To author Challenges, we used an Excel-based system similar to the Quest pipeline. It defined objectives and the number of Challenges per chapter while accounting for narrative progression across the Challenges and increasing difficulty as players unlocked each successive entry.</p>
         </section>
         <section id="tournaments">
             <h3>Tournaments</h3>
-            <p>I worked on the pipeline used to author tournaments across the live-service calendar, supporting daily, weekly and seasonal formats. The system needed to expose the rules and configuration required by content teams while remaining scalable enough to sustain repeated seasonal deliveries.</p>
-            <p>This work strengthened my approach to content architecture: translating a recurring player-facing feature into a reliable authoring structure that other teams could populate, test and maintain over time.</p>
+            <p>Live Services gave me the opportunity to create all new content for the Tournaments system. This feature allowed players to compete online and earn rewards based on their final leaderboard position.</p>
+            <p>To maintain a continuous flow of content, we supported several Tournament categories: Daily, Weekly, Seasonal, and Final.</p>
+            <p>All of this content was built through an Excel system connected to SQL. It allowed us to design the complete Tournament experience, from course and weather conditions to gameplay rules. Based on the configured difficulty, the system automatically generated a reward set for the entire leaderboard.</p>
         </section>
-        <section id="event-pass">
-            <h3>Event Pass</h3>
-            <p>I contributed to the Event Pass system used to centralize seasonal rewards and connect live-service activity with the broader progression. The feature provided a clear structure for distributing rewards through event-linked progression and supported different configurations from season to season.</p>
-            <p>The design work required aligning reward pacing, player goals, progression state and the pass UI so the system felt connected to the rest of the game rather than like an isolated reward track.</p>
+        <section id="pro-pass">
+            <h3>Pro Pass</h3>
+            <p>Before Live Services launched, it was essential to develop a system that could centralize the rewards for every season. I designed and implemented a complete Event Pass system built around progression through a dedicated currency.</p>
+            <p>The design work required connecting and balancing every game system affected by the player's pacing through the content: Quests, Challenges, Tournaments, the Store, and Career. This gave us a behavioral map of the entire ecosystem, allowing us to project Pro Pass progression and estimate how long players would take to complete it.</p>
+            <p>With this data, we could make better-informed decisions about seasonal content planning across every system, with Pro Pass acting as the central pillar of Live Services.</p>
         </section>
         <section id="player-progression-skill-tree">
             <h3>Player Progression &amp; Skill Tree</h3>
-            <p>I was responsible for the golfer's level-progression structure and built the complete progression table and formulas used to balance XP, levels and long-term character growth. This work connected numerical progression curves to the pace at which players developed their golfer.</p>
-            <p>I also worked on the relationship between Skill Point investment, attributes and player abilities, aiming to ensure growth decisions translated into distinct builds rather than a simple linear accumulation of numerical upgrades.</p>
+            <p>This RPG system is the central pillar driving players to progress through their career and feel sustained growth and improvement over time through gameplay.</p>
+            <p>I was responsible for developing the golfer's complete level-progression structure. I built an Excel-based balancing system with custom formulas to create progression curves across 50 levels.</p>
+            <p>This architecture defined the pacing of the game's upgrade system: the player's Skill Tree. It required me to work on the relationship between Skill Point investment, attributes, and player abilities, ensuring that growth decisions produced distinct builds rather than a simple linear accumulation of numerical upgrades.</p>
         </section>
-        <section id="skills-abilities-ball-striking">
-            <h3>Skills, Abilities &amp; Ball Striking</h3>
-            <p>I expanded the golfer ability system by designing new unlocks around the existing Skill Points framework, linking progression choices to player specialization.</p>
-            <p>Alongside progression, I designed gameplay and UI systems for ball striking, defining how new shot interactions worked in play and how their state, feedback and available options were communicated to the player. This connected systemic design directly with moment-to-moment gameplay and interface readability.</p>
+        <section id="ball-striking">
+            <h3>Ball Striking</h3>
+            <p>Alongside progression, I designed gameplay and UI systems for ball striking. I defined how new shot interactions worked during play and how their state, feedback, and available options were communicated to the player. This gave players clearer feedback on the quality of their shot execution on the course.</p>
         </section>
     </section>
 </article>

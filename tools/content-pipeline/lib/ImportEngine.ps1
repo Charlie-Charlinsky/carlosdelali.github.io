@@ -507,6 +507,19 @@ function Convert-CvLanguage {
     }
 }
 
+function ConvertTo-ContentFragmentId {
+    param([Parameter(Mandatory = $true)][string]$Text, [Parameter(Mandatory = $true)][string]$Fallback)
+
+    $builder = New-Object System.Text.StringBuilder
+    foreach ($character in $Text.Normalize([Text.NormalizationForm]::FormD).ToCharArray()) {
+        if ([Globalization.CharUnicodeInfo]::GetUnicodeCategory($character) -ne [Globalization.UnicodeCategory]::NonSpacingMark) {
+            [void]$builder.Append($character)
+        }
+    }
+    $fragment = ([regex]::Replace($builder.ToString().ToLowerInvariant(), '[^a-z0-9]+', '-')).Trim('-')
+    return $(if ([string]::IsNullOrWhiteSpace($fragment)) { $Fallback } else { $fragment })
+}
+
 function Convert-GameLanguage {
     param([object[]]$Paragraphs, [string]$Language, [string]$GameId, $Schema)
     if ($Paragraphs.Count -lt 2) { throw "Game $Language document is incomplete." }
@@ -516,27 +529,23 @@ function Convert-GameLanguage {
     }
     if ($titleIndex -lt 0) { throw "Game $Language title is missing." }
     $title = $Paragraphs[$titleIndex].Text.Trim()
-    $sectionMap = $Schema.sections.$Language
-    $overviewIndex = -1
-    for ($index = $titleIndex + 1; $index -lt $Paragraphs.Count; $index++) {
-        if ((Get-MappedValue -Map $sectionMap -Label $Paragraphs[$index].Text.Trim()) -eq 'overview') { $overviewIndex = $index; break }
-    }
-    if ($overviewIndex -lt 0) { throw "Game $Language Overview section is missing." }
-
     $metadata = [ordered]@{}
+    $metadataOrder = @()
     $sourcePresence = [ordered]@{ year = $false; company = $false; platform = $false; access = $false; engine = $false }
     $metadataMap = $Schema.metadata.$Language
     $index = $titleIndex + 1
-    while ($index -lt $overviewIndex) {
+    while ($index -lt $Paragraphs.Count) {
         $labelParagraph = $Paragraphs[$index]
         $field = Get-MappedValue -Map $metadataMap -Label $labelParagraph.Text.Trim()
-        if ($null -eq $field) { throw "Unknown Game $Language metadata label: $($labelParagraph.Text)" }
+        if ($null -eq $field) { break }
+        if ($labelParagraph.Style -ne 'Heading2') { throw "Game $Language metadata label '$($labelParagraph.Text)' must use Heading 2." }
         if ($metadata.Contains($field)) { throw "Duplicate Game $Language metadata field: $field" }
         $index++
-        if ($index -ge $overviewIndex) { throw "Game $Language metadata field '$field' has no value." }
+        if ($index -ge $Paragraphs.Count) { throw "Game $Language metadata field '$field' has no value." }
         $valueParagraph = $Paragraphs[$index]
         $link = @($valueParagraph.Runs | Where-Object Url | Select-Object -First 1)
         $metadata[$field] = [pscustomobject]@{ Value = $valueParagraph.Text.Trim(); Url = if ($link.Count) { $link[0].Url } else { $null } }
+        $metadataOrder += $field
         $sourcePresence[$field] = $true
         $index++
     }
@@ -547,26 +556,31 @@ function Convert-GameLanguage {
     $sections = @()
     $current = $null
     $currentSubsection = $null
-    for ($index = $overviewIndex; $index -lt $Paragraphs.Count; $index++) {
+    $sectionIds = @($Schema.sectionIds)
+    if ($sectionIds.Count -eq 0) { throw 'Game section ID schema is empty.' }
+    $fragmentCounts = @{}
+    for (; $index -lt $Paragraphs.Count; $index++) {
         $paragraph = $Paragraphs[$index]
         if ($paragraph.Style -eq 'Heading2') {
-            $sectionId = Get-MappedValue -Map $sectionMap -Label $paragraph.Text.Trim()
-            if ($null -eq $sectionId) { throw "Unknown Game $Language section: $($paragraph.Text)" }
+            if ($sections.Count -ge $sectionIds.Count) { throw "Game $Language has more Heading 2 sections than the schema permits." }
+            $sectionId = [string]$sectionIds[$sections.Count]
             $current = [pscustomobject]@{ Id = $sectionId; Heading = $paragraph; Paragraphs = @(); Subsections = @() }
             $sections += $current
             $currentSubsection = $null
         } elseif ($paragraph.Style -eq 'Heading3') {
-            if ($null -eq $current -or $current.Id -ne 'contribution') { throw "Unexpected Game $Language subsection: $($paragraph.Text)" }
-            $subsectionId = Get-MappedValue -Map $Schema.subsections -Label $paragraph.Text.Trim()
-            if ($null -eq $subsectionId) { throw "Unknown Game $Language contribution subsection: $($paragraph.Text)" }
+            if ($null -eq $current) { throw "Game $Language Heading 3 appears before its parent Heading 2: $($paragraph.Text)" }
+            $baseId = ConvertTo-ContentFragmentId -Text $paragraph.Text.Trim() -Fallback "subsection-$($current.Subsections.Count + 1)"
+            $fragmentCounts[$baseId] = if ($fragmentCounts.ContainsKey($baseId)) { [int]$fragmentCounts[$baseId] + 1 } else { 1 }
+            $subsectionId = if ($fragmentCounts[$baseId] -eq 1) { $baseId } else { "$baseId-$($fragmentCounts[$baseId])" }
             $currentSubsection = [pscustomobject]@{ Id = $subsectionId; Heading = $paragraph; Paragraphs = @() }
             $current.Subsections += $currentSubsection
         } else {
+            if ($paragraph.Style -match '^Heading') { throw "Unsupported Game $Language heading level '$($paragraph.Style)': $($paragraph.Text)" }
             if ($null -eq $current) { throw "Game $Language prose appears outside a section." }
             if ($null -ne $currentSubsection) { $currentSubsection.Paragraphs += $paragraph } else { $current.Paragraphs += $paragraph }
         }
     }
-    if (($sections.Id -join '|') -cne 'overview|contribution') { throw "Game $Language section order does not match the schema." }
+    if (($sections.Id -join '|') -cne ($sectionIds -join '|')) { throw "Game $Language Heading 2 section count does not match the schema." }
 
     $html = New-HtmlDocument -AttributeName 'data-game-id' -AttributeValue $GameId
     $signature = @()
@@ -579,18 +593,21 @@ function Convert-GameLanguage {
             $child = Add-HtmlElement -Document $html.Document -Parent $output -Name 'section' -Text $null -Attributes @{ id = $subsection.Id }
             Add-HtmlElement -Document $html.Document -Parent $child -Name 'h3' -Text $subsection.Heading.Text | Out-Null
             $body = @(Add-ParagraphSequence -Document $html.Document -Parent $child -Paragraphs @($subsection.Paragraphs) -Target "game:$GameId" -Language $Language)
-            $subSignatures += "$($subsection.Id):$($body -join ',')"
+            $subSignatures += "h3:$($body -join ',')"
         }
-        $signature += "$($section.Id):$($direct -join ','):$($subSignatures -join ';')"
+        $signature += "$($section.Id):h2:$($direct -join ','):$($subSignatures -join ';')"
     }
     return [pscustomobject]@{
         Html = ConvertTo-SemanticHtml $html.Document
         Structure = $signature -join '|'
         Title = $title
         Metadata = [pscustomobject]$metadata
+        MetadataOrder = $metadataOrder
         SourcePresence = [pscustomobject]$sourcePresence
         Sections = @($sections | ForEach-Object Id)
-        Subsections = @($sections | Where-Object Id -eq 'contribution' | ForEach-Object Subsections | ForEach-Object Id)
+        SectionHeadings = @($sections | ForEach-Object { $_.Heading.Text })
+        Subsections = @($sections | ForEach-Object Subsections | ForEach-Object { $_.Heading.Text })
+        HeadingTopology = @($sections | ForEach-Object { "h2[$(@($_.Subsections | ForEach-Object { 'h3' }) -join ',')]" }) -join '|'
     }
 }
 
@@ -611,6 +628,7 @@ function Assert-GameParity {
     param($Spanish, $English)
     if ($Spanish.Structure -cne $English.Structure) { throw 'Game ES/EN semantic structures are not equivalent.' }
     if ($Spanish.Title -cne $English.Title) { throw 'Game ES/EN titles differ.' }
+    if (($Spanish.MetadataOrder -join '|') -cne ($English.MetadataOrder -join '|')) { throw 'Game ES/EN metadata field order differs.' }
     foreach ($field in @('year', 'company', 'platform', 'access', 'engine')) {
         if ($Spanish.SourcePresence.$field -ne $English.SourcePresence.$field) { throw "Game ES/EN metadata presence differs for $field." }
         if ($Spanish.Metadata.$field.Value -cne $English.Metadata.$field.Value) { throw "Game ES/EN metadata values differ for $field." }
@@ -644,58 +662,60 @@ function ConvertTo-StableJson {
 }
 
 function New-UpdatedGameRegistry {
-    param([string]$RepositoryRoot, [string]$GameId, $ParsedGame, $Config)
+    param([string]$RepositoryRoot, [object[]]$GameItems, $Config)
     $path = Join-Path $RepositoryRoot 'data\games.json'
     $registry = Get-Content -LiteralPath $path -Raw -Encoding UTF8 | ConvertFrom-Json
     $games = @($registry.games)
-    $gameIndex = -1
-    for ($index = 0; $index -lt $games.Count; $index++) { if ($games[$index].id -ceq $GameId) { $gameIndex = $index; break } }
-    if ($gameIndex -lt 0) { throw "Game registry entry is missing: $GameId" }
-    $current = $games[$gameIndex]
-
-    $metadata = $ParsedGame.en.Metadata
-    $accessUrl = if ($metadata.access.Value -eq '?') { $null } elseif ($metadata.access.Url) { $metadata.access.Url } elseif (Test-SafeContentUrl $metadata.access.Value) { $metadata.access.Value } else { throw 'PGA Access must be an authored safe URL.' }
-    if ($null -ne $accessUrl -and -not (Test-SafeContentUrl $accessUrl)) { throw 'PGA Access URL is unsafe.' }
-    $engineName = if ($metadata.engine.Value -eq '?') { $null } else { $metadata.engine.Value }
-
-    $updates = [ordered]@{
-        title = $ParsedGame.en.Title
-        studio = $metadata.company.Value
-        year = $metadata.year.Value
-        platform = $metadata.platform.Value
-        accessUrl = $accessUrl
-        engineName = $engineName
-    }
-    $updated = [ordered]@{}
-    foreach ($property in $current.PSObject.Properties) {
-        if ($property.Name -in @('year', 'platform', 'accessUrl', 'engineName')) { continue }
-        if ($updates.Contains($property.Name)) { $updated[$property.Name] = $updates[$property.Name] } else { $updated[$property.Name] = $property.Value }
-        if ($property.Name -eq 'published') {
-            $updated.year = $updates.year
-            $updated.platform = $updates.platform
-            $updated.accessUrl = $updates.accessUrl
-            $updated.engineName = $updates.engineName
-        }
-    }
-    $updatedGame = [pscustomobject]$updated
-
     $protected = @($Config.contentTypes.game.protectedFields)
-    foreach ($field in $protected) {
-        if ($field -eq 'registryOrder') { continue }
-        $beforeProperty = $current.PSObject.Properties[$field]
-        $afterProperty = $updatedGame.PSObject.Properties[$field]
-        $before = if ($beforeProperty) { ConvertTo-StableJson $beforeProperty.Value } else { '<absent>' }
-        $after = if ($afterProperty) { ConvertTo-StableJson $afterProperty.Value } else { '<absent>' }
-        if ($before -cne $after) { throw "Protected Game field changed for ${GameId}: $field" }
+    $updatedGames = [ordered]@{}
+    $missingFields = @()
+    foreach ($item in $GameItems) {
+        $gameIndex = -1
+        for ($index = 0; $index -lt $games.Count; $index++) { if ($games[$index].id -ceq $item.Id) { $gameIndex = $index; break } }
+        if ($gameIndex -lt 0) { throw "Game registry entry is missing: $($item.Id)" }
+        $current = $games[$gameIndex]
+        $metadata = $item.Summary.en.Metadata
+        $accessUrl = if ($metadata.access.Value -eq '?') { $null } elseif ($metadata.access.Url) { $metadata.access.Url } elseif (Test-SafeContentUrl $metadata.access.Value) { $metadata.access.Value } else { throw "Game Access must be an authored safe URL: $($item.Id)" }
+        if ($null -ne $accessUrl -and -not (Test-SafeContentUrl $accessUrl)) { throw "Game Access URL is unsafe: $($item.Id)" }
+        $updates = [ordered]@{
+            title = $item.Summary.en.Title
+            studio = $metadata.company.Value
+            year = $metadata.year.Value
+            platform = $metadata.platform.Value
+            accessUrl = $accessUrl
+            engineName = if ($metadata.engine.Value -eq '?') { $null } else { $metadata.engine.Value }
+        }
+        $updated = [ordered]@{}
+        foreach ($property in $current.PSObject.Properties) {
+            if ($property.Name -in @('year', 'platform', 'accessUrl', 'engineName')) { continue }
+            if ($updates.Contains($property.Name)) { $updated[$property.Name] = $updates[$property.Name] } else { $updated[$property.Name] = $property.Value }
+            if ($property.Name -eq 'published') {
+                $updated.year = $updates.year
+                $updated.platform = $updates.platform
+                $updated.accessUrl = $updates.accessUrl
+                $updated.engineName = $updates.engineName
+            }
+        }
+        $updatedGame = [pscustomobject]$updated
+        foreach ($field in $protected) {
+            if ($field -eq 'registryOrder') { continue }
+            $beforeProperty = $current.PSObject.Properties[$field]
+            $afterProperty = $updatedGame.PSObject.Properties[$field]
+            $before = if ($beforeProperty) { ConvertTo-StableJson $beforeProperty.Value } else { '<absent>' }
+            $after = if ($afterProperty) { ConvertTo-StableJson $afterProperty.Value } else { '<absent>' }
+            if ($before -cne $after) { throw "Protected Game field changed for $($item.Id): $field" }
+        }
+        $games[$gameIndex] = $updatedGame
+        $updatedGames[$item.Id] = $updatedGame
+        $missingFields += [pscustomobject]@{ GameId = $item.Id; Fields = @($item.Summary.en.SourcePresence.PSObject.Properties | Where-Object { -not $_.Value } | ForEach-Object Name) }
     }
-    $games[$gameIndex] = $updatedGame
     $registry.games = $games
     return [pscustomobject]@{
         Json = (ConvertTo-StableJson $registry) + "`n"
-        Game = $updatedGame
+        Games = [pscustomobject]$updatedGames
         Warnings = @()
         ProtectedFields = $protected
-        MissingFields = @($ParsedGame.en.SourcePresence.PSObject.Properties | Where-Object { -not $_.Value } | ForEach-Object Name)
+        MissingFields = $missingFields
     }
 }
 
@@ -711,7 +731,7 @@ function New-ContentImportPlan {
     }
     $config = Get-ContentPipelineConfig -RepositoryRoot $RepositoryRoot
     $items = @()
-    $gameItem = $null
+    $gameItems = @()
     $candidateStatuses = if ($IncludeUnchanged) { @('NEW', 'CHANGED', 'UNCHANGED') } else { @('NEW', 'CHANGED') }
     foreach ($entry in @($scan.Entries | Where-Object Status -in $candidateStatuses)) {
         $identity = ConvertTo-ContentSourceIdentity -FileName $entry.Source -Config $config
@@ -770,16 +790,13 @@ function New-ContentImportPlan {
             Summary = $summary
         }
         $items += $item
-        if ($identity.Type -eq 'game') {
-            if ($null -ne $gameItem) { throw 'Import Engine #02 supports one Game registry update per batch.' }
-            $gameItem = $item
-        }
+        if ($identity.Type -eq 'game') { $gameItems += $item }
     }
 
     $registryUpdate = $null
     $warnings = @()
-    if ($null -ne $gameItem) {
-        $registryUpdate = New-UpdatedGameRegistry -RepositoryRoot $RepositoryRoot -GameId $gameItem.Id -ParsedGame $gameItem.Summary -Config $config
+    if ($gameItems.Count -gt 0) {
+        $registryUpdate = New-UpdatedGameRegistry -RepositoryRoot $RepositoryRoot -GameItems $gameItems -Config $config
         $warnings += @($registryUpdate.Warnings)
     }
     return [pscustomobject][ordered]@{

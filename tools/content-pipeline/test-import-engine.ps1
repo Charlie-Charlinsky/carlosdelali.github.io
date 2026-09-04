@@ -41,6 +41,13 @@ function Invoke-ListFixture {
     return [pscustomobject]@{ Document = $html.Document; Html = ConvertTo-SemanticHtml $html.Document; Signature = ($signature -join '|') }
 }
 
+function Invoke-GameFixture {
+    param([object[]]$EditorialParagraphs, [string]$Language = 'en', [string]$GameId = 'fixture-game')
+    $paragraphs = @((New-TestParagraph 'Fixture Game' -Style 'Heading1')) + @($EditorialParagraphs)
+    $schema = (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
+    return Convert-GameLanguage -Paragraphs $paragraphs -Language $Language -GameId $GameId -Schema $schema
+}
+
 try {
     $before = Get-ContentTreeFingerprint -RepositoryRoot $root
     $temporaryRoot = Join-Path ([IO.Path]::GetTempPath()) ('portfolio-import-engine-' + [Guid]::NewGuid().ToString('N'))
@@ -160,11 +167,76 @@ try {
     try { [void][xml]$threeLevels.Html; $nestedHtmlValid = $true } catch { $nestedHtmlValid = $false }
     Assert-ImportEngine $nestedHtmlValid 'nested list HTML is well-formed and balanced'
 
+    $flatGame = Invoke-GameFixture @(
+        (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
+        (New-TestParagraph 'Overview body'),
+        (New-TestParagraph 'Contribution fixture' -Style 'Heading2'),
+        (New-TestParagraph 'Contribution body')
+    )
+    $flatGameXml = [xml]$flatGame.Html
+    Assert-ImportEngine ($flatGameXml.SelectNodes('/article/section/h2').Count -eq 2 -and $flatGameXml.SelectNodes('//h3').Count -eq 0) 'A. Heading 2 main sections compile as h2'
+
+    $singleSubsectionGame = Invoke-GameFixture @(
+        (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
+        (New-TestParagraph 'Overview body'),
+        (New-TestParagraph 'Contribution fixture' -Style 'Heading2'),
+        (New-TestParagraph 'Child fixture' -Style 'Heading3'),
+        (New-TestParagraph 'Child body')
+    )
+    $singleSubsectionXml = [xml]$singleSubsectionGame.Html
+    Assert-ImportEngine ($singleSubsectionXml.SelectNodes('/article/section/section/h3').Count -eq 1 -and $singleSubsectionGame.HeadingTopology -ceq 'h2[]|h2[h3]') 'B. Heading 2 to Heading 3 topology is preserved'
+
+    $multipleSubsectionGame = Invoke-GameFixture @(
+        (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
+        (New-TestParagraph 'Overview body'),
+        (New-TestParagraph 'Contribution fixture' -Style 'Heading2'),
+        (New-TestParagraph 'First child' -Style 'Heading3'),
+        (New-TestParagraph 'First body'),
+        (New-TestParagraph 'Second child' -Style 'Heading3'),
+        (New-TestParagraph 'Second body')
+    )
+    $multipleSubsectionXml = [xml]$multipleSubsectionGame.Html
+    Assert-ImportEngine ($multipleSubsectionXml.SelectNodes('/article/section/section/h3').Count -eq 2 -and $multipleSubsectionGame.HeadingTopology -ceq 'h2[]|h2[h3,h3]') 'C. multiple Heading 3 siblings remain siblings'
+
+    $subsectionListGame = Invoke-GameFixture @(
+        (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
+        (New-TestParagraph 'Overview body'),
+        (New-TestParagraph 'Contribution fixture' -Style 'Heading2'),
+        (New-TestParagraph 'Child with list' -Style 'Heading3'),
+        (New-TestParagraph 'Lead paragraph'),
+        (New-TestParagraph 'List parent' '201' 0 'bullet'),
+        (New-TestParagraph 'Nested item' '201' 1 'bullet')
+    )
+    $subsectionListXml = [xml]$subsectionListGame.Html
+    Assert-ImportEngine ($subsectionListXml.SelectNodes('/article/section/section[h3]/p').Count -eq 1 -and $subsectionListXml.SelectNodes('/article/section/section[h3]/ul/li/ul/li').Count -eq 1) 'D. Heading 3 owns following paragraphs and nested lists'
+
+    $equivalentSpanish = Invoke-GameFixture @(
+        (New-TestParagraph 'Seccion principal' -Style 'Heading2'),
+        (New-TestParagraph 'Texto'),
+        (New-TestParagraph 'Contribucion' -Style 'Heading2'),
+        (New-TestParagraph 'Hijo traducido' -Style 'Heading3'),
+        (New-TestParagraph 'Texto')
+    ) -Language 'es'
+    Assert-GameParity -Spanish $equivalentSpanish -English $singleSubsectionGame
+    Assert-ImportEngine ($equivalentSpanish.HeadingTopology -ceq $singleSubsectionGame.HeadingTopology) 'E. ES/EN equivalent heading topology passes without comparing wording'
+
+    $differentTopologyRejected = $false
+    try { Assert-GameParity -Spanish $equivalentSpanish -English $multipleSubsectionGame } catch { $differentTopologyRejected = $_.Exception.Message -match 'semantic structures are not equivalent' }
+    Assert-ImportEngine $differentTopologyRejected 'F. ES/EN different heading topology fails'
+
+    $flatGameRepeat = Invoke-GameFixture @(
+        (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
+        (New-TestParagraph 'Overview body'),
+        (New-TestParagraph 'Contribution fixture' -Style 'Heading2'),
+        (New-TestParagraph 'Contribution body')
+    )
+    Assert-ImportEngine ($flatGame.Html -ceq $flatGameRepeat.Html -and $flatGame.Structure -ceq $flatGameRepeat.Structure) 'G. existing flat Game documents continue compiling identically'
+
     $plan = New-ContentImportPlan -RepositoryRoot $root -IncludeUnchanged
     $targets = @($plan.Items | ForEach-Object TargetKey)
-    Assert-ImportEngine (($targets -join '|') -ceq 'about:main|cv:main|game:ea-sports-pga-tour') 'three expected targets resolve in deterministic order'
+    Assert-ImportEngine (($targets -join '|') -ceq 'about:main|cv:main|game:ea-sports-pga-tour|game:madden-nfl-25|game:madden-nfl-26|game:madden-nfl-27') 'all expected targets resolve in deterministic order'
     Assert-ImportEngine ($plan.Scan.Counts.INVALID -eq 0) 'filename and target preflight'
-    Assert-ImportEngine ($plan.Items.Count -eq 3) 'all real DOCX files parse'
+    Assert-ImportEngine ($plan.Items.Count -eq 6) 'all real DOCX files parse'
 
     foreach ($item in $plan.Items) {
         foreach ($relative in $item.Outputs.Keys) {
@@ -195,14 +267,30 @@ try {
         $ludographyLists = @($parsedSections | Where-Object Id -eq 'ludography' | ForEach-Object Items | Where-Object { $null -ne $_.NumberId })
         Assert-ImportEngine ($ludographyLists.Count -gt 0 -and @($ludographyLists | Where-Object { $_.ListFormat -eq 'bullet' -or $_.ListLevel -notin @($null, 0) }).Count -eq 0) "CV $language Ludography remains a flat ordered list"
     }
+    $gameItems = @($plan.Items | Where-Object Type -eq 'game')
+    foreach ($game in $gameItems) {
+        $esGameHtml = [xml]$game.Outputs["content/games/$($game.Id)/es.html"]
+        $enGameHtml = [xml]$game.Outputs["content/games/$($game.Id)/en.html"]
+        $expectedSubsections = @($game.Summary.en.Subsections).Count
+        Assert-ImportEngine ($game.Summary.es.Structure -ceq $game.Summary.en.Structure) "$($game.TargetKey) ES/EN structural parity"
+        Assert-ImportEngine (($game.Summary.es.MetadataOrder -join '|') -ceq ($game.Summary.en.MetadataOrder -join '|')) "$($game.TargetKey) ES/EN metadata order parity"
+        Assert-ImportEngine ($game.Summary.es.HeadingTopology -ceq $game.Summary.en.HeadingTopology) "$($game.TargetKey) ES/EN heading topology parity"
+        Assert-ImportEngine ($esGameHtml.SelectNodes('/article/section/h2').Count -eq 2 -and $enGameHtml.SelectNodes('/article/section/h2').Count -eq 2) "$($game.TargetKey) main sections remain h2"
+        Assert-ImportEngine ($esGameHtml.SelectNodes('/article/section/section/h3').Count -eq $expectedSubsections -and $enGameHtml.SelectNodes('/article/section/section/h3').Count -eq $expectedSubsections) "$($game.TargetKey) authored subsections remain h3"
+        Assert-ImportEngine ($esGameHtml.SelectNodes('/article/section/section/h2').Count -eq 0 -and $enGameHtml.SelectNodes('/article/section/section/h2').Count -eq 0) "$($game.TargetKey) no subsection is promoted to h2"
+    }
     $game = $plan.Items | Where-Object TargetKey -eq 'game:ea-sports-pga-tour'
-    Assert-ImportEngine ($game.Summary.es.Structure -ceq $game.Summary.en.Structure) 'PGA ES/EN structural parity'
-    Assert-ImportEngine ($plan.GameRegistry.Game.year -ceq '2023') 'PGA Year mapping'
-    Assert-ImportEngine ($plan.GameRegistry.Game.studio -ceq 'EA Sports') 'PGA Company mapping'
-    Assert-ImportEngine ($plan.GameRegistry.Game.engineName -ceq 'Frostbite') 'PGA textual Engine metadata mapping'
+    $updatedPga = $plan.GameRegistry.Games.PSObject.Properties['ea-sports-pga-tour'].Value
+    Assert-ImportEngine ($updatedPga.year -ceq '2023') 'PGA Year mapping'
+    Assert-ImportEngine ($updatedPga.studio -ceq 'EA Sports') 'PGA Company mapping'
+    Assert-ImportEngine ($updatedPga.engineName -ceq 'Frostbite') 'PGA textual Engine metadata mapping'
+    foreach ($gameItem in $gameItems) {
+        $updatedGame = $plan.GameRegistry.Games.PSObject.Properties[$gameItem.Id].Value
+        Assert-ImportEngine ($updatedGame.engineName -ceq 'Frostbite') "$($gameItem.TargetKey) textual Engine metadata mapping"
+    }
     try { $parsedRegistry = $plan.GameRegistry.Json | ConvertFrom-Json; $jsonValid = $null -ne $parsedRegistry.games } catch { $jsonValid = $false }
-    Assert-ImportEngine $jsonValid 'updated Game registry JSON is valid'
-    if ($game.Status -eq 'UNCHANGED') {
+    Assert-ImportEngine $jsonValid 'multi-Game registry JSON is valid'
+    if (@($gameItems | Where-Object Status -ne 'UNCHANGED').Count -eq 0) {
         Assert-ImportEngine ((Get-Content (Join-Path $root 'data\games.json') -Raw -Encoding UTF8) -ceq $plan.GameRegistry.Json) 'current Game registry matches the compiler'
     }
 

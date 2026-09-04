@@ -9,7 +9,7 @@
     "writing",
     "oniric-journal"
   ],
-  "importerVersion": 3,
+  "importerVersion": 4,
   "importSchemas": {
     "about": {
       "title": {"es": "About", "en": "About"}
@@ -45,20 +45,11 @@
           "Platform": "platform",
           "Access": "access",
           "Engine": "engine",
-          "Development Engine": "engine"
+          "Development Engine": "engine",
+          "Game Engine": "engine"
         }
       },
-      "sections": {
-        "es": {"Visi\u00f3n general": "overview", "Mi contribuci\u00f3n": "contribution"},
-        "en": {"Overview": "overview", "My Contribution": "contribution"}
-      },
-      "subsections": {
-        "Quests & Challenges": "quests-challenges",
-        "Tournaments": "tournaments",
-        "Event Pass": "event-pass",
-        "Player Progression & Skill Tree": "player-progression-skill-tree",
-        "Skills, Abilities & Ball Striking": "skills-abilities-ball-striking"
-      }
+      "sectionIds": ["overview", "contribution"]
     }
   },
   "contentTypes": {
