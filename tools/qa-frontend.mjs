@@ -66,6 +66,7 @@ if (games.length !== 19) fail(`Games: se esperaban 19 y hay ${games.length}`);
 if (new Set(games.map((game) => game.id)).size !== games.length) fail("Games: IDs duplicados");
 const gameMap = new Map(games.map((game) => [game.id, game]));
 const gameDetailSource = read("js/pages/game-detail.js");
+const frontendCss = read("css/frontend.css");
 const obsoleteEngineKey = ["engine", "Id"].join("");
 const obsoleteEnginePresentationTokens = [
     ["assets", "engines"].join("/"),
@@ -104,6 +105,26 @@ if (!gameDetailSource.includes("createGameNavigation(orderedGames, currentIndex,
 }
 if (!gameDetailSource.includes("createMediaGallery(game.media")) {
     fail("Game Detail: galería de medios no resuelta");
+}
+if (!frontendCss.includes("--game-detail-h2-size: 1.75rem;")) {
+    fail("Game Detail: H2 debe conservar el baseline de 28px");
+}
+if (!frontendCss.includes("--game-detail-title-step: 0.25rem;")) {
+    fail("Game Detail: la diferencia tipográfica H1/H2 debe ser exactamente 4px");
+}
+if (!frontendCss.includes("--game-detail-heading-step: 0.375rem;")) {
+    fail("Game Detail: la diferencia tipográfica H2/H3 debe ser exactamente 6px");
+}
+if (!frontendCss.includes("--game-detail-h1-size: calc(var(--game-detail-h2-size) + var(--game-detail-title-step));")) {
+    fail("Game Detail: H1 no deriva su tamaño del H2");
+}
+if (!frontendCss.includes("--game-detail-h3-size: calc(var(--game-detail-h2-size) - var(--game-detail-heading-step));")) {
+    fail("Game Detail: H3 no deriva su tamaño del H2");
+}
+if (!/\.game-detail \.detail-hero h1\s*\{[^}]*font-size:\s*var\(--game-detail-h1-size\)/s.test(frontendCss)
+    || !/\.game-detail \.game-content h2\s*\{[^}]*font-size:\s*var\(--game-detail-h2-size\)/s.test(frontendCss)
+    || !/\.game-detail \.game-content h3\s*\{[^}]*font-size:\s*var\(--game-detail-h3-size\)/s.test(frontendCss)) {
+    fail("Game Detail: selectores semánticos H1/H2/H3 no resueltos");
 }
 
 games.forEach((game) => {

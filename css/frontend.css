@@ -669,6 +669,11 @@ body[data-page="game-detail"] .page-shell {
 
 .game-detail {
     --game-detail-section-gap: 1.25rem;
+    --game-detail-h2-size: 1.75rem;
+    --game-detail-title-step: 0.25rem;
+    --game-detail-heading-step: 0.375rem;
+    --game-detail-h1-size: calc(var(--game-detail-h2-size) + var(--game-detail-title-step));
+    --game-detail-h3-size: calc(var(--game-detail-h2-size) - var(--game-detail-heading-step));
 }
 
 .game-detail .detail-hero {
@@ -716,7 +721,7 @@ body[data-page="game-detail"] .page-shell {
 .game-detail .detail-hero h1 {
     max-width: none;
     margin: 0;
-    font-size: 1.75rem;
+    font-size: var(--game-detail-h1-size);
     font-style: normal;
     line-height: 1.15;
 }
@@ -773,11 +778,18 @@ body[data-page="game-detail"] .page-shell {
     margin-bottom: 0;
 }
 
-.game-content h2,
-.game-content h3 {
-    font-size: 1.75rem;
+.game-detail .game-content h2,
+.game-detail .game-content h3 {
     font-style: normal;
     line-height: 1.2;
+}
+
+.game-detail .game-content h2 {
+    font-size: var(--game-detail-h2-size);
+}
+
+.game-detail .game-content h3 {
+    font-size: var(--game-detail-h3-size);
 }
 
 .game-content > section > h2 {
@@ -1610,6 +1622,10 @@ body[data-page="oniric-journal"] .page-shell {
         --header-height: 7.5rem;
     }
 
+    .game-detail {
+        --game-detail-h2-size: 3rem;
+    }
+
     .site-header {
         grid-template-columns: minmax(0, 1fr) auto;
         align-items: end;
@@ -1770,6 +1786,10 @@ body[data-page="oniric-journal"] .page-shell {
         --space-2xl: 4rem;
         --card-gap: 1rem;
         --header-height: 7rem;
+    }
+
+    .game-detail {
+        --game-detail-h2-size: 2.25rem;
     }
 
     .site-header {
