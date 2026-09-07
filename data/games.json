@@ -193,7 +193,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2018",
+      "platform": "Web / Browser (PC \u0026 Mobile)",
+      "accessUrl": "https://slotcatalog.com/en/slots/Gold-Rush-Gus",
+      "engineName": "Unity + Private Engine",
       "content": {
         "en": "content/games/gold-rush-gus/en.html",
         "es": "content/games/gold-rush-gus/es.html"
@@ -245,7 +248,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2018",
+      "platform": "Web / Browser (PC \u0026 Mobile)",
+      "accessUrl": "https://www.bovada.lv/casino/slots/5-reel/777-deluxe-hot-drop-jackpots",
+      "engineName": "Private Engine",
       "content": {
         "en": "content/games/777-deluxe/en.html",
         "es": "content/games/777-deluxe/es.html"
@@ -297,7 +303,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2018",
+      "platform": "Web / Browser (PC \u0026 Mobile)",
+      "accessUrl": "https://www.vegasslotsonline.com/qora-games/cyberpunk-city/",
+      "engineName": "Private Engine",
       "content": {
         "en": "content/games/cyberpunk-city/en.html",
         "es": "content/games/cyberpunk-city/es.html"
@@ -339,7 +348,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2021",
+      "platform": "Web / Browser (PC \u0026 Mobile)",
+      "accessUrl": "https://www.slotstemple.com/free-slots/gods-of-luxor/",
+      "engineName": "Private Engine",
       "content": {
         "en": "content/games/gods-of-luxor/en.html",
         "es": "content/games/gods-of-luxor/es.html"
@@ -391,7 +403,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2021",
+      "platform": "Web / Browser (PC \u0026 Mobile)",
+      "accessUrl": "https://www.qoragames.com/games/teen-patti-pro/",
+      "engineName": "Private Engine",
       "content": {
         "en": "content/games/teen-patti/en.html",
         "es": "content/games/teen-patti/es.html"
@@ -428,7 +443,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2018",
+      "platform": "Web / Browser (PC \u0026 Mobile)",
+      "accessUrl": "https://templeofgames.com/game/andar-bahar-demo-play-free-1",
+      "engineName": "Private Engine",
       "content": {
         "en": "content/games/andar-bahar/en.html",
         "es": "content/games/andar-bahar/es.html"
@@ -475,7 +493,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2020",
+      "platform": "Web / Browser (PC \u0026 Mobile)",
+      "accessUrl": "https://casino.guru/free-casino-games/other-gambling-games/spin-the-wheel-play-free",
+      "engineName": "Private Engine",
       "content": {
         "en": "content/games/wheel-of-fortune/en.html",
         "es": "content/games/wheel-of-fortune/es.html"
@@ -512,7 +533,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2018",
+      "platform": "Web / Browser (PC \u0026 Mobile)",
+      "accessUrl": "https://www.slotstemple.com/free-slots/cricket-legends/",
+      "engineName": "Private Engine",
       "content": {
         "en": "content/games/cricket-legends/en.html",
         "es": "content/games/cricket-legends/es.html"
@@ -559,7 +583,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2018",
+      "platform": "Web / Browser (PC \u0026 Mobile)",
+      "accessUrl": "https://slotcatalog.com/en/slots/Zombie-FC",
+      "engineName": "Private Engine",
       "content": {
         "en": "content/games/zombie-soccer/en.html",
         "es": "content/games/zombie-soccer/es.html"
@@ -611,7 +638,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2020",
+      "platform": "Web / Browser (PC \u0026 Mobile)",
+      "accessUrl": "https://www.bovada.lv/casino/slots/progressive-jackpot/mystic-elements",
+      "engineName": "Private Engine",
       "content": {
         "en": "content/games/mystic-elements/en.html",
         "es": "content/games/mystic-elements/es.html"
@@ -663,7 +693,10 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2018",
+      "platform": "Web / Browser (PC \u0026 Mobile)",
+      "accessUrl": "https://www.ignitioncasino.eu/casino/slots/progressive-jackpot/night-cleo",
+      "engineName": "Private Engine",
       "content": {
         "en": "content/games/a-night-with-cleo/en.html",
         "es": "content/games/a-night-with-cleo/es.html"

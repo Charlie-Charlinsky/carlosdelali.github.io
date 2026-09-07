@@ -1,25 +1,12 @@
 <article data-game-id="andar-bahar">
     <section id="overview">
-        <h2>Visión general</h2>
-        <p>Andar Bahar era un proyecto de juego de mesa digital construido alrededor de la elección principal de si la carta coincidente se resolvería en el lado Andar o Bahar, con opciones de apuesta adicionales integradas en un loop de rondas rápido. En TWS Inventors of Play fui responsable del diseño y de definir el comportamiento del juego desde las reglas hasta la documentación de implementación.</p>
-    </section>
-
-    <section id="contribution">
-        <h2>Mi contribución</h2>
-
-        <section id="design-ownership-documentation">
-            <h3>Responsabilidad de diseño y documentación</h3>
-            <p>Creé los GDDs y las especificaciones de comportamiento para el flujo completo de ronda: colocación de apuestas, transiciones de estado, reparto y revelado de cartas, resolución del resultado, lógica de pagos, comportamientos de apuesta opcionales, casos límite y feedback de UI. Esta documentación era la referencia común utilizada por matemáticas, ingeniería y arte durante producción.</p>
-        </section>
-
-        <section id="feature-design-mathematical-validation">
-            <h3>Diseño de features y validación matemática</h3>
-            <p>Trabajé con matemáticos para validar el modelo probabilístico, las relaciones de pago y el impacto de las opciones de apuesta adicionales. Utilizamos simulación y prototipado en Unity/C# para comprobar el flujo y el balance antes de cerrar la implementación. El reto de diseño era conservar la inmediatez de Andar Bahar haciendo inequívocos sus estados digitales y el feedback de las apuestas.</p>
-        </section>
-
-        <section id="cross-disciplinary-development">
-            <h3>Desarrollo multidisciplinar</h3>
-            <p>Colaboré directamente con matemáticos, ingenieros y artistas durante el desarrollo, aclarando reglas y revisando el comportamiento implementado frente a los documentos de diseño. Esto permitía que el modelo matemático, el flujo técnico y la presentación de la mesa evolucionasen juntos y no como tareas de producción desconectadas.</p>
+        <h2>El Juego</h2>
+        <p>Andar Bahar se planteó como una adaptación digital y refrescante de un juego de cartas tradicional de la India. La intención era conservar una regla central extremadamente sencilla y apoyarla con una interfaz rápida, clara y cómoda en móvil, de forma que el jugador pudiese entender la partida casi de inmediato y encadenar rondas sin interrupciones innecesarias.</p>
+        <p>Cada ronda comienza con una carta central que actúa como referencia. El jugador apuesta por Andar o Bahar y las cartas se reparten alternativamente entre ambos lados hasta que aparece una carta con el mismo valor que la carta central. El lado en el que aparece esa coincidencia determina el resultado de la ronda.</p>
+        <p>Sobre este núcleo se añadieron cinco side bets para ampliar las posibilidades de apuesta, junto con Re-bet y Re-bet x2 para repetir o duplicar rápidamente la jugada anterior. El juego también permite personalizar el fondo y utilizar una presentación a pantalla completa en móvil, manteniendo una experiencia ligera, directa y fácil de leer.</p>
+        <section id="main-features">
+            <h3>Main Features</h3>
+            <p>Andar / Bahar Main Bet · Central Card Match · Alternating Deal · 5 Side Bets · Re-bet · Re-bet x2 · Customisable Background · Mobile Full-Screen</p>
         </section>
     </section>
 </article>

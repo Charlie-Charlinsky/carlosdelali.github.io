@@ -133,6 +133,8 @@ Visual assets are supplied manually under `assets/games/<game-id>/` and connecte
 
 The registry also owns optional presentation and metadata fields. `coverPosition` adjusts an individual cover focal point inside the shared `1112 / 628` frame and defaults to `50% 50%`; Games Index and Game Detail consume the same value. `accessUrl` stores a legitimate purchase, play, or access URL; omit it when no verified local source exists. `engineName` stores an explicitly documented development engine as textual metadata; omit it when the engine is unknown rather than inferring a value.
 
+Game editorial hierarchy is schema-driven and semantic. The title is `Heading1`; Game main sections such as `El Juego` / `The Game` and `Contribución` / `Contribution` are `Heading2`; genuine authored subsections are `Heading3`. The Game schema also defines the exact normal-paragraph label `Main Features` as the `mainFeatures` subsection beneath the overview section, so it compiles to `<h3>` while its following authored block remains normal semantic content. This explicit field rule does not inspect Word typography and does not promote any other normal paragraph.
+
 ### Professional Game
 
 ```text

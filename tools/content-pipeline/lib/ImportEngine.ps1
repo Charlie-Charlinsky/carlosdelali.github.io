@@ -19,6 +19,43 @@ function Get-WordAttribute {
     return $Node.GetAttribute($Name, $script:WordNamespace)
 }
 
+function Get-WordParagraphStyleMap {
+    param($StylesXml)
+
+    $resolved = @{}
+    if ($null -eq $StylesXml) { return $resolved }
+    $namespace = New-Object System.Xml.XmlNamespaceManager($StylesXml.NameTable)
+    $namespace.AddNamespace('w', $script:WordNamespace)
+    $definitions = @{}
+    foreach ($style in $StylesXml.SelectNodes('//w:style', $namespace)) {
+        if ((Get-WordAttribute -Node $style -Name 'type') -cne 'paragraph') { continue }
+        $styleId = Get-WordAttribute -Node $style -Name 'styleId'
+        if ([string]::IsNullOrWhiteSpace($styleId)) { continue }
+        $nameNode = $style.SelectSingleNode('w:name', $namespace)
+        $basedOnNode = $style.SelectSingleNode('w:basedOn', $namespace)
+        $name = if ($nameNode) { Get-WordAttribute -Node $nameNode -Name 'val' } else { '' }
+        $basedOn = if ($basedOnNode) { Get-WordAttribute -Node $basedOnNode -Name 'val' } else { '' }
+        $definitions[$styleId] = [pscustomobject]@{ Name = $name; BasedOn = $basedOn }
+        if ($styleId -match '^Heading([1-9])$' -or $name -match '^heading\s+([1-9])$') {
+            $resolved[$styleId] = "Heading$($Matches[1])"
+        }
+    }
+
+    $changed = $true
+    while ($changed) {
+        $changed = $false
+        foreach ($styleId in $definitions.Keys) {
+            if ($resolved.ContainsKey($styleId)) { continue }
+            $basedOn = [string]$definitions[$styleId].BasedOn
+            if (-not [string]::IsNullOrWhiteSpace($basedOn) -and $resolved.ContainsKey($basedOn)) {
+                $resolved[$styleId] = $resolved[$basedOn]
+                $changed = $true
+            }
+        }
+    }
+    return $resolved
+}
+
 function Test-WordToggle {
     param($Node)
     if ($null -eq $Node) { return $false }
@@ -62,9 +99,11 @@ function Read-DocxDocument {
         $document = Read-ZipXmlEntry -Archive $archive -Name 'word/document.xml' -Required
         $relationshipsXml = Read-ZipXmlEntry -Archive $archive -Name 'word/_rels/document.xml.rels'
         $numberingXml = Read-ZipXmlEntry -Archive $archive -Name 'word/numbering.xml'
+        $stylesXml = Read-ZipXmlEntry -Archive $archive -Name 'word/styles.xml'
         $namespace = New-Object System.Xml.XmlNamespaceManager($document.NameTable)
         $namespace.AddNamespace('w', $script:WordNamespace)
         $namespace.AddNamespace('r', $script:OfficeRelationshipNamespace)
+        $paragraphStyles = Get-WordParagraphStyleMap -StylesXml $stylesXml
 
         $relationships = @{}
         if ($null -ne $relationshipsXml) {
@@ -108,7 +147,8 @@ function Read-DocxDocument {
             if ($node.LocalName -ne 'p') { continue }
 
             $styleNode = $node.SelectSingleNode('w:pPr/w:pStyle', $namespace)
-            $style = if ($styleNode) { Get-WordAttribute -Node $styleNode -Name 'val' } else { 'Normal' }
+            $sourceStyle = if ($styleNode) { Get-WordAttribute -Node $styleNode -Name 'val' } else { 'Normal' }
+            $style = if ($paragraphStyles.ContainsKey($sourceStyle)) { [string]$paragraphStyles[$sourceStyle] } else { $sourceStyle }
             $numberNode = $node.SelectSingleNode('w:pPr/w:numPr/w:numId', $namespace)
             $levelNode = $node.SelectSingleNode('w:pPr/w:numPr/w:ilvl', $namespace)
             $numberId = if ($numberNode) { Get-WordAttribute -Node $numberNode -Name 'val' } else { $null }
@@ -559,8 +599,10 @@ function Convert-GameLanguage {
     $sectionIds = @($Schema.sectionIds)
     if ($sectionIds.Count -eq 0) { throw 'Game section ID schema is empty.' }
     $fragmentCounts = @{}
+    $seenSchemaSubsections = @{}
     for (; $index -lt $Paragraphs.Count; $index++) {
         $paragraph = $Paragraphs[$index]
+        $schemaSubsectionField = if ($paragraph.Style -eq 'Normal') { Get-MappedValue -Map $Schema.schemaSubsections.$Language -Label $paragraph.Text.Trim() } else { $null }
         if ($paragraph.Style -eq 'Heading2') {
             if ($sections.Count -ge $sectionIds.Count) { throw "Game $Language has more Heading 2 sections than the schema permits." }
             $sectionId = [string]$sectionIds[$sections.Count]
@@ -574,13 +616,28 @@ function Convert-GameLanguage {
             $subsectionId = if ($fragmentCounts[$baseId] -eq 1) { $baseId } else { "$baseId-$($fragmentCounts[$baseId])" }
             $currentSubsection = [pscustomobject]@{ Id = $subsectionId; Heading = $paragraph; Paragraphs = @() }
             $current.Subsections += $currentSubsection
+        } elseif ($null -ne $schemaSubsectionField) {
+            if ($null -eq $current) { throw "Game $Language schema subsection appears before its parent Heading 2: $($paragraph.Text)" }
+            if ($null -ne $paragraph.NumberId) { throw "Game $Language schema subsection must be a normal, non-list paragraph: $($paragraph.Text)" }
+            $definitionProperty = $Schema.subsectionFields.PSObject.Properties[$schemaSubsectionField]
+            if ($null -eq $definitionProperty) { throw "Unknown Game schema subsection field: $schemaSubsectionField" }
+            $definition = $definitionProperty.Value
+            if ([string]$definition.parentSectionId -cne [string]$current.Id) { throw "Game $Language schema subsection '$($paragraph.Text)' is not beneath its required section '$($definition.parentSectionId)'." }
+            if ($seenSchemaSubsections.ContainsKey($schemaSubsectionField)) { throw "Duplicate Game $Language schema subsection field: $schemaSubsectionField" }
+            $seenSchemaSubsections[$schemaSubsectionField] = $true
+            $currentSubsection = [pscustomobject]@{ Id = [string]$definition.id; Heading = $paragraph; Paragraphs = @() }
+            $current.Subsections += $currentSubsection
         } else {
             if ($paragraph.Style -match '^Heading') { throw "Unsupported Game $Language heading level '$($paragraph.Style)': $($paragraph.Text)" }
             if ($null -eq $current) { throw "Game $Language prose appears outside a section." }
             if ($null -ne $currentSubsection) { $currentSubsection.Paragraphs += $paragraph } else { $current.Paragraphs += $paragraph }
         }
     }
-    if (($sections.Id -join '|') -cne ($sectionIds -join '|')) { throw "Game $Language Heading 2 section count does not match the schema." }
+    $requiredSectionIds = @($Schema.requiredSectionIds)
+    if ($requiredSectionIds.Count -eq 0) { throw 'Game required section ID schema is empty.' }
+    foreach ($requiredSectionId in $requiredSectionIds) {
+        if (@($sections | Where-Object Id -CEQ $requiredSectionId).Count -ne 1) { throw "Game $Language required Heading 2 section is missing: $requiredSectionId" }
+    }
 
     $html = New-HtmlDocument -AttributeName 'data-game-id' -AttributeValue $GameId
     $signature = @()
@@ -722,7 +779,8 @@ function New-UpdatedGameRegistry {
 function New-ContentImportPlan {
     param(
         [string]$RepositoryRoot = (Get-ContentPipelineRepositoryRoot),
-        [switch]$IncludeUnchanged
+        [switch]$IncludeUnchanged,
+        [string[]]$TargetKeys = @()
     )
     $scan = Get-ContentInboxScan -RepositoryRoot $RepositoryRoot
     if ($scan.Counts.INVALID -gt 0) {
@@ -736,6 +794,7 @@ function New-ContentImportPlan {
     foreach ($entry in @($scan.Entries | Where-Object Status -in $candidateStatuses)) {
         $identity = ConvertTo-ContentSourceIdentity -FileName $entry.Source -Config $config
         $target = Resolve-ContentPipelineTarget -Identity $identity -RepositoryRoot $RepositoryRoot -Config $config
+        if ($TargetKeys.Count -gt 0 -and $TargetKeys -cnotcontains $target.TargetKey) { continue }
         $sourcePath = Join-Path (Get-ContentPipelinePaths -RepositoryRoot $RepositoryRoot).Inbox $entry.Source
         $blocks = Split-BilingualDocx (Read-DocxDocument -Path $sourcePath)
         $outputs = [ordered]@{}
@@ -968,8 +1027,22 @@ function Invoke-ContentImportApply {
         foreach ($destination in $stageMap.Keys) { Copy-ContentFileAtomically -Source $stageMap[$destination] -Destination $destination }
 
         if (Get-Command node -ErrorAction SilentlyContinue) {
-            $qaOutput = @(& node (Join-Path $RepositoryRoot 'tools\qa-frontend.mjs') 2>&1)
-            if ($LASTEXITCODE -ne 0) { throw "Frontend QA failed: $($qaOutput -join ' ')" }
+            $nodeCommand = Get-Command node -ErrorAction Stop
+            $qaProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
+            $qaProcessInfo.FileName = $nodeCommand.Source
+            $qaProcessInfo.Arguments = '"' + (Join-Path $RepositoryRoot 'tools\qa-frontend.mjs') + '"'
+            $qaProcessInfo.UseShellExecute = $false
+            $qaProcessInfo.CreateNoWindow = $true
+            $qaProcessInfo.RedirectStandardOutput = $true
+            $qaProcessInfo.RedirectStandardError = $true
+            $qaProcess = New-Object System.Diagnostics.Process
+            $qaProcess.StartInfo = $qaProcessInfo
+            [void]$qaProcess.Start()
+            $qaStandardOutput = $qaProcess.StandardOutput.ReadToEndAsync()
+            $qaStandardError = $qaProcess.StandardError.ReadToEndAsync()
+            $qaProcess.WaitForExit()
+            $qaOutput = @(($qaStandardOutput.Result -split "`r?`n") + ($qaStandardError.Result -split "`r?`n") | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+            if ($qaProcess.ExitCode -ne 0) { throw "Frontend QA failed: $($qaOutput -join ' ')" }
             $qaStatus = 'PASS'
         } else {
             $qaStatus = 'SKIPPED - Node unavailable'

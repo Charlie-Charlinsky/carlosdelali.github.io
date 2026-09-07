@@ -9,7 +9,7 @@
     "writing",
     "oniric-journal"
   ],
-  "importerVersion": 4,
+  "importerVersion": 5,
   "importSchemas": {
     "about": {
       "title": {"es": "About", "en": "About"}
@@ -49,7 +49,22 @@
           "Game Engine": "engine"
         }
       },
-      "sectionIds": ["overview", "contribution"]
+      "sectionIds": ["overview", "contribution"],
+      "requiredSectionIds": ["overview"],
+      "schemaSubsections": {
+        "es": {
+          "Main Features": "mainFeatures"
+        },
+        "en": {
+          "Main Features": "mainFeatures"
+        }
+      },
+      "subsectionFields": {
+        "mainFeatures": {
+          "id": "main-features",
+          "parentSectionId": "overview"
+        }
+      }
     }
   },
   "contentTypes": {

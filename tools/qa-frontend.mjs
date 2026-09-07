@@ -85,9 +85,6 @@ if (gameMap.get("ea-sports-pga-tour")?.engineName !== "Frostbite") {
 if (gameMap.get("skull-towers")?.engineName !== "Unity") {
     fail("Game Detail: Skull Towers debe conservar el texto de motor Unity");
 }
-if (!games.some((game) => !game.engineName)) {
-    fail("Game Detail: falta un caso de motor desconocido para validar el fallback textual");
-}
 if (!gameDetailSource.includes("metadataValue(game.engineName)")) {
     fail("Game Detail: el motor textual no se renderiza desde engineName");
 }

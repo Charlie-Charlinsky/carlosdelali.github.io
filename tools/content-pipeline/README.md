@@ -55,6 +55,8 @@ Importer version 3 supports deterministic nested ordered and unordered lists. Hi
 
 Importer version 4 preserves Game editorial heading hierarchy directly from Word paragraph styles. Game main sections must be `Heading2` and compile to semantic `<h2>` elements; authored child subsections must be `Heading3` and compile to semantic `<h3>` elements. Subsection titles are unrestricted editorial text and receive deterministic HTML fragment IDs without title-specific mappings. ES/EN parity compares heading and content-block topology rather than translated heading text. A batch may update any number of Game registry entries transactionally while preserving every protected field.
 
+Importer version 5 permits the Game schema to require a prefix of the declared main sections, so an overview-only Game and an overview-plus-contribution Game use the same compiler. It also declares `Main Features` as the `mainFeatures` Game field beneath `overview`: when that exact schema label is authored as a normal, non-list paragraph, it compiles to semantic `<h3>` and owns the authored content that follows. Genuine Word `Heading3` paragraphs continue to compile as `<h3>` independently. No font, size, boldness, short-text heuristic, or other presentation inference promotes arbitrary normal paragraphs.
+
 `-Rebuild` explicitly recompiles accepted UNCHANGED sources after a compiler/tooling change. Normal imports continue to skip unchanged hashes. Rebuilding an identical canonical source does not create a redundant archive version.
 
 ## Media budget gate
