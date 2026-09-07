@@ -9,7 +9,7 @@
     "writing",
     "oniric-journal"
   ],
-  "importerVersion": 5,
+  "importerVersion": 6,
   "importSchemas": {
     "about": {
       "title": {"es": "About", "en": "About"}
@@ -53,16 +53,52 @@
       "requiredSectionIds": ["overview"],
       "schemaSubsections": {
         "es": {
-          "Main Features": "mainFeatures"
+          "Main Features": "mainFeatures",
+          "Level Design": "levelDesign",
+          "Gameplay Upgrade & Implementation": "gameplayUpgradeImplementation",
+          "La tienda": "shop",
+          "Las carreras": "races",
+          "Recompensas y sistema de progresi\u00f3n": "rewardsProgression",
+          "Balanceo & FX": "balancingFx"
         },
         "en": {
-          "Main Features": "mainFeatures"
+          "Main Features": "mainFeatures",
+          "Level Design": "levelDesign",
+          "Gameplay Upgrade & Implementation": "gameplayUpgradeImplementation",
+          "The Shop": "shop",
+          "The Races": "races",
+          "Rewards & Progression System": "rewardsProgression",
+          "Balancing & FX": "balancingFx"
         }
       },
       "subsectionFields": {
         "mainFeatures": {
           "id": "main-features",
           "parentSectionId": "overview"
+        },
+        "levelDesign": {
+          "id": "level-design",
+          "parentSectionId": "contribution"
+        },
+        "gameplayUpgradeImplementation": {
+          "id": "gameplay-upgrade-implementation",
+          "parentSectionId": "contribution"
+        },
+        "shop": {
+          "id": "shop",
+          "parentSectionId": "contribution"
+        },
+        "races": {
+          "id": "races",
+          "parentSectionId": "contribution"
+        },
+        "rewardsProgression": {
+          "id": "rewards-progression",
+          "parentSectionId": "contribution"
+        },
+        "balancingFx": {
+          "id": "balancing-fx",
+          "parentSectionId": "contribution"
         }
       }
     }

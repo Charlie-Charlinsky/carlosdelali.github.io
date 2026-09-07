@@ -2,14 +2,16 @@
   "games": [
     {
       "id": "the-little-prince",
-      "title": "The Little Prince",
+      "title": "The Little Prince - Bubble Pop Journey",
       "studio": "Genera Games",
       "studioId": "genera-games",
       "category": "mobile",
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2016",
+      "platform": "iOS / Android (Mobile \u0026 Tablet)",
+      "accessUrl": "https://www.apkturbo.com/games/the-little-prince-bubble-pop/com.generamobile.thelittleprince",
       "engineName": "Unity",
       "content": {
         "en": "content/games/the-little-prince/en.html",
@@ -52,7 +54,9 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2013",
+      "platform": "iOS / Android",
+      "accessUrl": "https://runbot.uptodown.com/android/descargar",
       "engineName": "Unity",
       "content": {
         "en": "content/games/runbot/en.html",
@@ -100,7 +104,9 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2017",
+      "platform": "Android",
+      "accessUrl": "https://www.mobygames.com/game/84656/xtreme-racing-2/",
       "engineName": "Unity",
       "coverPosition": "50% 10%",
       "content": {
@@ -144,7 +150,9 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "accessUrl": null,
+      "year": "2016",
+      "platform": "iOS / Android",
+      "accessUrl": "https://apps.apple.com/es/app/skull-towers-defensa-de-torre/id1126772151",
       "engineName": "Unity",
       "coverPosition": "50% 0%",
       "content": {
@@ -306,7 +314,7 @@
       "year": "2018",
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.vegasslotsonline.com/qora-games/cyberpunk-city/",
-      "engineName": "Private Engine",
+      "engineName": "Unity + Private Engine",
       "content": {
         "en": "content/games/cyberpunk-city/en.html",
         "es": "content/games/cyberpunk-city/es.html"
@@ -351,7 +359,7 @@
       "year": "2021",
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.slotstemple.com/free-slots/gods-of-luxor/",
-      "engineName": "Private Engine",
+      "engineName": "Unity + Private Engine",
       "content": {
         "en": "content/games/gods-of-luxor/en.html",
         "es": "content/games/gods-of-luxor/es.html"
@@ -536,7 +544,7 @@
       "year": "2018",
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.slotstemple.com/free-slots/cricket-legends/",
-      "engineName": "Private Engine",
+      "engineName": "Unity + Private Engine",
       "content": {
         "en": "content/games/cricket-legends/en.html",
         "es": "content/games/cricket-legends/es.html"
@@ -586,7 +594,7 @@
       "year": "2018",
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://slotcatalog.com/en/slots/Zombie-FC",
-      "engineName": "Private Engine",
+      "engineName": "Unity + Private Engine",
       "content": {
         "en": "content/games/zombie-soccer/en.html",
         "es": "content/games/zombie-soccer/es.html"
@@ -641,7 +649,7 @@
       "year": "2020",
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.bovada.lv/casino/slots/progressive-jackpot/mystic-elements",
-      "engineName": "Private Engine",
+      "engineName": "Unity + Private Engine",
       "content": {
         "en": "content/games/mystic-elements/en.html",
         "es": "content/games/mystic-elements/es.html"
@@ -696,7 +704,7 @@
       "year": "2018",
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.ignitioncasino.eu/casino/slots/progressive-jackpot/night-cleo",
-      "engineName": "Private Engine",
+      "engineName": "Unity + Private Engine",
       "content": {
         "en": "content/games/a-night-with-cleo/en.html",
         "es": "content/games/a-night-with-cleo/es.html"

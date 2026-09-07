@@ -57,6 +57,8 @@ Importer version 4 preserves Game editorial heading hierarchy directly from Word
 
 Importer version 5 permits the Game schema to require a prefix of the declared main sections, so an overview-only Game and an overview-plus-contribution Game use the same compiler. It also declares `Main Features` as the `mainFeatures` Game field beneath `overview`: when that exact schema label is authored as a normal, non-list paragraph, it compiles to semantic `<h3>` and owns the authored content that follows. Genuine Word `Heading3` paragraphs continue to compile as `<h3>` independently. No font, size, boldness, short-text heuristic, or other presentation inference promotes arbitrary normal paragraphs.
 
+Importer version 6 extends the same explicit Game subsection schema to known Contribution child fields, including localized ES/EN labels. These normal, non-list field labels compile as sibling `<h3>` sections only beneath `contribution`; unrelated normal prose is unchanged. Access metadata parity compares the effective authored destination, preferring a DOCX hyperlink relationship and otherwise accepting the identical safe URL text used by registry compilation.
+
 `-Rebuild` explicitly recompiles accepted UNCHANGED sources after a compiler/tooling change. Normal imports continue to skip unchanged hashes. Rebuilding an identical canonical source does not create a redundant archive version.
 
 ## Media budget gate

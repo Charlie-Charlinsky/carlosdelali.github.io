@@ -20,14 +20,15 @@ function New-TestParagraph {
         $ListLevel = $null,
         $ListFormat = $null,
         [string]$Style = 'Normal',
-        [int]$ParagraphIndex = 0
+        [int]$ParagraphIndex = 0,
+        [string]$Url = $null
     )
     return [pscustomobject][ordered]@{
         Kind = 'paragraph'
         ParagraphIndex = $ParagraphIndex
         Style = $Style
         Text = $Text
-        Runs = @([pscustomobject]@{ Text = $Text; Bold = $false; Italic = $false; Url = $null })
+        Runs = @([pscustomobject]@{ Text = $Text; Bold = $false; Italic = $false; Url = $Url })
         NumberId = $NumberId
         ListLevel = $ListLevel
         ListFormat = $ListFormat
@@ -215,6 +216,31 @@ try {
     Assert-ImportEngine ($schemaSubsectionXml.SelectNodes('/article/section[@id="overview"]/section[@id="main-features"]/p[text()="Feature summary"]').Count -eq 1) 'D. content after schema Main Features remains normal semantic content'
     Assert-ImportEngine ((@($schemaSubsectionXml.SelectNodes('/article/section[@id="overview"]/*') | ForEach-Object Name) -join '|') -ceq 'h2|p|section') 'E. schema Main Features remains beneath the preceding h2 section'
 
+    $contributionSubsections = Invoke-GameFixture @(
+        (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
+        (New-TestParagraph 'Overview body'),
+        (New-TestParagraph 'Contribution fixture' -Style 'Heading2'),
+        (New-TestParagraph 'The Shop'),
+        (New-TestParagraph 'Shop body'),
+        (New-TestParagraph 'The Races'),
+        (New-TestParagraph 'Races body')
+    )
+    $contributionSubsectionsXml = [xml]$contributionSubsections.Html
+    Assert-ImportEngine ($contributionSubsections.HeadingTopology -ceq 'h2[]|h2[h3,h3]' -and $contributionSubsectionsXml.SelectNodes('/article/section[@id="contribution"]/section/h3').Count -eq 2) 'schema Contribution Normal paragraphs compile as sibling h3 subsections'
+    Assert-ImportEngine ($contributionSubsectionsXml.SelectNodes('/article/section[@id="contribution"]/section[@id="shop"]/p[text()="Shop body"]').Count -eq 1 -and $contributionSubsectionsXml.SelectNodes('/article/section[@id="contribution"]/section[@id="races"]/p[text()="Races body"]').Count -eq 1) 'schema Contribution subsections own their following prose'
+
+    $contributionSpanish = Invoke-GameFixture @(
+        (New-TestParagraph 'Seccion principal' -Style 'Heading2'),
+        (New-TestParagraph 'Texto'),
+        (New-TestParagraph 'Contribucion' -Style 'Heading2'),
+        (New-TestParagraph 'La tienda'),
+        (New-TestParagraph 'Texto de tienda'),
+        (New-TestParagraph 'Las carreras'),
+        (New-TestParagraph 'Texto de carreras')
+    ) -Language 'es'
+    Assert-GameParity -Spanish $contributionSpanish -English $contributionSubsections
+    Assert-ImportEngine ($contributionSpanish.HeadingTopology -ceq $contributionSubsections.HeadingTopology) 'ES/EN schema Contribution topology parity passes independently of wording'
+
     $schemaSpanish = Invoke-GameFixture @(
         (New-TestParagraph 'Seccion principal' -Style 'Heading2'),
         (New-TestParagraph 'Texto'),
@@ -223,6 +249,9 @@ try {
     ) -Language 'es'
     Assert-GameParity -Spanish $schemaSpanish -English $schemaSubsectionGame
     Assert-ImportEngine ($schemaSpanish.HeadingTopology -ceq 'h2[h3]' -and $schemaSpanish.HeadingTopology -ceq $schemaSubsectionGame.HeadingTopology) 'F. schema Main Features ES/EN h2 to h3 topology matches'
+    $contributionMismatchRejected = $false
+    try { Assert-GameParity -Spanish $schemaSpanish -English $contributionSubsections } catch { $contributionMismatchRejected = $_.Exception.Message -match 'semantic structures are not equivalent' }
+    Assert-ImportEngine $contributionMismatchRejected 'ES/EN mismatched schema Contribution h3 count fails parity'
 
     $coexistingSubsections = Invoke-GameFixture @(
         (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
@@ -240,6 +269,13 @@ try {
         (New-TestParagraph 'Contribution body')
     )
     Assert-ImportEngine (([xml]$arbitraryNormal.Html).SelectNodes('//h3').Count -eq 0) 'H. arbitrary Normal paragraphs are not promoted to h3'
+    $boldNormalParagraph = New-TestParagraph 'Bold Normal prose'
+    $boldNormalParagraph.Runs[0].Bold = $true
+    $boldNormal = Invoke-GameFixture @(
+        (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
+        $boldNormalParagraph
+    )
+    Assert-ImportEngine (([xml]$boldNormal.Html).SelectNodes('//h3').Count -eq 0) 'bold Normal prose is not promoted to h3'
     $importEngineSource = Get-Content -LiteralPath (Join-Path $root 'tools\content-pipeline\lib\ImportEngine.ps1') -Raw -Encoding UTF8
     Assert-ImportEngine ($importEngineSource -notmatch 'w:sz|font-size|FontSize') 'I. heading levels do not use Word font or size inspection'
 
@@ -281,6 +317,31 @@ try {
     try { Assert-GameParity -Spanish $equivalentSpanish -English $multipleSubsectionGame } catch { $differentTopologyRejected = $_.Exception.Message -match 'semantic structures are not equivalent' }
     Assert-ImportEngine $differentTopologyRejected 'F. ES/EN different heading topology fails'
 
+    $accessTarget = 'https://example.com/authored-game'
+    $accessSpanish = Invoke-GameFixture @(
+        (New-TestParagraph 'Acceso' -Style 'Heading2'),
+        (New-TestParagraph $accessTarget),
+        (New-TestParagraph 'El Juego' -Style 'Heading2'),
+        (New-TestParagraph 'Texto')
+    ) -Language 'es'
+    $accessEnglish = Invoke-GameFixture @(
+        (New-TestParagraph 'Access' -Style 'Heading2'),
+        (New-TestParagraph $accessTarget -Url $accessTarget),
+        (New-TestParagraph 'The Game' -Style 'Heading2'),
+        (New-TestParagraph 'Text')
+    )
+    Assert-GameParity -Spanish $accessSpanish -English $accessEnglish
+    Assert-ImportEngine ((Get-GameAccessTarget $accessSpanish.Metadata.access) -ceq $accessTarget -and (Get-GameAccessTarget $accessEnglish.Metadata.access) -ceq $accessTarget) 'Access parity resolves an authored relationship or identical safe visible URL'
+    $differentAccessEnglish = Invoke-GameFixture @(
+        (New-TestParagraph 'Access' -Style 'Heading2'),
+        (New-TestParagraph $accessTarget -Url 'https://example.com/different-target'),
+        (New-TestParagraph 'The Game' -Style 'Heading2'),
+        (New-TestParagraph 'Text')
+    )
+    $differentAccessRejected = $false
+    try { Assert-GameParity -Spanish $accessSpanish -English $differentAccessEnglish } catch { $differentAccessRejected = $_.Exception.Message -match 'metadata URLs differ for access' }
+    Assert-ImportEngine $differentAccessRejected 'different authored Access hyperlink targets fail parity'
+
     $flatGameRepeat = Invoke-GameFixture @(
         (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
         (New-TestParagraph 'Overview body'),
@@ -288,6 +349,27 @@ try {
         (New-TestParagraph 'Contribution body')
     )
     Assert-ImportEngine ($flatGame.Html -ceq $flatGameRepeat.Html -and $flatGame.Structure -ceq $flatGameRepeat.Structure) 'G. existing flat Game documents continue compiling identically'
+
+    $generaExpected = [ordered]@{
+        'the-little-prince' = [pscustomobject]@{ es = @('Level Design'); en = @('Level Design') }
+        'runbot' = [pscustomobject]@{ es = @('Gameplay Upgrade & Implementation'); en = @('Gameplay Upgrade & Implementation') }
+        'xtreme-racing-2' = [pscustomobject]@{ es = @('La tienda', 'Las carreras'); en = @('The Shop', 'The Races') }
+        'skull-towers' = [pscustomobject]@{ es = @('Recompensas y sistema de progresion', 'Balanceo & FX'); en = @('Rewards & Progression System', 'Balancing & FX') }
+    }
+    $generaExpected['skull-towers'].es[0] = "Recompensas y sistema de progresi$([char]0x00f3)n"
+    foreach ($generaId in $generaExpected.Keys) {
+        $generaDocument = Split-BilingualDocx (Read-DocxDocument -Path (Join-Path $root "local-content\inbox\game__${generaId}__ES-EN.docx"))
+        $generaEs = Convert-GameLanguage -Paragraphs $generaDocument.es -Language 'es' -GameId $generaId -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
+        $generaEn = Convert-GameLanguage -Paragraphs $generaDocument.en -Language 'en' -GameId $generaId -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
+        Assert-GameParity -Spanish $generaEs -English $generaEn
+        $expectedEs = @($generaExpected[$generaId].es)
+        $expectedEn = @($generaExpected[$generaId].en)
+        Assert-ImportEngine (($generaEs.Subsections -join '|') -ceq ($expectedEs -join '|') -and ($generaEn.Subsections -join '|') -ceq ($expectedEn -join '|')) "game:$generaId schema Contribution labels compile as h3"
+        Assert-ImportEngine ($generaEs.HeadingTopology -ceq $generaEn.HeadingTopology -and @($generaEs.Subsections).Count -eq $expectedEs.Count) "game:$generaId ES/EN Contribution topology parity"
+        $generaEsXml = [xml]$generaEs.Html
+        $generaEnXml = [xml]$generaEn.Html
+        Assert-ImportEngine ($generaEsXml.SelectNodes('/article/section[@id="contribution"]/section/h3').Count -eq $expectedEs.Count -and $generaEnXml.SelectNodes('/article/section[@id="contribution"]/section/h3').Count -eq $expectedEn.Count) "game:$generaId Contribution subsections render as h3"
+    }
 
     $expectedTargetKeys = @('about:main', 'cv:main', 'game:ea-sports-pga-tour', 'game:madden-nfl-25', 'game:madden-nfl-26', 'game:madden-nfl-27')
     $plan = New-ContentImportPlan -RepositoryRoot $root -IncludeUnchanged -TargetKeys $expectedTargetKeys
@@ -365,26 +447,10 @@ try {
     Assert-ImportEngine ($updatedPga.year -ceq '2023') 'PGA Year mapping'
     Assert-ImportEngine ($updatedPga.studio -ceq 'EA Sports') 'PGA Company mapping'
     Assert-ImportEngine ($updatedPga.engineName -ceq 'Frostbite') 'PGA textual Engine metadata mapping'
-    $expectedEngines = @{
-        '777-deluxe' = 'Private Engine'
-        'andar-bahar' = 'Private Engine'
-        'a-night-with-cleo' = 'Private Engine'
-        'cricket-legends' = 'Private Engine'
-        'cyberpunk-city' = 'Private Engine'
-        'ea-sports-pga-tour' = 'Frostbite'
-        'gods-of-luxor' = 'Private Engine'
-        'gold-rush-gus' = 'Unity + Private Engine'
-        'madden-nfl-25' = 'Frostbite'
-        'madden-nfl-26' = 'Frostbite'
-        'madden-nfl-27' = 'Frostbite'
-        'mystic-elements' = 'Private Engine'
-        'teen-patti' = 'Private Engine'
-        'wheel-of-fortune' = 'Private Engine'
-        'zombie-soccer' = 'Private Engine'
-    }
     foreach ($gameItem in $gameItems) {
         $updatedGame = $compiledGameRegistry.Games.PSObject.Properties[$gameItem.Id].Value
-        Assert-ImportEngine ($updatedGame.engineName -ceq $expectedEngines[$gameItem.Id]) "$($gameItem.TargetKey) textual Engine metadata mapping"
+        $expectedEngine = if ($gameItem.Summary.en.Metadata.engine.Value -ceq '?') { $null } else { [string]$gameItem.Summary.en.Metadata.engine.Value }
+        Assert-ImportEngine ([string]$updatedGame.engineName -ceq [string]$expectedEngine) "$($gameItem.TargetKey) textual Engine metadata mapping"
     }
     foreach ($twsId in $twsIds) {
         $twsGame = $gameItems | Where-Object Id -CEQ $twsId

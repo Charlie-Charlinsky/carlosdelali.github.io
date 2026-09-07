@@ -227,6 +227,18 @@ function Test-SafeContentUrl {
     return @('http', 'https', 'mailto') -contains $uri.Scheme.ToLowerInvariant()
 }
 
+function Get-GameAccessTarget {
+    param($Metadata)
+
+    if ($Metadata.Value -ceq '?') { return $null }
+    if (-not [string]::IsNullOrWhiteSpace([string]$Metadata.Url)) {
+        if (-not (Test-SafeContentUrl -Url $Metadata.Url)) { throw "Game Access URL is unsafe: $($Metadata.Url)" }
+        return [string]$Metadata.Url
+    }
+    if (Test-SafeContentUrl -Url $Metadata.Value) { return [string]$Metadata.Value }
+    throw "Game Access must be an authored safe URL: $($Metadata.Value)"
+}
+
 function New-HtmlDocument {
     param([string]$AttributeName, [string]$AttributeValue)
     $document = New-Object System.Xml.XmlDocument
@@ -689,7 +701,13 @@ function Assert-GameParity {
     foreach ($field in @('year', 'company', 'platform', 'access', 'engine')) {
         if ($Spanish.SourcePresence.$field -ne $English.SourcePresence.$field) { throw "Game ES/EN metadata presence differs for $field." }
         if ($Spanish.Metadata.$field.Value -cne $English.Metadata.$field.Value) { throw "Game ES/EN metadata values differ for $field." }
-        if ([string]$Spanish.Metadata.$field.Url -cne [string]$English.Metadata.$field.Url) { throw "Game ES/EN metadata URLs differ for $field." }
+        if ($field -eq 'access') {
+            $spanishTarget = Get-GameAccessTarget -Metadata $Spanish.Metadata.$field
+            $englishTarget = Get-GameAccessTarget -Metadata $English.Metadata.$field
+            if ([string]$spanishTarget -cne [string]$englishTarget) { throw "Game ES/EN metadata URLs differ for $field." }
+        } elseif ([string]$Spanish.Metadata.$field.Url -cne [string]$English.Metadata.$field.Url) {
+            throw "Game ES/EN metadata URLs differ for $field."
+        }
     }
 }
 
@@ -732,8 +750,7 @@ function New-UpdatedGameRegistry {
         if ($gameIndex -lt 0) { throw "Game registry entry is missing: $($item.Id)" }
         $current = $games[$gameIndex]
         $metadata = $item.Summary.en.Metadata
-        $accessUrl = if ($metadata.access.Value -eq '?') { $null } elseif ($metadata.access.Url) { $metadata.access.Url } elseif (Test-SafeContentUrl $metadata.access.Value) { $metadata.access.Value } else { throw "Game Access must be an authored safe URL: $($item.Id)" }
-        if ($null -ne $accessUrl -and -not (Test-SafeContentUrl $accessUrl)) { throw "Game Access URL is unsafe: $($item.Id)" }
+        try { $accessUrl = Get-GameAccessTarget -Metadata $metadata.access } catch { throw "$($_.Exception.Message) [$($item.Id)]" }
         $updates = [ordered]@{
             title = $item.Summary.en.Title
             studio = $metadata.company.Value
