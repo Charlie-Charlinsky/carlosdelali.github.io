@@ -342,6 +342,22 @@ try {
     try { Assert-GameParity -Spanish $accessSpanish -English $differentAccessEnglish } catch { $differentAccessRejected = $_.Exception.Message -match 'metadata URLs differ for access' }
     Assert-ImportEngine $differentAccessRejected 'different authored Access hyperlink targets fail parity'
 
+    $splitLinkParagraph = New-TestParagraph 'Download CV'
+    $splitLinkParagraph.Runs = @(
+        [pscustomobject]@{ Text = 'Download'; Bold = $true; Italic = $false; Url = 'https://example.com/cv.pdf' },
+        [pscustomobject]@{ Text = ' CV'; Bold = $true; Italic = $false; Url = 'https://example.com/cv.pdf' }
+    )
+    $splitLink = Get-OnlyDocxLink -Paragraphs @($splitLinkParagraph) -Context 'CV Downloads fixture'
+    Assert-ImportEngine ($splitLink.Text -ceq 'Download CV' -and $splitLink.Url -ceq 'https://example.com/cv.pdf') 'one DOCX hyperlink split across runs remains one semantic link'
+    $differentTargetParagraph = New-TestParagraph 'Download CV'
+    $differentTargetParagraph.Runs = @(
+        [pscustomobject]@{ Text = 'Download'; Bold = $true; Italic = $false; Url = 'https://example.com/cv.pdf' },
+        [pscustomobject]@{ Text = ' CV'; Bold = $true; Italic = $false; Url = 'https://example.com/other.pdf' }
+    )
+    $multipleLinkTargetsRejected = $false
+    try { [void](Get-OnlyDocxLink -Paragraphs @($differentTargetParagraph) -Context 'CV Downloads fixture') } catch { $multipleLinkTargetsRejected = $_.Exception.Message -match 'exactly one hyperlink target' }
+    Assert-ImportEngine $multipleLinkTargetsRejected 'multiple DOCX hyperlink targets remain rejected'
+
     $flatGameRepeat = Invoke-GameFixture @(
         (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
         (New-TestParagraph 'Overview body'),

@@ -504,10 +504,13 @@ function Get-CvLudographyModel {
 
 function Get-OnlyDocxLink {
     param([object[]]$Paragraphs, [string]$Context)
-    $runs = @($Paragraphs | ForEach-Object Runs | Where-Object { $_.Url -and -not [string]::IsNullOrWhiteSpace($_.Text) })
-    if ($runs.Count -ne 1) { throw "$Context must contain exactly one hyperlink." }
-    if (-not (Test-SafeContentUrl -Url $runs[0].Url)) { throw "$Context contains an unsafe URL." }
-    return $runs[0]
+    $linkedParagraphs = @($Paragraphs | Where-Object { @($_.Runs | Where-Object { $_.Url -and -not [string]::IsNullOrWhiteSpace($_.Text) }).Count -gt 0 })
+    if ($linkedParagraphs.Count -ne 1) { throw "$Context must contain exactly one hyperlink." }
+    $runs = @($linkedParagraphs[0].Runs | Where-Object { $_.Url -and -not [string]::IsNullOrWhiteSpace($_.Text) })
+    $urls = @($runs | ForEach-Object { [string]$_.Url } | Select-Object -Unique)
+    if ($urls.Count -ne 1) { throw "$Context must contain exactly one hyperlink target." }
+    if (-not (Test-SafeContentUrl -Url $urls[0])) { throw "$Context contains an unsafe URL." }
+    return [pscustomobject]@{ Text = (@($runs | ForEach-Object Text) -join ''); Url = $urls[0] }
 }
 
 function Convert-CvLanguage {
