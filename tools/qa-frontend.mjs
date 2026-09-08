@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const failures = [];
@@ -44,6 +44,7 @@ function walk(directory, extensions) {
 const canonicalRoutes = [
     "index.html", "en/index.html", "es/index.html",
     "en/cv/index.html", "es/cv/index.html",
+    "en/contact/index.html", "es/contact/index.html",
     "en/games/index.html", "es/games/index.html",
     "en/games/detail/index.html", "es/games/detail/index.html",
     "en/projects/index.html", "es/projects/index.html",
@@ -66,6 +67,14 @@ if (games.length !== 19) fail(`Games: se esperaban 19 y hay ${games.length}`);
 if (new Set(games.map((game) => game.id)).size !== games.length) fail("Games: IDs duplicados");
 const gameMap = new Map(games.map((game) => [game.id, game]));
 const gameDetailSource = read("js/pages/game-detail.js");
+const gameOrderSource = read("js/core/game-order.js");
+const gamesPageSource = read("js/pages/games.js");
+const cvPageSource = read("js/pages/cv.js");
+const aboutPageSource = read("js/pages/about.js");
+const appSource = read("js/app.js");
+const pathsSource = read("js/core/paths.js");
+const publicationSource = read("js/core/publication.js");
+const shellSource = read("js/core/shell.js");
 const frontendCss = read("css/frontend.css");
 const obsoleteEngineKey = ["engine", "Id"].join("");
 const obsoleteEnginePresentationTokens = [
@@ -102,6 +111,18 @@ if (!gameDetailSource.includes("createGameNavigation(orderedGames, currentIndex,
 }
 if (!gameDetailSource.includes("createMediaGallery(game.media")) {
     fail("Game Detail: galería de medios no resuelta");
+}
+const metadataOrderTokens = [
+    "appendMetadataRow(metadata, labels.year",
+    "appendMetadataRow(metadata, labels.company",
+    "appendMetadataRow(metadata, labels.platform",
+    "appendMetadataRow(metadata, labels.engine",
+    "appendMetadataRow(metadata, labels.access"
+];
+const metadataOrderIndexes = metadataOrderTokens.map((token) => gameDetailSource.indexOf(token));
+if (metadataOrderIndexes.some((index) => index < 0)
+    || metadataOrderIndexes.some((index, position) => position > 0 && index <= metadataOrderIndexes[position - 1])) {
+    fail("Game Detail: orden Year/Company/Platform/Engine/Access no resuelto");
 }
 if (!frontendCss.includes("--game-detail-h2-size: 1.75rem;")) {
     fail("Game Detail: H2 debe conservar el baseline de 28px");
@@ -141,6 +162,105 @@ games.forEach((game) => {
         if (!gameMap.has(id)) fail(`Ludografía: ${id} no resuelve`);
     });
 });
+
+const expectedGameOrder = [
+    {
+        studioId: "ea-sports",
+        gameIds: ["madden-nfl-27", "madden-nfl-26", "madden-nfl-25", "ea-sports-pga-tour"]
+    },
+    {
+        studioId: "tws-inventors-of-play",
+        gameIds: ["gods-of-luxor", "teen-patti", "wheel-of-fortune", "mystic-elements", "gold-rush-gus", "777-deluxe", "cyberpunk-city", "a-night-with-cleo", "cricket-legends", "zombie-soccer", "andar-bahar"]
+    },
+    {
+        studioId: "genera-games",
+        gameIds: ["xtreme-racing-2", "skull-towers", "the-little-prince", "runbot"]
+    }
+];
+const gameOrderModule = await import(pathToFileURL(path.join(root, "js/core/game-order.js")).href);
+const declaredGameOrder = gameOrderModule.AUTHORITATIVE_GAME_ORDER.map(({ studioId, gameIds }) => ({
+    studioId,
+    gameIds: [...gameIds]
+}));
+if (JSON.stringify(declaredGameOrder) !== JSON.stringify(expectedGameOrder)) {
+    fail("Game order: la secuencia autoritativa no coincide");
+}
+const orderedStudios = gameOrderModule.getOrderedGameStudios(ludography);
+const visibleGameOrder = orderedStudios.map((studio) => ({ studioId: studio.id, gameIds: studio.games }));
+if (JSON.stringify(visibleGameOrder) !== JSON.stringify(expectedGameOrder)) {
+    fail("Game order: Games/CV no resuelven la secuencia compartida");
+}
+if (!gameOrderSource.includes("AUTHORITATIVE_GAME_ORDER")
+    || !gamesPageSource.includes("getOrderedGameStudios(ludography)")
+    || !cvPageSource.includes("getOrderedGameStudios(ludography)")) {
+    fail("Game order: Games y CV no consumen el helper compartido");
+}
+if (cvPageSource.includes("detailUrl") || /createElement\("a"/.test(cvPageSource)) {
+    fail("CV Ludography: los enlaces a Game Detail no se eliminaron");
+}
+if (/createElement\("(?:strong|b)"/.test(cvPageSource)
+    || !cvPageSource.includes('createElement("li", { text: `${game.title} - ${game.year ?? "?"}` })')) {
+    fail("CV Ludography: formato de texto normal Game Title - Year no resuelto");
+}
+if (!cvPageSource.includes('createElement("ol", { className: "ludography-list" })')) {
+    fail("CV Ludography: la secuencia dejo de usar una lista ordenada semantica");
+}
+if (!/\.ludography-list\s*\{[^}]*padding:\s*0;[^}]*list-style:\s*none;/s.test(frontendCss)) {
+    fail("CV Ludography: numeracion visible o sangria lateral no eliminada");
+}
+
+const aboutEnglish = read("content/about/en.html");
+const aboutSpanish = read("content/about/es.html");
+if (/id="contact"|mailto:|linkedin\.com/i.test(aboutEnglish + aboutSpanish)) {
+    fail("About: el bloque de contacto sigue presente");
+}
+if (!aboutPageSource.includes('article.querySelector("#contact")?.remove()')) {
+    fail("About: el renderer no protege la separacion About/Contact");
+}
+const portraitRule = frontendCss.match(/\.about-portrait\s*\{([^}]*)\}/s)?.[1] ?? "";
+if (!portraitRule || /border\s*:|outline\s*:|box-shadow\s*:/.test(portraitRule)) {
+    fail("About: el retrato conserva un borde, outline o sombra de marco");
+}
+if (!portraitRule.includes("aspect-ratio: 3 / 4") || !portraitRule.includes("width: 100%")) {
+    fail("About: la geometria del retrato cambio");
+}
+
+[
+    "content/contact/en.html", "content/contact/es.html",
+    "js/pages/contact.js"
+].forEach((filePath) => assertFile(filePath, "Contact"));
+const contactEnglish = read("content/contact/en.html");
+const contactSpanish = read("content/contact/es.html");
+for (const [language, source, heading] of [["en", contactEnglish, "Contact"], ["es", contactSpanish, "Contacto"]]) {
+    if (!source.includes(`<h2>${heading}</h2>`)
+        || !source.includes("<h3>Email</h3>")
+        || !source.includes("<h3>LinkedIn</h3>")) {
+        fail(`Contact ${language}: jerarquia H2/H3 no resuelta`);
+    }
+    if ((source.match(/<p>\?<\/p>/g) ?? []).length !== 2 || /<a\b/i.test(source)) {
+        fail(`Contact ${language}: placeholders o enlaces invalidos`);
+    }
+}
+if (!appSource.includes('contact: () => import("./pages/contact.js")')
+    || !pathsSource.includes('contact: "contact/"')
+    || !publicationSource.includes('"contact"')) {
+    fail("Contact: ruta, modulo o publicacion no resueltos");
+}
+if (!/const NAVIGATION = \[[^\]]*"contact"\];/s.test(shellSource)
+    || !/"oniric-journal",\s*"contact"\]/s.test(shellSource)) {
+    fail("Contact: no es el ultimo elemento de navegacion");
+}
+if (!/body\[data-page="contact"\] \.page-shell\s*\{[^}]*padding-top:\s*calc\(var\(--header-height\) \+ var\(--page-top-gap\)\)/s.test(frontendCss)
+    || !frontendCss.includes("--page-top-gap: 1.25rem;")) {
+    fail("Contact: separacion superior de 20px no resuelta");
+}
+if (!frontendCss.includes("--contact-heading-size: 1.75rem;")
+    || !frontendCss.includes("--contact-subheading-size: 1.375rem;")) {
+    fail("Contact: tipografia H2/H3 de 28px/22px no resuelta");
+}
+if (!/\.contact-field p\s*\{[^}]*overflow-wrap:\s*anywhere/s.test(frontendCss)) {
+    fail("Contact: los valores largos no protegen el viewport");
+}
 
 (projectsRegistry.projects ?? []).forEach((project) => {
     if (project.contentStatus !== "content-ready") fail(`${project.id}: proyecto no preparado`);

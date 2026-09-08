@@ -449,8 +449,6 @@ function Convert-AboutLanguage {
     $copy = Add-HtmlElement -Document $html.Document -Parent $html.Article -Name 'section' -Text $null -Attributes @{ id = 'about-copy' }
     Add-HtmlElement -Document $html.Document -Parent $copy -Name 'h2' -Text $Paragraphs[0].Text | Out-Null
     foreach ($paragraph in $prose) { Add-SemanticParagraph -Document $html.Document -Parent $copy -Paragraph $paragraph | Out-Null }
-    $contact = Get-ProtectedHtmlNode -Path $CurrentHtmlPath -XPath "/article/section[@id='contact']"
-    [void]$html.Article.AppendChild($html.Document.ImportNode($contact, $true))
     return [pscustomobject]@{ Html = ConvertTo-SemanticHtml $html.Document; Structure = 'about|p:4'; ParagraphCount = 4 }
 }
 
@@ -696,6 +694,94 @@ function Assert-CvParity {
     }
 }
 
+function Convert-ContactLanguage {
+    param([object[]]$Paragraphs, [string]$Language, $Schema)
+
+    if ($Paragraphs.Count -lt 2) { throw "Contact $Language requires a document title and visible heading." }
+    if ($Paragraphs[0].Style -ne 'Heading1' -or $Paragraphs[0].Text.Trim() -cne [string]$Schema.title.$Language) {
+        throw "Unexpected Contact document title for ${Language}: $($Paragraphs[0].Text)"
+    }
+    if ($Paragraphs[1].Style -ne 'Heading2' -or $Paragraphs[1].Text.Trim() -cne [string]$Schema.heading.$Language) {
+        throw "Unexpected Contact visible heading for ${Language}: $($Paragraphs[1].Text)"
+    }
+
+    $fieldIds = @($Schema.fieldIds)
+    $sourceFields = [ordered]@{}
+    foreach ($fieldId in $fieldIds) { $sourceFields[$fieldId] = @() }
+    $seenFields = @{}
+    $currentField = $null
+    $remaining = if ($Paragraphs.Count -gt 2) { @($Paragraphs[2..($Paragraphs.Count - 1)]) } else { @() }
+    foreach ($paragraph in $remaining) {
+        if ($paragraph.Style -eq 'Heading3') {
+            $fieldId = Get-MappedValue -Map $Schema.fieldLabels.$Language -Label $paragraph.Text.Trim()
+            if ($null -eq $fieldId) { throw "Unknown Contact $Language field heading: $($paragraph.Text)" }
+            if ($seenFields.ContainsKey($fieldId)) { throw "Duplicate Contact $Language field: $fieldId" }
+            $seenFields[$fieldId] = $true
+            $currentField = $fieldId
+        } else {
+            if ($paragraph.Style -match '^Heading') { throw "Unsupported Contact $Language heading level '$($paragraph.Style)': $($paragraph.Text)" }
+            if ($null -eq $currentField) { throw "Contact $Language value appears before a field heading." }
+            if ($null -ne $paragraph.NumberId) { throw "Contact $Language values cannot be lists: $currentField" }
+            $sourceFields[$currentField] = @($sourceFields[$currentField]) + $paragraph
+        }
+    }
+
+    $html = New-HtmlDocument -AttributeName 'data-page-id' -AttributeValue 'contact'
+    $section = Add-HtmlElement -Document $html.Document -Parent $html.Article -Name 'section' -Text $null -Attributes @{ id = 'contact' }
+    Add-HtmlElement -Document $html.Document -Parent $section -Name 'h2' -Text ([string]$Schema.heading.$Language) | Out-Null
+    $values = [ordered]@{}
+    foreach ($fieldId in $fieldIds) {
+        $valueParagraphs = @($sourceFields[$fieldId])
+        if ($valueParagraphs.Count -gt 1) { throw "Contact $Language field '$fieldId' must contain at most one value paragraph." }
+        $present = $valueParagraphs.Count -eq 1
+        $text = '?'
+        $url = $null
+        if ($present) {
+            $paragraph = $valueParagraphs[0]
+            $text = $paragraph.Text.Trim()
+            if ([string]::IsNullOrWhiteSpace($text)) { $text = '?' }
+            $linkedRuns = @($paragraph.Runs | Where-Object { $_.Url -and -not [string]::IsNullOrWhiteSpace($_.Text) })
+            if ($linkedRuns.Count -gt 0) {
+                $link = Get-OnlyDocxLink -Paragraphs @($paragraph) -Context "Contact $Language $fieldId"
+                if ($link.Text.Trim() -cne $text) { throw "Contact $Language field '$fieldId' must contain only its linked value." }
+                $uri = $null
+                if (-not [Uri]::TryCreate($link.Url, [UriKind]::Absolute, [ref]$uri)) { throw "Contact $Language field '$fieldId' URL is invalid." }
+                if ($fieldId -ceq 'email' -and $uri.Scheme.ToLowerInvariant() -cne 'mailto') { throw "Contact $Language Email link must use mailto." }
+                if ($fieldId -ceq 'linkedin' -and $uri.Scheme.ToLowerInvariant() -cne 'https') { throw "Contact $Language LinkedIn link must use HTTPS." }
+                $url = [string]$link.Url
+            }
+        }
+
+        $field = Add-HtmlElement -Document $html.Document -Parent $section -Name 'section' -Text $null -Attributes @{ id = $fieldId; class = 'contact-field' }
+        Add-HtmlElement -Document $html.Document -Parent $field -Name 'h3' -Text ([string]$Schema.displayLabels.$Language.$fieldId) | Out-Null
+        $value = Add-HtmlElement -Document $html.Document -Parent $field -Name 'p' -Text $null
+        if ($null -ne $url) {
+            $attributes = @{ href = $url }
+            if ($fieldId -ceq 'linkedin') { $attributes.target = '_blank'; $attributes.rel = 'noopener noreferrer' }
+            Add-HtmlElement -Document $html.Document -Parent $value -Name 'a' -Text $text -Attributes $attributes | Out-Null
+        } else {
+            [void]$value.AppendChild($html.Document.CreateTextNode($text))
+        }
+        $values[$fieldId] = [pscustomobject]@{ Text = $text; Url = $url; Present = $present }
+    }
+
+    return [pscustomobject]@{
+        Html = ConvertTo-SemanticHtml $html.Document
+        Structure = 'contact|h2|email:h3,p|linkedin:h3,p'
+        Values = [pscustomobject]$values
+    }
+}
+
+function Assert-ContactParity {
+    param($Spanish, $English)
+    if ($Spanish.Structure -cne $English.Structure) { throw 'Contact ES/EN semantic structures are not equivalent.' }
+    foreach ($fieldId in @('email', 'linkedin')) {
+        if ($Spanish.Values.$fieldId.Present -ne $English.Values.$fieldId.Present) { throw "Contact ES/EN field presence differs for $fieldId." }
+        if ($Spanish.Values.$fieldId.Text -cne $English.Values.$fieldId.Text) { throw "Contact ES/EN field values differ for $fieldId." }
+        if ([string]$Spanish.Values.$fieldId.Url -cne [string]$English.Values.$fieldId.Url) { throw "Contact ES/EN field URLs differ for $fieldId." }
+    }
+}
+
 function Assert-GameParity {
     param($Spanish, $English)
     if ($Spanish.Structure -cne $English.Structure) { throw 'Game ES/EN semantic structures are not equivalent.' }
@@ -844,6 +930,14 @@ function New-ContentImportPlan {
                     ludographyGroups = @($es.Ludography).Count; download = 'cv'; structure = $es.Structure
                 }
             }
+            'contact' {
+                $es = Convert-ContactLanguage -Paragraphs $blocks.es -Language 'es' -Schema $config.importSchemas.contact
+                $en = Convert-ContactLanguage -Paragraphs $blocks.en -Language 'en' -Schema $config.importSchemas.contact
+                Assert-ContactParity -Spanish $es -English $en
+                $outputs['content/contact/es.html'] = $es.Html
+                $outputs['content/contact/en.html'] = $en.Html
+                $summary = [pscustomobject]@{ es = $es; en = $en; structure = $es.Structure }
+            }
             'game' {
                 $es = Convert-GameLanguage -Paragraphs $blocks.es -Language 'es' -GameId $identity.Id -Schema $config.importSchemas.game
                 $en = Convert-GameLanguage -Paragraphs $blocks.en -Language 'en' -GameId $identity.Id -Schema $config.importSchemas.game
@@ -918,6 +1012,10 @@ function Format-ContentImportPlan {
             $lines += "PROFESSIONAL EXPERIENCE: ES $($item.Summary.esExperience) / EN $($item.Summary.enExperience)"
             $lines += "LUDOGRAPHY GROUPS: $($item.Summary.ludographyGroups) (runtime registry-owned)"
             $lines += 'DOWNLOADS: CV only (publication-gated)'
+        } elseif ($item.Type -eq 'contact') {
+            $lines += "EMAIL: $($item.Summary.en.Values.email.Text)"
+            $lines += "LINKEDIN: $($item.Summary.en.Values.linkedin.Text)"
+            $lines += "STRUCTURE: $($item.Summary.structure)"
         } else {
             $metadata = $item.Summary.en.Metadata
             $lines += 'DOCX METADATA:'

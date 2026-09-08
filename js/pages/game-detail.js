@@ -53,8 +53,8 @@ function createGameMetadata(game, language) {
     appendMetadataRow(metadata, labels.year, [metadataValue(game.year)]);
     appendMetadataRow(metadata, labels.company, [metadataValue(game.studio)]);
     appendMetadataRow(metadata, labels.platform, [metadataValue(game.platform)]);
-    appendMetadataRow(metadata, labels.access, [access]);
     appendMetadataRow(metadata, labels.engine, [metadataValue(game.engineName)]);
+    appendMetadataRow(metadata, labels.access, [access]);
     return metadata;
 }
 

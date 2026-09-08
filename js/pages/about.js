@@ -12,10 +12,9 @@ export async function render({ language, target }) {
     setPageTitle(language === "es" ? `Sobre mí | ${authoredName}` : `About | ${authoredName}`);
 
     if (identity) identity.hidden = true;
-    ["#about-copy > h2", "#contact > h2"].forEach((selector) => {
-        const heading = article.querySelector(selector);
-        if (heading) heading.hidden = true;
-    });
+    article.querySelector("#contact")?.remove();
+    const heading = article.querySelector("#about-copy > h2");
+    if (heading) heading.hidden = true;
 
     const page = createElement("div", { className: "about-layout" });
     const portrait = createElement("figure", { className: "about-portrait" });

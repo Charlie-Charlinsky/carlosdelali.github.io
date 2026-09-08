@@ -47,7 +47,7 @@ js/ + css/                            presentation and runtime behaviour
 
 All `local-content/` paths are ignored local state. A successful future import archives the previous canonical file as `<yyyyMMddTHHmmssZ>__<short-old-hash>.docx`, promotes the accepted inbox file to canonical, and refreshes the established `local-content/<family>/<id>/content.docx` mirror where one exists. Foundation #01 does not populate canonical or rewrite any mirror.
 
-Master filenames use the exact contract `<content-type>__<content-id>__ES-EN.docx`. Supported initial types are `about`, `cv`, `game`, `project`, `writing`, and `oniric-journal`; fixed pages resolve as `about:main` and `cv:main`, while collection IDs must resolve exactly against their current registry. There is no fuzzy target matching. SHA-256 of the raw DOCX bytes determines NEW, CHANGED, and UNCHANGED state; invalid names, unknown targets, and duplicate target keys are INVALID. Removing a file from inbox never deletes or unpublishes its website entity.
+Master filenames use the exact contract `<content-type>__<content-id>__ES-EN.docx`. Supported types are `about`, `cv`, `contact`, `game`, `project`, `writing`, and `oniric-journal`; fixed pages resolve as `about:main`, `cv:main`, and `contact:main`, while collection IDs must resolve exactly against their current registry. There is no fuzzy target matching. SHA-256 of the raw DOCX bytes determines NEW, CHANGED, and UNCHANGED state; invalid names, unknown targets, and duplicate target keys are INVALID. Removing a file from inbox never deletes or unpublishes its website entity.
 
 Each master DOCX is the complete current editorial state. A future import replaces old authored prose and DOCX-owned structured values in full; prose absent from the new document disappears. The importer does not translate, rewrite, paraphrase, summarise, correct, improve, or invent copy. Spanish and English section trees must have structural parity, and a mismatch stops the batch rather than generating or translating a missing section.
 
@@ -65,7 +65,7 @@ Manifest schema version 1 keys accepted entries by stable `<type>:<id>` identity
 
 Tracked automation lives under `tools/content-pipeline/`. Bootstrap creates missing ignored state without overwriting existing files, scan is read-only with respect to the website and canonical/archive sources, and Git orchestration is split into explicit PREPARE, SAVE-CONTENT, INTEGRATE-DEVELOP, and PUBLISH-MAIN modes. Publishing `main` is never an automatic consequence of import and must stop when local and remote release history differ.
 
-Import Engine #02 implements deterministic Open XML parsing for the initial About, CV, and Game schemas without external DOCX dependencies. It uses Word paragraph styles, numbering definitions, inline emphasis, and hyperlink relationships; the exact `ENGLISH VERSION` paragraph is the bilingual boundary and is never emitted. About compiles only the authored About copy while preserving the established identity/contact structure. CV compiles Education and Professional Experience, validates the authored Ludography tree while leaving its runtime list registry-owned, and emits only publication-gated authored downloads. Game compiles editorial sections and updates only DOCX-owned values on the existing registry object.
+Import Engine #02 implements deterministic Open XML parsing for the About, CV, Contact, and Game schemas without external DOCX dependencies. It uses Word paragraph styles, numbering definitions, inline emphasis, and hyperlink relationships; the exact `ENGLISH VERSION` paragraph is the bilingual boundary and is never emitted. About compiles only the authored biography while preserving identity. CV compiles Education and Professional Experience, validates the authored Ludography tree while leaving its runtime list registry-owned, and emits only publication-gated authored downloads. Contact compiles fixed Email and LinkedIn fields with safe-link validation and `?` fallbacks. Game compiles editorial sections and updates only DOCX-owned values on the existing registry object.
 
 Importer version 3 supports nested ordered and unordered DOCX lists generically. The importer reads `w:numPr`, `w:numId`, `w:ilvl`, and the resolved `w:numFmt`; it never infers list depth from prose, punctuation, or visual indentation. Generated child `<ul>` and `<ol>` elements are nested inside the preceding parent `<li>`, while numbering-ID changes, list-type changes, normal paragraphs, headings, and language boundaries end the applicable list sequence. A hierarchy may increase only one level at a time; a skipped level stops preflight with `INVALID_LIST_HIERARCHY` and source context. Bilingual parity compares semantic list type, depth, item order, and topology independently of translated wording and Word numbering-ID values.
 
@@ -90,7 +90,7 @@ future content/about/en.html
 future content/about/es.html
 ```
 
-The DOCX owns the editable identity, biography / About copy, and contact text. Its profile photograph is a separately supplied public asset under `assets/about/profile/`, not part of the DOCX content layer.
+The DOCX owns the editable identity and biography / About copy. Contact channels belong to the independent Contact target. Its profile photograph is a separately supplied public asset under `assets/about/profile/`, not part of the DOCX content layer.
 
 CV uses one private bilingual authoring source:
 
@@ -104,6 +104,10 @@ future content/cv/es.html
 The CV DOCX owns editable Education, Work Experience, and bilingual section / download-action copy. Ludography is populated from `data/ludography.json` and `data/games.json` and must not be duplicated in the CV authoring source. Downloadable CV and Portfolio PDFs remain separate public assets under `assets/downloads/cv/` and `assets/downloads/portfolio/`. Only the CV download is currently allowlisted for rendered UI; the Portfolio PDF remains publicly addressable until it is deliberately removed from deployment.
 
 As with game authoring, DOCX metadata, research notes, and integration instructions must never appear in public semantic content. `local-content/` remains private/local and ignored by Git. Carlos manually supplies profile and download binaries; a later integration pass normalises their public filenames without modifying binary contents or changing extensions.
+
+### Contact Authoring Source
+
+Contact uses the fixed future source `local-content/inbox/contact__main__ES-EN.docx`, resolving to `contact:main`. Each language block contains an internal `Heading1` document title, a visible Contact `Heading2`, and schema-defined Email and LinkedIn `Heading3` fields with at most one value paragraph each. The internal title is not rendered, so the page has no duplicate Contact heading. Missing fields compile to plain `?` values; Email hyperlinks require `mailto:` and LinkedIn hyperlinks require HTTPS. The generated outputs are `content/contact/en.html` and `content/contact/es.html`.
 
 ### Game Authoring Source
 

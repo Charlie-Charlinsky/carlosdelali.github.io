@@ -17,7 +17,8 @@ const LABELS = {
             games: "GAMES",
             projects: "PROJECTS",
             writing: "WRITING",
-            "oniric-journal": "ONIRIC JOURNAL"
+            "oniric-journal": "ONIRIC JOURNAL",
+            contact: "CONTACT"
         }
     },
     es: {
@@ -32,12 +33,13 @@ const LABELS = {
             games: "JUEGOS",
             projects: "PROYECTOS",
             writing: "ESCRITURA",
-            "oniric-journal": "DIARIO ONÍRICO"
+            "oniric-journal": "DIARIO ONÍRICO",
+            contact: "CONTACTO"
         }
     }
 };
 
-const NAVIGATION = ["about", "cv", "games", "projects", "writing", "oniric-journal"];
+const NAVIGATION = ["about", "cv", "games", "projects", "writing", "oniric-journal", "contact"];
 
 export function buildShell(language, page) {
     const strings = LABELS[language];

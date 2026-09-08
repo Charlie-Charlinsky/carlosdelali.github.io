@@ -2,6 +2,15 @@
 
 This file is the permanent, versioned development diary for the portfolio website. The v0.1.0 record below is based on the repository files inspected on 18 August 2026. Version-control status is recorded from the project brief; no Git operation was used during this documentation task.
 
+## 8 September 2026 - About, Games, CV, and Contact polish
+
+- Removed the About portrait frame and moved contact channels out of About.
+- Established one authoritative studio/Game order in `js/core/game-order.js` for Games, Game Detail navigation, and CV Ludography.
+- Simplified CV Ludography rows to plain `Game Title - Year` text with no Game Detail link.
+- Reordered Game Detail metadata so Development Engine precedes Access.
+- Added the published bilingual Contact route, placeholder semantic content, and responsive presentation.
+- Added future `contact__main__ES-EN.docx` support and synthetic validation to the Content Pipeline without importing or accepting a source.
+
 ## v0.1.0 — Initial Sci-Fi Portfolio Prototype
 
 **Date:** 18 August 2026  

@@ -53,6 +53,7 @@ try {
     $targets = @(
         'about__main__ES-EN.docx',
         'cv__main__ES-EN.docx',
+        'contact__main__ES-EN.docx',
         'game__ea-sports-pga-tour__ES-EN.docx',
         'project__project-1__ES-EN.docx',
         'writing__ecos-de-sangre__ES-EN.docx',
@@ -62,7 +63,7 @@ try {
         $identity = ConvertTo-ContentSourceIdentity -FileName $_ -Config $config
         Resolve-ContentPipelineTarget -Identity $identity -RepositoryRoot $root -Config $config
     })
-    Assert-Foundation ($resolved.Count -eq 6) 'fixed pages and all registry families resolve'
+    Assert-Foundation ($resolved.Count -eq 7 -and $resolved[2].TargetKey -ceq 'contact:main') 'fixed pages, Contact, and all registry families resolve'
 
     $unknownRejected = $false
     try {

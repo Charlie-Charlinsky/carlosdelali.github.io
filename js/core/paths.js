@@ -55,7 +55,8 @@ export function resolveRoute(language, page = "about", options = {}) {
         "project-detail": "projects/detail/",
         writing: "writing/",
         "oniric-journal": "oniric-journal/",
-        "oniric-journal-detail": "oniric-journal/detail/"
+        "oniric-journal-detail": "oniric-journal/detail/",
+        contact: "contact/"
     };
     const route = routeMap[page] ?? "";
     const url = new URL(`${language}/${route}`, SITE_ROOT);

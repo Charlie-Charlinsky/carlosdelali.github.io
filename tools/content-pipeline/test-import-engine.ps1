@@ -168,6 +168,70 @@ try {
     try { [void][xml]$threeLevels.Html; $nestedHtmlValid = $true } catch { $nestedHtmlValid = $false }
     Assert-ImportEngine $nestedHtmlValid 'nested list HTML is well-formed and balanced'
 
+    $contactSchema = (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.contact
+    $contactPlaceholderEs = Convert-ContactLanguage -Paragraphs @(
+        (New-TestParagraph 'Contact' -Style 'Heading1'),
+        (New-TestParagraph 'Contacto' -Style 'Heading2'),
+        (New-TestParagraph 'Email' -Style 'Heading3'),
+        (New-TestParagraph '?'),
+        (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
+        (New-TestParagraph '?')
+    ) -Language 'es' -Schema $contactSchema
+    $contactPlaceholderEn = Convert-ContactLanguage -Paragraphs @(
+        (New-TestParagraph 'Contact' -Style 'Heading1'),
+        (New-TestParagraph 'Contact' -Style 'Heading2'),
+        (New-TestParagraph 'Email' -Style 'Heading3'),
+        (New-TestParagraph '?'),
+        (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
+        (New-TestParagraph '?')
+    ) -Language 'en' -Schema $contactSchema
+    Assert-ContactParity -Spanish $contactPlaceholderEs -English $contactPlaceholderEn
+    $contactPlaceholderXml = [xml]$contactPlaceholderEn.Html
+    Assert-ImportEngine ($contactPlaceholderXml.SelectNodes('/article/section/h2[text()="Contact"]').Count -eq 1 -and $contactPlaceholderXml.SelectNodes('//h1').Count -eq 0) 'Contact consumes its document H1 and renders one visible H2'
+    Assert-ImportEngine ($contactPlaceholderXml.SelectNodes('/article/section/section/h3').Count -eq 2 -and $contactPlaceholderXml.SelectNodes('/article/section/section/p[text()="?"]').Count -eq 2) 'Contact placeholder fields render semantic H3 and plain values'
+    Assert-ImportEngine ($contactPlaceholderXml.SelectNodes('//a').Count -eq 0) 'Contact placeholder values do not render links'
+
+    $contactMissing = Convert-ContactLanguage -Paragraphs @(
+        (New-TestParagraph 'Contact' -Style 'Heading1'),
+        (New-TestParagraph 'Contact' -Style 'Heading2')
+    ) -Language 'en' -Schema $contactSchema
+    Assert-ImportEngine (([xml]$contactMissing.Html).SelectNodes('/article/section/section/p[text()="?"]').Count -eq 2) 'missing Contact fields compile to visible question marks'
+    $contactPresenceMismatchRejected = $false
+    try { Assert-ContactParity -Spanish $contactPlaceholderEs -English $contactMissing } catch { $contactPresenceMismatchRejected = $_.Exception.Message -match 'field presence differs' }
+    Assert-ImportEngine $contactPresenceMismatchRejected 'Contact ES/EN field presence mismatch is rejected'
+
+    $contactEmail = 'contact@example.com'
+    $contactLinkedIn = 'https://www.linkedin.com/in/example/'
+    $contactLinkedEs = Convert-ContactLanguage -Paragraphs @(
+        (New-TestParagraph 'Contact' -Style 'Heading1'),
+        (New-TestParagraph 'Contacto' -Style 'Heading2'),
+        (New-TestParagraph 'Email' -Style 'Heading3'),
+        (New-TestParagraph $contactEmail -Url ('mailto:' + $contactEmail)),
+        (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
+        (New-TestParagraph $contactLinkedIn -Url $contactLinkedIn)
+    ) -Language 'es' -Schema $contactSchema
+    $contactLinkedEn = Convert-ContactLanguage -Paragraphs @(
+        (New-TestParagraph 'Contact' -Style 'Heading1'),
+        (New-TestParagraph 'Contact' -Style 'Heading2'),
+        (New-TestParagraph 'Email' -Style 'Heading3'),
+        (New-TestParagraph $contactEmail -Url ('mailto:' + $contactEmail)),
+        (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
+        (New-TestParagraph $contactLinkedIn -Url $contactLinkedIn)
+    ) -Language 'en' -Schema $contactSchema
+    Assert-ContactParity -Spanish $contactLinkedEs -English $contactLinkedEn
+    $contactLinkedXml = [xml]$contactLinkedEn.Html
+    Assert-ImportEngine ($contactLinkedXml.SelectNodes('//section[@id="email"]/p/a[starts-with(@href,"mailto:")]').Count -eq 1 -and $contactLinkedXml.SelectNodes('//section[@id="linkedin"]/p/a[starts-with(@href,"https://")]').Count -eq 1) 'Contact represents valid Email and LinkedIn links semantically'
+    $unsafeContactRejected = $false
+    try {
+        [void](Convert-ContactLanguage -Paragraphs @(
+            (New-TestParagraph 'Contact' -Style 'Heading1'),
+            (New-TestParagraph 'Contact' -Style 'Heading2'),
+            (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
+            (New-TestParagraph 'Unsafe' -Url 'javascript:alert(1)')
+        ) -Language 'en' -Schema $contactSchema)
+    } catch { $unsafeContactRejected = $_.Exception.Message -match 'unsafe URL' }
+    Assert-ImportEngine $unsafeContactRejected 'unsafe Contact URLs are rejected'
+
     $flatGame = Invoke-GameFixture @(
         (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
         (New-TestParagraph 'Overview body'),

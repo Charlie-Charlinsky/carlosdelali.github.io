@@ -24,7 +24,7 @@ The DOCX owns the complete editorial state and may update values of established 
 
 Local authoring state is private because it is excluded from deployment. Conversely, `content/`, `data/`, and `assets/` are public static trees: removing a navigation or UI reference does not make a deployed file confidential.
 
-The operational Import Engine currently supports About, CV, and Game masters. PowerShell/.NET reads DOCX Open XML directly, maps schema-equivalent ES/EN headings, preserves inline emphasis and safe links, and produces complete semantic fragments rather than paragraph patches. The Game compiler merges authored title/company/year/platform/access/engine values into the existing object while preserving IDs, grouping, publication, content paths, media/assets, cover focal position, and registry order. The authored engine name remains textual Game metadata and has no separate image dependency.
+The operational Import Engine currently supports About, Contact, CV, and Game masters. PowerShell/.NET reads DOCX Open XML directly, maps schema-equivalent ES/EN headings, preserves inline emphasis and safe links, and produces complete semantic fragments rather than paragraph patches. The Game compiler merges authored title/company/year/platform/access/engine values into the existing object while preserving IDs, grouping, publication, content paths, media/assets, cover focal position, and registry order. The authored engine name remains textual Game metadata and has no separate image dependency.
 
 Public writes are a single rollback-capable transaction. Generated fragments and registries are staged and parsed before replacement, existing destinations are backed up, frontend QA runs against the proposed public state, and canonical/mirror/manifest acceptance occurs only after QA. The manifest hash is therefore evidence of a successful import, not merely a discovered inbox file.
 
@@ -36,6 +36,7 @@ Public writes are a single rollback-capable transaction. Generated fragments and
 - PROJECTS
 - WRITING
 - ONIRIC JOURNAL / DIARIO ONÍRICO
+- CONTACT / CONTACTO
 
 Narrative and Drawings are future sections. They are not current routes and must not appear in the v0.2.0 main navigation.
 
@@ -53,6 +54,7 @@ Narrative and Drawings are future sections. They are not current routes and must
 /en/projects/
 /en/writing/
 /en/oniric-journal/
+/en/contact/
 
 /en/games/detail/?id=<game-id>
 /en/projects/detail/?id=<project-id>
@@ -67,6 +69,7 @@ Narrative and Drawings are future sections. They are not current routes and must
 /es/projects/
 /es/writing/
 /es/oniric-journal/
+/es/contact/
 
 /es/games/detail/?id=<game-id>
 /es/projects/detail/?id=<project-id>
@@ -85,7 +88,7 @@ The intended desktop header is fixed while page content scrolls.
 ```text
 Upper left:  ESP / ENG
 Below:       CARLOS J. L. SÁNCHEZ
-Right:       About / CV / Games / Projects / Writing / Oniric Journal
+Right:       About / CV / Games / Projects / Writing / Oniric Journal / Contact
 ```
 
 The language selector, designer name, and main navigation are global controls. The current language and page must be conveyed accessibly as well as visually.
@@ -106,13 +109,12 @@ On mobile, the header must:
 - Profile
 - Portrait
 - Introduction
-- Contact information
 
 About is the default landing page for each language tree.
 
 #### Authoring Architecture
 
-`local-content/about/content.docx` is the authoritative editable source for the bilingual identity, biography / About copy, and contact text. A future content-integration pass will transform it into:
+`local-content/about/content.docx` is the authoritative editable source for the bilingual identity and biography / About copy. A content-integration pass transforms it into:
 
 ```text
 local-content/about/content.docx
@@ -127,7 +129,6 @@ The future semantic fragment follows this conceptual model:
 <article data-page-id="about">
     identity
     biography / about-copy
-    contact
 </article>
 ```
 
@@ -159,7 +160,7 @@ The CV has three permanent main content regions:
 2. Work Experience
 3. Ludography
 
-Education and Work Experience are DOCX-authored. Ludography remains data-driven from `data/ludography.json` and `data/games.json`; it must be mounted into the future semantic/page composition rather than duplicated as manually maintained CV copy.
+Education and Work Experience are DOCX-authored. Ludography remains data-driven from `data/ludography.json` and `data/games.json`; its studio and Game sequence comes from `js/core/game-order.js`, the same canonical ordering consumed by Games. Ludography titles are informational text, not Game Detail links.
 
 The future semantic fragment follows this conceptual model:
 
@@ -178,6 +179,15 @@ The public, versioned download assets live separately from the DOCX:
 - `assets/downloads/portfolio/carlos-lopez-portfolio.pdf`
 
 The page renderer composes semantic content, data-driven Ludography, and allowlisted download actions without duplicating the global page shell or navigation. The Portfolio action is currently unpublished, so it is omitted before the CV fragment is mounted. Its PDF remains a deployed public asset and can still be fetched directly by a known URL; removing a UI control is not file-access security.
+
+### CONTACT
+
+- Email
+- LinkedIn
+
+Contact is a published top-level section at `/en/contact/` and `/es/contact/`. Its localized semantic fragments live under `content/contact/`; the initial values are plain-text `?` placeholders and therefore do not create invalid links.
+
+The Content Pipeline reserves the deterministic future source `contact__main__ES-EN.docx` for target `contact:main`. Its document-level H1 is consumed as the source envelope, while one visible H2 and the Email and LinkedIn H3 fields are rendered exactly once. Missing values remain visible as `?`; populated Email and LinkedIn links must use `mailto:` and HTTPS respectively.
 
 ### GAMES
 
@@ -221,7 +231,7 @@ Game
 
 Game metadata may include optional `year`, `platform`, `engineName`, and `accessUrl` values. Missing values render as `?`. `accessUrl` is the single structured purchase/play/access target and is rendered as a safe external link when present. `engineName` is rendered as textual metadata only.
 
-Game Detail Previous/Next controls are circular. Both Games Index grouping and Game Detail navigation consume the same ordered studio/game helper, so the flattened navigation sequence always follows the visible Games Index order without a second ordering rule.
+Game Detail Previous/Next controls are circular. Games Index grouping, Game Detail navigation, and CV Ludography consume the same authoritative studio/game order from `js/core/game-order.js`, so all three views remain aligned without duplicated order arrays.
 
 On desktop, the visual gallery is positioned alongside the written content. A maximum of six gallery images may be available for the visible page, while game metadata and professional contribution remain the primary information. The layout becomes responsive on tablet and mobile. Final CSS dimensions are intentionally undefined at this architecture stage.
 

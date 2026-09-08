@@ -4,12 +4,13 @@
   "supportedTypes": [
     "about",
     "cv",
+    "contact",
     "game",
     "project",
     "writing",
     "oniric-journal"
   ],
-  "importerVersion": 6,
+  "importerVersion": 7,
   "importSchemas": {
     "about": {
       "title": {"es": "About", "en": "About"}
@@ -27,6 +28,37 @@
           "Professional Experience": "work-experience",
           "Ludography": "ludography",
           "Downloads": "downloads"
+        }
+      }
+    },
+    "contact": {
+      "title": {
+        "es": "Contact",
+        "en": "Contact"
+      },
+      "heading": {
+        "es": "Contacto",
+        "en": "Contact"
+      },
+      "fieldIds": ["email", "linkedin"],
+      "fieldLabels": {
+        "es": {
+          "Email": "email",
+          "LinkedIn": "linkedin"
+        },
+        "en": {
+          "Email": "email",
+          "LinkedIn": "linkedin"
+        }
+      },
+      "displayLabels": {
+        "es": {
+          "email": "Email",
+          "linkedin": "LinkedIn"
+        },
+        "en": {
+          "email": "Email",
+          "linkedin": "LinkedIn"
         }
       }
     },
@@ -110,7 +142,7 @@
       "publicOutputs": ["content/about/en.html", "content/about/es.html"],
       "mirror": "local-content/about/content.docx",
       "docxOwnedFields": ["aboutCopy"],
-      "protectedFields": ["identity", "contact", "profileAsset", "route", "publication"]
+      "protectedFields": ["identity", "profileAsset", "route", "publication"]
     },
     "cv": {
       "fixedIds": ["main"],
@@ -119,6 +151,14 @@
       "mirror": "local-content/cv/content.docx",
       "docxOwnedFields": ["profile", "workExperience", "education", "sectionCopy"],
       "protectedFields": ["ludographyRelationships", "downloadAssets", "downloadPublication", "route"]
+    },
+    "contact": {
+      "fixedIds": ["main"],
+      "registry": null,
+      "publicOutputs": ["content/contact/en.html", "content/contact/es.html"],
+      "mirror": "local-content/contact/content.docx",
+      "docxOwnedFields": ["email", "linkedin"],
+      "protectedFields": ["route", "publication"]
     },
     "game": {
       "fixedIds": [],

@@ -5,7 +5,8 @@ export const PUBLICATION_POLICY = Object.freeze({
         "games",
         "projects",
         "writing",
-        "oniric-journal"
+        "oniric-journal",
+        "contact"
     ]),
     items: Object.freeze({
         "cv-downloads": Object.freeze(["cv"])

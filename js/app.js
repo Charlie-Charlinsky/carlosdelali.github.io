@@ -13,7 +13,8 @@ const PAGE_MODULES = {
     "project-detail": () => import("./pages/project-detail.js"),
     writing: () => import("./pages/writing.js"),
     "oniric-journal": () => import("./pages/oniric-journal.js"),
-    "oniric-journal-detail": () => import("./pages/oniric-journal-detail.js")
+    "oniric-journal-detail": () => import("./pages/oniric-journal-detail.js"),
+    contact: () => import("./pages/contact.js")
 };
 
 async function initialize() {
