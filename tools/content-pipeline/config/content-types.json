@@ -10,7 +10,7 @@
     "writing",
     "oniric-journal"
   ],
-  "importerVersion": 7,
+  "importerVersion": 8,
   "importSchemas": {
     "about": {
       "title": {"es": "About", "en": "About"}
@@ -32,10 +32,7 @@
       }
     },
     "contact": {
-      "title": {
-        "es": "Contact",
-        "en": "Contact"
-      },
+      "firstHeadingStyle": "Heading2",
       "heading": {
         "es": "Contacto",
         "en": "Contact"

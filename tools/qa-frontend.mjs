@@ -231,15 +231,33 @@ if (!portraitRule.includes("aspect-ratio: 3 / 4") || !portraitRule.includes("wid
 ].forEach((filePath) => assertFile(filePath, "Contact"));
 const contactEnglish = read("content/contact/en.html");
 const contactSpanish = read("content/contact/es.html");
+const contactLinks = new Map();
 for (const [language, source, heading] of [["en", contactEnglish, "Contact"], ["es", contactSpanish, "Contacto"]]) {
     if (!source.includes(`<h2>${heading}</h2>`)
         || !source.includes("<h3>Email</h3>")
-        || !source.includes("<h3>LinkedIn</h3>")) {
+        || !source.includes("<h3>LinkedIn</h3>")
+        || (source.match(/<h2\b/g) ?? []).length !== 1
+        || (source.match(/<h3\b/g) ?? []).length !== 2
+        || /<h1\b/i.test(source)) {
         fail(`Contact ${language}: jerarquia H2/H3 no resuelta`);
     }
-    if ((source.match(/<p>\?<\/p>/g) ?? []).length !== 2 || /<a\b/i.test(source)) {
-        fail(`Contact ${language}: placeholders o enlaces invalidos`);
+
+    const emailSection = source.match(/<section id="email"[^>]*>[\s\S]*?<\/section>/)?.[0] ?? "";
+    const linkedinSection = source.match(/<section id="linkedin"[^>]*>[\s\S]*?<\/section>/)?.[0] ?? "";
+    const emailLink = emailSection.match(/<a\b[^>]*\bhref="([^"]+)"[^>]*>([^<]+)<\/a>/);
+    const linkedinLink = linkedinSection.match(/<a\b[^>]*\bhref="([^"]+)"[^>]*>([^<]+)<\/a>/);
+    if (/<p>\?<\/p>/.test(source)
+        || !emailLink || !emailLink[1].toLowerCase().startsWith("mailto:") || !emailLink[2].trim()
+        || !linkedinLink || !linkedinLink[1].toLowerCase().startsWith("https://") || !linkedinLink[2].trim()) {
+        fail(`Contact ${language}: valores o enlaces semanticos invalidos`);
+    } else {
+        contactLinks.set(language, { email: emailLink[1], linkedin: linkedinLink[1] });
     }
+}
+if (contactLinks.size === 2
+    && (contactLinks.get("en").email !== contactLinks.get("es").email
+        || contactLinks.get("en").linkedin !== contactLinks.get("es").linkedin)) {
+    fail("Contact: los destinos ES/EN no coinciden");
 }
 if (!appSource.includes('contact: () => import("./pages/contact.js")')
     || !pathsSource.includes('contact: "contact/"')

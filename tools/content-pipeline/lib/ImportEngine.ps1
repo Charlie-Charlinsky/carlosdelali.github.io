@@ -697,12 +697,11 @@ function Assert-CvParity {
 function Convert-ContactLanguage {
     param([object[]]$Paragraphs, [string]$Language, $Schema)
 
-    if ($Paragraphs.Count -lt 2) { throw "Contact $Language requires a document title and visible heading." }
-    if ($Paragraphs[0].Style -ne 'Heading1' -or $Paragraphs[0].Text.Trim() -cne [string]$Schema.title.$Language) {
-        throw "Unexpected Contact document title for ${Language}: $($Paragraphs[0].Text)"
-    }
-    if ($Paragraphs[1].Style -ne 'Heading2' -or $Paragraphs[1].Text.Trim() -cne [string]$Schema.heading.$Language) {
-        throw "Unexpected Contact visible heading for ${Language}: $($Paragraphs[1].Text)"
+    if ($Paragraphs.Count -lt 1) { throw "Contact $Language requires a visible heading." }
+    $firstHeadingStyle = [string]$Schema.firstHeadingStyle
+    if ([string]::IsNullOrWhiteSpace($firstHeadingStyle)) { throw 'Contact first-heading style schema is empty.' }
+    if ($Paragraphs[0].Style -cne $firstHeadingStyle -or $Paragraphs[0].Text.Trim() -cne [string]$Schema.heading.$Language) {
+        throw "Unexpected Contact visible heading for ${Language}: $($Paragraphs[0].Text)"
     }
 
     $fieldIds = @($Schema.fieldIds)
@@ -710,7 +709,7 @@ function Convert-ContactLanguage {
     foreach ($fieldId in $fieldIds) { $sourceFields[$fieldId] = @() }
     $seenFields = @{}
     $currentField = $null
-    $remaining = if ($Paragraphs.Count -gt 2) { @($Paragraphs[2..($Paragraphs.Count - 1)]) } else { @() }
+    $remaining = if ($Paragraphs.Count -gt 1) { @($Paragraphs[1..($Paragraphs.Count - 1)]) } else { @() }
     foreach ($paragraph in $remaining) {
         if ($paragraph.Style -eq 'Heading3') {
             $fieldId = Get-MappedValue -Map $Schema.fieldLabels.$Language -Label $paragraph.Text.Trim()

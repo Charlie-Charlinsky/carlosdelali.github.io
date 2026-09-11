@@ -185,9 +185,9 @@ The page renderer composes semantic content, data-driven Ludography, and allowli
 - Email
 - LinkedIn
 
-Contact is a published top-level section at `/en/contact/` and `/es/contact/`. Its localized semantic fragments live under `content/contact/`; the initial values are plain-text `?` placeholders and therefore do not create invalid links.
+Contact is a published top-level section at `/en/contact/` and `/es/contact/`. Its localized semantic fragments live under `content/contact/` and contain the accepted authored Email and LinkedIn links.
 
-The Content Pipeline reserves the deterministic future source `contact__main__ES-EN.docx` for target `contact:main`. Its document-level H1 is consumed as the source envelope, while one visible H2 and the Email and LinkedIn H3 fields are rendered exactly once. Missing values remain visible as `?`; populated Email and LinkedIn links must use `mailto:` and HTTPS respectively.
+The Content Pipeline maps the deterministic source `contact__main__ES-EN.docx` to target `contact:main`. Each language block starts at the one visible H2, with no document-level H1, and renders the Email and LinkedIn H3 fields exactly once. Missing values remain visible as `?`; populated Email and LinkedIn display text is preserved independently from relationship targets, which must use `mailto:` and HTTPS respectively.
 
 ### GAMES
 

@@ -169,68 +169,98 @@ try {
     Assert-ImportEngine $nestedHtmlValid 'nested list HTML is well-formed and balanced'
 
     $contactSchema = (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.contact
-    $contactPlaceholderEs = Convert-ContactLanguage -Paragraphs @(
-        (New-TestParagraph 'Contact' -Style 'Heading1'),
+    Assert-ImportEngine ($contactSchema.firstHeadingStyle -ceq 'Heading2' -and $null -eq $contactSchema.PSObject.Properties['title']) 'A. Contact schema declares H2-first with no Heading 1 envelope'
+
+    $contactEmail = 'contact@example.com'
+    $contactDisplayText = 'https://linkedin.com/in/carjelosa'
+    $contactTarget = 'https://profiles.example.test/member'
+    $contactLinkedEs = Convert-ContactLanguage -Paragraphs @(
         (New-TestParagraph 'Contacto' -Style 'Heading2'),
         (New-TestParagraph 'Email' -Style 'Heading3'),
-        (New-TestParagraph '?'),
+        (New-TestParagraph $contactEmail -Url ('mailto:' + $contactEmail)),
         (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
-        (New-TestParagraph '?')
+        (New-TestParagraph $contactDisplayText -Url $contactTarget)
     ) -Language 'es' -Schema $contactSchema
-    $contactPlaceholderEn = Convert-ContactLanguage -Paragraphs @(
-        (New-TestParagraph 'Contact' -Style 'Heading1'),
+    $contactLinkedEn = Convert-ContactLanguage -Paragraphs @(
         (New-TestParagraph 'Contact' -Style 'Heading2'),
         (New-TestParagraph 'Email' -Style 'Heading3'),
-        (New-TestParagraph '?'),
+        (New-TestParagraph $contactEmail -Url ('mailto:' + $contactEmail)),
         (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
-        (New-TestParagraph '?')
+        (New-TestParagraph $contactDisplayText -Url $contactTarget)
     ) -Language 'en' -Schema $contactSchema
-    Assert-ContactParity -Spanish $contactPlaceholderEs -English $contactPlaceholderEn
-    $contactPlaceholderXml = [xml]$contactPlaceholderEn.Html
-    Assert-ImportEngine ($contactPlaceholderXml.SelectNodes('/article/section/h2[text()="Contact"]').Count -eq 1 -and $contactPlaceholderXml.SelectNodes('//h1').Count -eq 0) 'Contact consumes its document H1 and renders one visible H2'
-    Assert-ImportEngine ($contactPlaceholderXml.SelectNodes('/article/section/section/h3').Count -eq 2 -and $contactPlaceholderXml.SelectNodes('/article/section/section/p[text()="?"]').Count -eq 2) 'Contact placeholder fields render semantic H3 and plain values'
-    Assert-ImportEngine ($contactPlaceholderXml.SelectNodes('//a').Count -eq 0) 'Contact placeholder values do not render links'
+    Assert-ContactParity -Spanish $contactLinkedEs -English $contactLinkedEn
+    $contactLinkedXml = [xml]$contactLinkedEn.Html
+    Assert-ImportEngine ($contactLinkedXml.SelectNodes('/article/section/h2[text()="Contact"]').Count -eq 1 -and $contactLinkedXml.SelectNodes('//h1').Count -eq 0) 'B. Contact H2 compiles once without a duplicate title'
+    Assert-ImportEngine ($contactLinkedXml.SelectNodes('/article/section/section/h3[text()="Email"]').Count -eq 1 -and $contactLinkedXml.SelectNodes('/article/section/section/h3[text()="LinkedIn"]').Count -eq 1) 'C. Contact Email and LinkedIn Heading 3 fields compile'
+    Assert-ImportEngine ($contactLinkedEn.Values.linkedin.Text -ceq $contactDisplayText -and $contactLinkedEn.Values.linkedin.Url -ceq $contactTarget -and $contactLinkedEn.Values.linkedin.Text -cne $contactLinkedEn.Values.linkedin.Url) 'D. Contact display text and hyperlink target remain separate source properties'
+    Assert-ImportEngine ($contactLinkedXml.SelectSingleNode('//section[@id="linkedin"]/p/a').InnerText -ceq $contactDisplayText -and $contactLinkedXml.SelectSingleNode('//section[@id="linkedin"]/p/a').GetAttribute('href') -ceq $contactTarget) 'E. arbitrary authored LinkedIn display text is emitted unchanged'
+    Assert-ImportEngine ($contactLinkedXml.SelectNodes('//section[@id="email"]/p/a[@href="mailto:contact@example.com"]').Count -eq 1) 'F. valid Contact Email mailto behaviour remains unchanged'
+
+    $namedDisplay = Convert-ContactLanguage -Paragraphs @(
+        (New-TestParagraph 'Contact' -Style 'Heading2'),
+        (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
+        (New-TestParagraph 'LinkedIn Profile' -Url $contactTarget)
+    ) -Language 'en' -Schema $contactSchema
+    Assert-ImportEngine ($namedDisplay.Values.linkedin.Text -ceq 'LinkedIn Profile' -and $namedDisplay.Values.linkedin.Url -ceq $contactTarget) 'G. valid HTTPS targets do not require a particular display string'
 
     $contactMissing = Convert-ContactLanguage -Paragraphs @(
-        (New-TestParagraph 'Contact' -Style 'Heading1'),
         (New-TestParagraph 'Contact' -Style 'Heading2')
     ) -Language 'en' -Schema $contactSchema
     Assert-ImportEngine (([xml]$contactMissing.Html).SelectNodes('/article/section/section/p[text()="?"]').Count -eq 2) 'missing Contact fields compile to visible question marks'
     $contactPresenceMismatchRejected = $false
-    try { Assert-ContactParity -Spanish $contactPlaceholderEs -English $contactMissing } catch { $contactPresenceMismatchRejected = $_.Exception.Message -match 'field presence differs' }
+    try { Assert-ContactParity -Spanish $contactLinkedEs -English $contactMissing } catch { $contactPresenceMismatchRejected = $_.Exception.Message -match 'field presence differs' }
     Assert-ImportEngine $contactPresenceMismatchRejected 'Contact ES/EN field presence mismatch is rejected'
 
-    $contactEmail = 'contact@example.com'
-    $contactLinkedIn = 'https://www.linkedin.com/in/example/'
-    $contactLinkedEs = Convert-ContactLanguage -Paragraphs @(
-        (New-TestParagraph 'Contact' -Style 'Heading1'),
-        (New-TestParagraph 'Contacto' -Style 'Heading2'),
-        (New-TestParagraph 'Email' -Style 'Heading3'),
-        (New-TestParagraph $contactEmail -Url ('mailto:' + $contactEmail)),
-        (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
-        (New-TestParagraph $contactLinkedIn -Url $contactLinkedIn)
-    ) -Language 'es' -Schema $contactSchema
-    $contactLinkedEn = Convert-ContactLanguage -Paragraphs @(
-        (New-TestParagraph 'Contact' -Style 'Heading1'),
+    $differentTargetEn = Convert-ContactLanguage -Paragraphs @(
         (New-TestParagraph 'Contact' -Style 'Heading2'),
         (New-TestParagraph 'Email' -Style 'Heading3'),
         (New-TestParagraph $contactEmail -Url ('mailto:' + $contactEmail)),
         (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
-        (New-TestParagraph $contactLinkedIn -Url $contactLinkedIn)
+        (New-TestParagraph $contactDisplayText -Url 'https://profiles.example.test/different')
     ) -Language 'en' -Schema $contactSchema
-    Assert-ContactParity -Spanish $contactLinkedEs -English $contactLinkedEn
-    $contactLinkedXml = [xml]$contactLinkedEn.Html
-    Assert-ImportEngine ($contactLinkedXml.SelectNodes('//section[@id="email"]/p/a[starts-with(@href,"mailto:")]').Count -eq 1 -and $contactLinkedXml.SelectNodes('//section[@id="linkedin"]/p/a[starts-with(@href,"https://")]').Count -eq 1) 'Contact represents valid Email and LinkedIn links semantically'
+    $differentContactTargetRejected = $false
+    try { Assert-ContactParity -Spanish $contactLinkedEs -English $differentTargetEn } catch { $differentContactTargetRejected = $_.Exception.Message -match 'field URLs differ for linkedin' }
+    Assert-ImportEngine $differentContactTargetRejected 'H. different Contact LinkedIn destinations fail ES/EN parity'
+
+    $httpContactRejected = $false
+    try {
+        [void](Convert-ContactLanguage -Paragraphs @(
+            (New-TestParagraph 'Contact' -Style 'Heading2'),
+            (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
+            (New-TestParagraph $contactDisplayText -Url 'http://profiles.example.test/member')
+        ) -Language 'en' -Schema $contactSchema)
+    } catch { $httpContactRejected = $_.Exception.Message -match 'LinkedIn link must use HTTPS' }
+    Assert-ImportEngine $httpContactRejected 'I. Contact LinkedIn HTTP targets remain rejected'
+
     $unsafeContactRejected = $false
     try {
         [void](Convert-ContactLanguage -Paragraphs @(
-            (New-TestParagraph 'Contact' -Style 'Heading1'),
             (New-TestParagraph 'Contact' -Style 'Heading2'),
             (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
             (New-TestParagraph 'Unsafe' -Url 'javascript:alert(1)')
         ) -Language 'en' -Schema $contactSchema)
     } catch { $unsafeContactRejected = $_.Exception.Message -match 'unsafe URL' }
-    Assert-ImportEngine $unsafeContactRejected 'unsafe Contact URLs are rejected'
+    Assert-ImportEngine $unsafeContactRejected 'J. unsafe Contact URLs remain rejected'
+
+    $plainLinkedInEn = Convert-ContactLanguage -Paragraphs @(
+        (New-TestParagraph 'Contact' -Style 'Heading2'),
+        (New-TestParagraph 'Email' -Style 'Heading3'),
+        (New-TestParagraph $contactEmail -Url ('mailto:' + $contactEmail)),
+        (New-TestParagraph 'LinkedIn' -Style 'Heading3'),
+        (New-TestParagraph $contactDisplayText)
+    ) -Language 'en' -Schema $contactSchema
+    $contactLinkPresenceMismatchRejected = $false
+    try { Assert-ContactParity -Spanish $contactLinkedEs -English $plainLinkedInEn } catch { $contactLinkPresenceMismatchRejected = $_.Exception.Message -match 'field URLs differ for linkedin' }
+    Assert-ImportEngine $contactLinkPresenceMismatchRejected 'K. plain-text versus hyperlink Contact parity mismatch remains rejected'
+
+    $contactH1Rejected = $false
+    try {
+        [void](Convert-ContactLanguage -Paragraphs @(
+            (New-TestParagraph 'Contact' -Style 'Heading1'),
+            (New-TestParagraph 'Contact' -Style 'Heading2')
+        ) -Language 'en' -Schema $contactSchema)
+    } catch { $contactH1Rejected = $_.Exception.Message -match 'Unexpected Contact visible heading' }
+    Assert-ImportEngine $contactH1Rejected 'Contact does not consume or require a Heading 1 envelope'
 
     $flatGame = Invoke-GameFixture @(
         (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
@@ -258,6 +288,16 @@ try {
     Assert-ImportEngine ($localizedStyleMap['Ttulo1'] -ceq 'Heading1' -and $localizedStyleMap['LocalizedChild'] -ceq 'Heading1') 'Open XML style declarations resolve localized and based-on Heading 1 styles'
     $localizedGameDocument = Split-BilingualDocx (Read-DocxDocument -Path (Join-Path $root 'local-content\inbox\game__a-night-with-cleo__ES-EN.docx'))
     Assert-ImportEngine ($localizedGameDocument.es[0].Style -ceq 'Heading1' -and $localizedGameDocument.en[0].Style -ceq 'Heading1') 'real localized Game title styles normalize to Heading 1'
+
+    $currentContactPlan = New-ContentImportPlan -RepositoryRoot $root -IncludeUnchanged -TargetKeys @('contact:main')
+    $currentContact = @($currentContactPlan.Items)[0]
+    $currentContactEs = [xml]$currentContact.Outputs['content/contact/es.html']
+    $currentContactEn = [xml]$currentContact.Outputs['content/contact/en.html']
+    Assert-ImportEngine ($currentContactPlan.Items.Count -eq 1 -and $currentContact.TargetKey -ceq 'contact:main' -and $currentContact.Status -in @('NEW', 'UNCHANGED')) 'current contact:main source passes the H2-first import plan'
+    Assert-ImportEngine ($currentContact.Summary.es.Values.linkedin.Text -ceq 'https://linkedin.com/in/carjelosa' -and $currentContact.Summary.en.Values.linkedin.Text -ceq 'https://linkedin.com/in/carjelosa') 'current Contact LinkedIn display text remains source-authoritative'
+    Assert-ImportEngine ($currentContact.Summary.es.Values.linkedin.Url -ceq 'https://linkedin.com/in/carjelosa' -and $currentContact.Summary.en.Values.linkedin.Url -ceq 'https://linkedin.com/in/carjelosa') 'current Contact LinkedIn HTTPS relationship targets match'
+    Assert-ImportEngine ($currentContactEs.SelectNodes('//h1').Count -eq 0 -and $currentContactEn.SelectNodes('//h1').Count -eq 0 -and $currentContactEs.SelectNodes('/article/section/h2').Count -eq 1 -and $currentContactEn.SelectNodes('/article/section/h2').Count -eq 1) 'current Contact output contains one H2 and no duplicate H1 title'
+    Assert-ImportEngine ($currentContactEs.SelectNodes('/article/section/section/h3').Count -eq 2 -and $currentContactEn.SelectNodes('/article/section/section/h3').Count -eq 2) 'current Contact ES/EN Heading 3 topology matches'
 
     $singleSubsectionGame = Invoke-GameFixture @(
         (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
@@ -458,6 +498,11 @@ try {
     Assert-ImportEngine (($targets -join '|') -ceq $expectedTargets) 'all expected targets resolve in deterministic order'
     Assert-ImportEngine ($plan.Scan.Counts.INVALID -eq 0) 'filename and target preflight'
     Assert-ImportEngine ($plan.Items.Count -eq 6) 'stable About, CV, and EA DOCX fixtures parse'
+
+    $manifest = Read-ContentPipelineManifest -Path (Get-ContentPipelinePaths -RepositoryRoot $root).Manifest
+    $previousAcceptedTargetKeys = @($manifest.entries.PSObject.Properties | Where-Object Name -CNE 'contact:main' | ForEach-Object Name)
+    $previousAcceptedPlan = New-ContentImportPlan -RepositoryRoot $root -IncludeUnchanged -TargetKeys $previousAcceptedTargetKeys
+    Assert-ImportEngine ($previousAcceptedTargetKeys.Count -eq 21 -and $previousAcceptedPlan.Items.Count -eq 21 -and @($previousAcceptedPlan.Items | Where-Object Status -ne 'UNCHANGED').Count -eq 0) 'all previous 21 accepted sources remain valid and unchanged'
 
     foreach ($item in $plan.Items) {
         foreach ($relative in $item.Outputs.Keys) {

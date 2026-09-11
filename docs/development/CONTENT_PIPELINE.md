@@ -107,7 +107,7 @@ As with game authoring, DOCX metadata, research notes, and integration instructi
 
 ### Contact Authoring Source
 
-Contact uses the fixed future source `local-content/inbox/contact__main__ES-EN.docx`, resolving to `contact:main`. Each language block contains an internal `Heading1` document title, a visible Contact `Heading2`, and schema-defined Email and LinkedIn `Heading3` fields with at most one value paragraph each. The internal title is not rendered, so the page has no duplicate Contact heading. Missing fields compile to plain `?` values; Email hyperlinks require `mailto:` and LinkedIn hyperlinks require HTTPS. The generated outputs are `content/contact/en.html` and `content/contact/es.html`.
+Contact uses the fixed source `local-content/inbox/contact__main__ES-EN.docx`, resolving to `contact:main`. Each language block intentionally starts with the visible Contact `Heading2`, followed by schema-defined Email and LinkedIn `Heading3` fields with at most one value paragraph each; no document-level `Heading1` is required or rendered. Missing fields compile to plain `?` values. Hyperlink display text is emitted exactly as authored, independently of the Word relationship target; Email targets require `mailto:`, LinkedIn targets require HTTPS, and ES/EN values and targets must match. The generated outputs are `content/contact/en.html` and `content/contact/es.html`.
 
 ### Game Authoring Source
 

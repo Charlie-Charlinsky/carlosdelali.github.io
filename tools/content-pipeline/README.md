@@ -59,7 +59,9 @@ Importer version 5 permits the Game schema to require a prefix of the declared m
 
 Importer version 6 extends the same explicit Game subsection schema to known Contribution child fields, including localized ES/EN labels. These normal, non-list field labels compile as sibling `<h3>` sections only beneath `contribution`; unrelated normal prose is unchanged. Access metadata parity compares the effective authored destination, preferring a DOCX hyperlink relationship and otherwise accepting the identical safe URL text used by registry compilation.
 
-Importer version 7 adds the fixed `contact:main` target for `contact__main__ES-EN.docx`. The document-level `Heading1` is consumed as an authoring envelope; the visible `Heading2` and fixed Email/LinkedIn `Heading3` fields compile to `content/contact/{es,en}.html`. Missing fields render as plain `?` values. Email links must use `mailto:`, LinkedIn links must use HTTPS, and ES/EN field presence, values, and targets must match. About compilation no longer preserves or emits a contact block.
+Importer version 7 adds the fixed `contact:main` target for `contact__main__ES-EN.docx`. Its initial contract consumed a document-level `Heading1` before compiling the visible `Heading2` and fixed Email/LinkedIn `Heading3` fields to `content/contact/{es,en}.html`. Missing fields render as plain `?` values. Email links must use `mailto:`, LinkedIn links must use HTTPS, and ES/EN field presence, values, and targets must match. About compilation no longer preserves or emits a contact block.
+
+Importer version 8 declares the Contact source as intentionally H2-first, with no document-level `Heading1`. Hyperlink display text remains source-authored and is emitted unchanged, while the independent Word relationship target is validated for a safe scheme and ES/EN destination parity. Other content schemas retain their existing heading contracts.
 
 `-Rebuild` explicitly recompiles accepted UNCHANGED sources after a compiler/tooling change. Normal imports continue to skip unchanged hashes. Rebuilding an identical canonical source does not create a redundant archive version.
 
