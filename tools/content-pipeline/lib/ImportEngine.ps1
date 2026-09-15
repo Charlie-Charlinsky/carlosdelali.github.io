@@ -1,4 +1,5 @@
 Set-StrictMode -Version Latest
+. (Join-Path $PSScriptRoot 'GameSemantics.ps1')
 
 $script:WordNamespace = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 $script:OfficeRelationshipNamespace = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
@@ -576,12 +577,17 @@ function ConvertTo-ContentFragmentId {
 function Convert-GameLanguage {
     param([object[]]$Paragraphs, [string]$Language, [string]$GameId, $Schema)
     if ($Paragraphs.Count -lt 2) { throw "Game $Language document is incomplete." }
+    $nodes = @(for ($nodeIndex = 0; $nodeIndex -lt $Paragraphs.Count; $nodeIndex++) {
+        New-GameSemanticNode -Paragraph $Paragraphs[$nodeIndex] -Index $nodeIndex -Language $Language -Schema $Schema
+    })
+    $rawTree = $nodes | ConvertTo-Json -Depth 15 | ConvertFrom-Json
     $titleIndex = -1
     for ($index = 0; $index -lt $Paragraphs.Count; $index++) {
         if ($Paragraphs[$index].Style -eq 'Heading1') { $titleIndex = $index; break }
     }
     if ($titleIndex -lt 0) { throw "Game $Language title is missing." }
     $title = $Paragraphs[$titleIndex].Text.Trim()
+    Set-GameNodeRole $nodes[$titleIndex] 'h1' 'game.root' 1 '' 'game.root'
     $metadata = [ordered]@{}
     $metadataOrder = @()
     $sourcePresence = [ordered]@{ year = $false; company = $false; platform = $false; access = $false; engine = $false }
@@ -593,9 +599,11 @@ function Convert-GameLanguage {
         if ($null -eq $field) { break }
         if ($labelParagraph.Style -ne 'Heading2') { throw "Game $Language metadata label '$($labelParagraph.Text)' must use Heading 2." }
         if ($metadata.Contains($field)) { throw "Duplicate Game $Language metadata field: $field" }
+        Set-GameNodeRole $nodes[$index] 'metadata-label' $field $null 'game.root' 'game.root'
         $index++
         if ($index -ge $Paragraphs.Count) { throw "Game $Language metadata field '$field' has no value." }
         $valueParagraph = $Paragraphs[$index]
+        Set-GameNodeRole $nodes[$index] 'metadata-value' $field $null 'game.root' 'game.root'
         $link = @($valueParagraph.Runs | Where-Object Url | Select-Object -First 1)
         $metadata[$field] = [pscustomobject]@{ Value = $valueParagraph.Text.Trim(); Url = if ($link.Count) { $link[0].Url } else { $null } }
         $metadataOrder += $field
@@ -615,20 +623,24 @@ function Convert-GameLanguage {
     $seenSchemaSubsections = @{}
     for (; $index -lt $Paragraphs.Count; $index++) {
         $paragraph = $Paragraphs[$index]
-        $schemaSubsectionField = if ($paragraph.Style -eq 'Normal') { Get-MappedValue -Map $Schema.schemaSubsections.$Language -Label $paragraph.Text.Trim() } else { $null }
+        $node = $nodes[$index]
+        $schemaSubsectionField = if ($paragraph.Style -eq 'Normal') { $node.AliasField } else { $null }
         if ($paragraph.Style -eq 'Heading2') {
             if ($sections.Count -ge $sectionIds.Count) { throw "Game $Language has more Heading 2 sections than the schema permits." }
             $sectionId = [string]$sectionIds[$sections.Count]
             $current = [pscustomobject]@{ Id = $sectionId; Heading = $paragraph; Paragraphs = @(); Subsections = @() }
             $sections += $current
             $currentSubsection = $null
+            Set-GameNodeRole $node 'h2' $sectionId 2 'game.root' $sectionId
         } elseif ($paragraph.Style -eq 'Heading3') {
             if ($null -eq $current) { throw "Game $Language Heading 3 appears before its parent Heading 2: $($paragraph.Text)" }
             $baseId = ConvertTo-ContentFragmentId -Text $paragraph.Text.Trim() -Fallback "subsection-$($current.Subsections.Count + 1)"
             $fragmentCounts[$baseId] = if ($fragmentCounts.ContainsKey($baseId)) { [int]$fragmentCounts[$baseId] + 1 } else { 1 }
             $subsectionId = if ($fragmentCounts[$baseId] -eq 1) { $baseId } else { "$baseId-$($fragmentCounts[$baseId])" }
-            $currentSubsection = [pscustomobject]@{ Id = $subsectionId; Heading = $paragraph; Paragraphs = @() }
+            $semanticId = if ($node.AliasField) { [string]$Schema.subsectionFields.($node.AliasField).id } else { "$($current.Id).authored-subsection-$($current.Subsections.Count + 1)" }
+            $currentSubsection = [pscustomobject]@{ Id = $subsectionId; SemanticId = $semanticId; Heading = $paragraph; Paragraphs = @() }
             $current.Subsections += $currentSubsection
+            Set-GameNodeRole $node 'h3' $semanticId 3 $current.Id $current.Id
         } elseif ($null -ne $schemaSubsectionField) {
             if ($null -eq $current) { throw "Game $Language schema subsection appears before its parent Heading 2: $($paragraph.Text)" }
             if ($null -ne $paragraph.NumberId) { throw "Game $Language schema subsection must be a normal, non-list paragraph: $($paragraph.Text)" }
@@ -638,12 +650,15 @@ function Convert-GameLanguage {
             if ([string]$definition.parentSectionId -cne [string]$current.Id) { throw "Game $Language schema subsection '$($paragraph.Text)' is not beneath its required section '$($definition.parentSectionId)'." }
             if ($seenSchemaSubsections.ContainsKey($schemaSubsectionField)) { throw "Duplicate Game $Language schema subsection field: $schemaSubsectionField" }
             $seenSchemaSubsections[$schemaSubsectionField] = $true
-            $currentSubsection = [pscustomobject]@{ Id = [string]$definition.id; Heading = $paragraph; Paragraphs = @() }
+            $currentSubsection = [pscustomobject]@{ Id = [string]$definition.id; SemanticId = [string]$definition.id; Heading = $paragraph; Paragraphs = @() }
             $current.Subsections += $currentSubsection
+            Set-GameNodeRole $node 'h3' ([string]$definition.id) 3 $current.Id $current.Id
         } else {
             if ($paragraph.Style -match '^Heading') { throw "Unsupported Game $Language heading level '$($paragraph.Style)': $($paragraph.Text)" }
             if ($null -eq $current) { throw "Game $Language prose appears outside a section." }
             if ($null -ne $currentSubsection) { $currentSubsection.Paragraphs += $paragraph } else { $current.Paragraphs += $paragraph }
+            $parentId = if ($null -ne $currentSubsection) { $currentSubsection.SemanticId } else { $current.Id }
+            Set-GameNodeRole $node $(if ($node.IsList) { 'li' } else { 'p' }) '' $null $parentId $current.Id
         }
     }
     $requiredSectionIds = @($Schema.requiredSectionIds)
@@ -678,6 +693,10 @@ function Convert-GameLanguage {
         SectionHeadings = @($sections | ForEach-Object { $_.Heading.Text })
         Subsections = @($sections | ForEach-Object Subsections | ForEach-Object { $_.Heading.Text })
         HeadingTopology = @($sections | ForEach-Object { "h2[$(@($_.Subsections | ForEach-Object { 'h3' }) -join ',')]" }) -join '|'
+        TargetKey = "game:$GameId"
+        GameId = $GameId
+        RawTree = @($rawTree)
+        SemanticNodes = $nodes
     }
 }
 
@@ -781,9 +800,8 @@ function Assert-ContactParity {
     }
 }
 
-function Assert-GameParity {
+function Assert-GameSharedData {
     param($Spanish, $English)
-    if ($Spanish.Structure -cne $English.Structure) { throw 'Game ES/EN semantic structures are not equivalent.' }
     if ($Spanish.Title -cne $English.Title) { throw 'Game ES/EN titles differ.' }
     if (($Spanish.MetadataOrder -join '|') -cne ($English.MetadataOrder -join '|')) { throw 'Game ES/EN metadata field order differs.' }
     foreach ($field in @('year', 'company', 'platform', 'access', 'engine')) {
@@ -938,12 +956,12 @@ function New-ContentImportPlan {
                 $summary = [pscustomobject]@{ es = $es; en = $en; structure = $es.Structure }
             }
             'game' {
-                $es = Convert-GameLanguage -Paragraphs $blocks.es -Language 'es' -GameId $identity.Id -Schema $config.importSchemas.game
-                $en = Convert-GameLanguage -Paragraphs $blocks.en -Language 'en' -GameId $identity.Id -Schema $config.importSchemas.game
-                Assert-GameParity -Spanish $es -English $en
+                $bilingual = Convert-GameBilingual -Blocks $blocks -GameId $identity.Id -Schema $config.importSchemas.game
+                $es = $bilingual.es
+                $en = $bilingual.en
                 $outputs["content/games/$($identity.Id)/es.html"] = $es.Html
                 $outputs["content/games/$($identity.Id)/en.html"] = $en.Html
-                $summary = [pscustomobject]@{ es = $es; en = $en }
+                $summary = $bilingual
             }
             default { throw "Import Engine #02 does not yet implement content type: $($identity.Type)" }
         }
@@ -1000,6 +1018,10 @@ function Format-ContentImportPlan {
         $lines += "STATUS: $($item.Status)"
         $lines += "SOURCE: $($item.Source)"
         $lines += "SHA256: $($item.Sha256)"
+        if ($item.Type -eq 'game') {
+            $lines += "SAFE REPAIR PASSES: $($item.Summary.RepairPasses)"
+            foreach ($repair in $item.Summary.Repairs) { $lines += Format-GameParityDiagnostic $repair }
+        }
         $lines += 'OUTPUTS:'
         $lines += @($item.Outputs.Keys | ForEach-Object { "  $_" })
         if ($item.Type -eq 'about') {
@@ -1234,6 +1256,10 @@ function Format-ContentImportReport {
         $lines += "PROTECTED: $($item.ProtectedFields -join ', ')"
         $lines += "CANONICAL: $($item.CanonicalFile)"
         $lines += "MIRROR: $($item.MirrorFile)"
+        if ($item.Type -eq 'game') {
+            $lines += "SAFE REPAIR PASSES: $($item.Summary.RepairPasses)"
+            foreach ($repair in $item.Summary.Repairs) { $lines += Format-GameParityDiagnostic $repair }
+        }
     }
     $lines += '------------------------------------------------------------'
     $lines += "ARCHIVE ACTIONS: $(if ($Result.Archives.Count) { $Result.Archives -join ', ' } else { 'NONE - first accepted versions' })"

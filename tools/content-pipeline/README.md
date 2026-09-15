@@ -65,6 +65,10 @@ Importer version 8 declares the Contact source as intentionally H2-first, with n
 
 `-Rebuild` explicitly recompiles accepted UNCHANGED sources after a compiler/tooling change. Normal imports continue to skip unchanged hashes. Rebuilding an identical canonical source does not create a redundant archive version.
 
+Importer version 9 adds Spanish aliases for the existing Game main-features and gameplay-upgrade subsection fields. Locale-specific `schemaSubsections` keys resolve to the shared `subsectionFields` definitions using the existing whole-label, case-insensitive property lookup after trimming surrounding whitespace. Only Normal, non-list paragraphs are eligible; genuine Word headings retain their semantics. Recognition never replaces authored heading text or capitalization. Tests compare pending inbox models to source text and accepted public outputs to canonical sources, so editorial changes do not require freezing old labels.
+
+Importer version 10 models Game structure as semantic nodes with stable section IDs, levels, parents, and sibling order. Bilingual parity compares those nodes independently of authored labels. A bounded three-pass repair loop may add an exact, already-known cross-locale alias to a document-local schema copy only when a unique mirrored Normal paragraph, enclosing section, body boundaries, and full reparsed parity agree. Unknown prose, duplicate or competing matches, missing nodes, and explicit heading conflicts remain blocking and produce node-level diagnostics. Repair reports include the pass, source and target locale, semantic ID, local alias, and document-only scope.
+
 ## Media budget gate
 
 Foundation baseline: develop 90.09 MB; main 133.46 KB; difference 89.96 MB; Git objects approximately 86.20 MiB; local repository approximately 177.40 MB; approximate GitHub Pages budget use 9% of 1 GB.

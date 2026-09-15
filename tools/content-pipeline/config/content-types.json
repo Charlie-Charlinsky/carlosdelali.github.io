@@ -10,7 +10,7 @@
     "writing",
     "oniric-journal"
   ],
-  "importerVersion": 8,
+  "importerVersion": 10,
   "importSchemas": {
     "about": {
       "title": {"es": "About", "en": "About"}
@@ -80,11 +80,14 @@
       },
       "sectionIds": ["overview", "contribution"],
       "requiredSectionIds": ["overview"],
+      "semanticRepair": {"maxPasses": 3, "knownAliasesOnly": true},
       "schemaSubsections": {
         "es": {
           "Main Features": "mainFeatures",
+          "Mec\u00e1nicas principales": "mainFeatures",
           "Level Design": "levelDesign",
           "Gameplay Upgrade & Implementation": "gameplayUpgradeImplementation",
+          "Mejora del gameplay & implementaci\u00f3n": "gameplayUpgradeImplementation",
           "La tienda": "shop",
           "Las carreras": "races",
           "Recompensas y sistema de progresi\u00f3n": "rewardsProgression",

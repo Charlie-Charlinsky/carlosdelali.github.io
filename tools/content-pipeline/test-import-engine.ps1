@@ -4,6 +4,7 @@ param()
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'lib\ContentPipeline.ps1')
 . (Join-Path $PSScriptRoot 'lib\ImportEngine.ps1')
+. (Join-Path $PSScriptRoot 'test-game-parity.ps1')
 $codes = Get-ContentPipelineExitCodes
 $root = Get-ContentPipelineRepositoryRoot
 $failures = @()
@@ -51,6 +52,7 @@ function Invoke-GameFixture {
 
 try {
     $before = Get-ContentTreeFingerprint -RepositoryRoot $root
+    Invoke-GameParityMatrix
     $temporaryRoot = Join-Path ([IO.Path]::GetTempPath()) ('portfolio-import-engine-' + [Guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $temporaryRoot -Force | Out-Null
     try {
@@ -320,6 +322,50 @@ try {
     Assert-ImportEngine ($schemaSubsectionXml.SelectNodes('/article/section[@id="overview"]/section[@id="main-features"]/p[text()="Feature summary"]').Count -eq 1) 'D. content after schema Main Features remains normal semantic content'
     Assert-ImportEngine ((@($schemaSubsectionXml.SelectNodes('/article/section[@id="overview"]/*') | ForEach-Object Name) -join '|') -ceq 'h2|p|section') 'E. schema Main Features remains beneath the preceding h2 section'
 
+    $aliasSchema = (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
+    $aliasPairs = @(
+        @("Mec$([char]0x00e1)nicas principales", 'Main features', 'mainFeatures'),
+        @("Mejora del gameplay & implementaci$([char]0x00f3)n", 'Gameplay upgrade & implementation', 'gameplayUpgradeImplementation'),
+        @('Main Features', 'Main Features', 'mainFeatures'),
+        @('Gameplay Upgrade & Implementation', 'Gameplay Upgrade & Implementation', 'gameplayUpgradeImplementation'),
+        @('La tienda', 'The Shop', 'shop'),
+        @('Las carreras', 'The Races', 'races'),
+        @("Recompensas y sistema de progresi$([char]0x00f3)n", 'Rewards & Progression System', 'rewardsProgression'),
+        @('Balanceo & FX', 'Balancing & FX', 'balancingFx'),
+        @('Level Design', 'Level Design', 'levelDesign')
+    )
+    foreach ($pair in $aliasPairs) {
+        $field = $pair[2]
+        $definition = $aliasSchema.subsectionFields.$field
+        $models = @{}
+        foreach ($language in @('es', 'en')) {
+            $label = if ($language -eq 'es') { $pair[0] } else { $pair[1] }
+            $paragraphs = @((New-TestParagraph 'Overview' -Style 'Heading2'), (New-TestParagraph 'Body'))
+            if ($definition.parentSectionId -ceq 'contribution') {
+                $paragraphs += New-TestParagraph 'Contribution' -Style 'Heading2'
+            }
+            $paragraphs += @((New-TestParagraph $label), (New-TestParagraph 'Authored subsection body'))
+            $models[$language] = Invoke-GameFixture $paragraphs -Language $language
+            $xml = [xml]$models[$language].Html
+            $node = $xml.SelectSingleNode("/article/section[@id='$($definition.parentSectionId)']/section[@id='$($definition.id)']/h3")
+            Assert-ImportEngine ($null -ne $node -and $node.InnerText -ceq $label) "$field $language alias renders H3 with exact authored text"
+            Assert-ImportEngine ($node.ParentNode.SelectSingleNode('p').InnerText -ceq 'Authored subsection body') "$field $language alias owns following prose"
+        }
+        Assert-GameParity -Spanish $models.es -English $models.en
+        Assert-ImportEngine ($models.es.HeadingTopology -ceq $models.en.HeadingTopology) "$field alias pair has equivalent ES/EN topology"
+    }
+    foreach ($unknown in @('Main features extra', 'Prefix Main features', 'Mecanicas principales', 'MECHANICS', 'Unknown subsection')) {
+        $model = Invoke-GameFixture @((New-TestParagraph 'Overview' -Style 'Heading2'), (New-TestParagraph $unknown))
+        $xml = [xml]$model.Html
+        Assert-ImportEngine ($xml.SelectNodes('//h3').Count -eq 0 -and $xml.SelectSingleNode('/article/section/p').InnerText -ceq $unknown) "unknown Normal label stays prose: $unknown"
+    }
+    $wordHeadingPrecedence = Invoke-GameFixture @(
+        (New-TestParagraph 'Main features' -Style 'Heading2'),
+        (New-TestParagraph 'The Shop' -Style 'Heading3'),
+        (New-TestParagraph 'Body')
+    )
+    Assert-ImportEngine ($wordHeadingPrecedence.HeadingTopology -ceq 'h2[h3]' -and ([xml]$wordHeadingPrecedence.Html).SelectSingleNode('/article/section/h2').InnerText -ceq 'Main features') 'genuine Word headings take precedence over Normal-only schema aliases'
+
     $contributionSubsections = Invoke-GameFixture @(
         (New-TestParagraph 'Overview fixture' -Style 'Heading2'),
         (New-TestParagraph 'Overview body'),
@@ -354,7 +400,7 @@ try {
     Assert-GameParity -Spanish $schemaSpanish -English $schemaSubsectionGame
     Assert-ImportEngine ($schemaSpanish.HeadingTopology -ceq 'h2[h3]' -and $schemaSpanish.HeadingTopology -ceq $schemaSubsectionGame.HeadingTopology) 'F. schema Main Features ES/EN h2 to h3 topology matches'
     $contributionMismatchRejected = $false
-    try { Assert-GameParity -Spanish $schemaSpanish -English $contributionSubsections } catch { $contributionMismatchRejected = $_.Exception.Message -match 'semantic structures are not equivalent' }
+    try { Assert-GameParity -Spanish $schemaSpanish -English $contributionSubsections } catch { $contributionMismatchRejected = $_.Exception.Data.Contains('GameParityDiagnostic') -and $_.Exception.Data['GameParityDiagnostic'].Classification -ceq 'AMBIGUOUS' }
     Assert-ImportEngine $contributionMismatchRejected 'ES/EN mismatched schema Contribution h3 count fails parity'
 
     $coexistingSubsections = Invoke-GameFixture @(
@@ -418,7 +464,7 @@ try {
     Assert-ImportEngine ($equivalentSpanish.HeadingTopology -ceq $singleSubsectionGame.HeadingTopology) 'E. ES/EN equivalent heading topology passes without comparing wording'
 
     $differentTopologyRejected = $false
-    try { Assert-GameParity -Spanish $equivalentSpanish -English $multipleSubsectionGame } catch { $differentTopologyRejected = $_.Exception.Message -match 'semantic structures are not equivalent' }
+    try { Assert-GameParity -Spanish $equivalentSpanish -English $multipleSubsectionGame } catch { $differentTopologyRejected = $_.Exception.Data.Contains('GameParityDiagnostic') -and $_.Exception.Data['GameParityDiagnostic'].Classification -ceq 'AMBIGUOUS' }
     Assert-ImportEngine $differentTopologyRejected 'F. ES/EN different heading topology fails'
 
     $accessTarget = 'https://example.com/authored-game'
@@ -471,24 +517,28 @@ try {
     Assert-ImportEngine ($flatGame.Html -ceq $flatGameRepeat.Html -and $flatGame.Structure -ceq $flatGameRepeat.Structure) 'G. existing flat Game documents continue compiling identically'
 
     $generaExpected = [ordered]@{
-        'the-little-prince' = [pscustomobject]@{ es = @('Level Design'); en = @('Level Design') }
-        'runbot' = [pscustomobject]@{ es = @('Gameplay Upgrade & Implementation'); en = @('Gameplay Upgrade & Implementation') }
-        'xtreme-racing-2' = [pscustomobject]@{ es = @('La tienda', 'Las carreras'); en = @('The Shop', 'The Races') }
-        'skull-towers' = [pscustomobject]@{ es = @('Recompensas y sistema de progresion', 'Balanceo & FX'); en = @('Rewards & Progression System', 'Balancing & FX') }
+        'the-little-prince' = @('levelDesign')
+        'runbot' = @('gameplayUpgradeImplementation')
+        'xtreme-racing-2' = @('shop', 'races')
+        'skull-towers' = @('rewardsProgression', 'balancingFx')
     }
-    $generaExpected['skull-towers'].es[0] = "Recompensas y sistema de progresi$([char]0x00f3)n"
+    $gameSchema = (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
     foreach ($generaId in $generaExpected.Keys) {
         $generaDocument = Split-BilingualDocx (Read-DocxDocument -Path (Join-Path $root "local-content\inbox\game__${generaId}__ES-EN.docx"))
         $generaEs = Convert-GameLanguage -Paragraphs $generaDocument.es -Language 'es' -GameId $generaId -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
         $generaEn = Convert-GameLanguage -Paragraphs $generaDocument.en -Language 'en' -GameId $generaId -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
         Assert-GameParity -Spanish $generaEs -English $generaEn
-        $expectedEs = @($generaExpected[$generaId].es)
-        $expectedEn = @($generaExpected[$generaId].en)
-        Assert-ImportEngine (($generaEs.Subsections -join '|') -ceq ($expectedEs -join '|') -and ($generaEn.Subsections -join '|') -ceq ($expectedEn -join '|')) "game:$generaId schema Contribution labels compile as h3"
-        Assert-ImportEngine ($generaEs.HeadingTopology -ceq $generaEn.HeadingTopology -and @($generaEs.Subsections).Count -eq $expectedEs.Count) "game:$generaId ES/EN Contribution topology parity"
-        $generaEsXml = [xml]$generaEs.Html
-        $generaEnXml = [xml]$generaEn.Html
-        Assert-ImportEngine ($generaEsXml.SelectNodes('/article/section[@id="contribution"]/section/h3').Count -eq $expectedEs.Count -and $generaEnXml.SelectNodes('/article/section[@id="contribution"]/section/h3').Count -eq $expectedEn.Count) "game:$generaId Contribution subsections render as h3"
+        foreach ($language in @('es', 'en')) {
+            $model = if ($language -eq 'es') { $generaEs } else { $generaEn }
+            $authoredHeadings = @($generaDocument.$language | Where-Object {
+                $_.Style -eq 'Heading3' -or ($_.Style -eq 'Normal' -and $null -ne (Get-MappedValue -Map $gameSchema.schemaSubsections.$language -Label $_.Text.Trim()))
+            })
+            $resolvedFields = @($authoredHeadings | ForEach-Object { Get-MappedValue -Map $gameSchema.schemaSubsections.$language -Label $_.Text.Trim() })
+            $renderedHeadings = @(([xml]$model.Html).SelectNodes('/article/section[@id="contribution"]/section/h3'))
+            Assert-ImportEngine (($resolvedFields -join '|') -ceq ($generaExpected[$generaId] -join '|')) "game:$generaId $language semantic Contribution fields"
+            Assert-ImportEngine ($renderedHeadings.Count -eq $generaExpected[$generaId].Count -and ($renderedHeadings.InnerText -join '|') -ceq ($authoredHeadings.Text -join '|')) "game:$generaId $language Contribution H3 preserves authored display text"
+        }
+        Assert-ImportEngine ($generaEs.HeadingTopology -ceq $generaEn.HeadingTopology) "game:$generaId ES/EN Contribution topology parity"
     }
 
     $expectedTargetKeys = @('about:main', 'cv:main', 'game:ea-sports-pga-tour', 'game:madden-nfl-25', 'game:madden-nfl-26', 'game:madden-nfl-27')
@@ -502,7 +552,10 @@ try {
     $manifest = Read-ContentPipelineManifest -Path (Get-ContentPipelinePaths -RepositoryRoot $root).Manifest
     $previousAcceptedTargetKeys = @($manifest.entries.PSObject.Properties | Where-Object Name -CNE 'contact:main' | ForEach-Object Name)
     $previousAcceptedPlan = New-ContentImportPlan -RepositoryRoot $root -IncludeUnchanged -TargetKeys $previousAcceptedTargetKeys
-    Assert-ImportEngine ($previousAcceptedTargetKeys.Count -eq 21 -and $previousAcceptedPlan.Items.Count -eq 21 -and @($previousAcceptedPlan.Items | Where-Object Status -ne 'UNCHANGED').Count -eq 0) 'all previous 21 accepted sources remain valid and unchanged'
+    Assert-ImportEngine ($previousAcceptedTargetKeys.Count -eq 21 -and $previousAcceptedPlan.Items.Count -eq 21) 'all 21 existing non-Contact targets parse with pending editorial updates'
+    foreach ($entry in $manifest.entries.PSObject.Properties.Value) {
+        Assert-ImportEngine ((Get-ContentFileSha256 -Path (Join-Path $root $entry.canonicalFile)) -ceq $entry.sha256) "$($entry.targetKey) canonical matches accepted hash independently of inbox edits"
+    }
 
     foreach ($item in $plan.Items) {
         foreach ($relative in $item.Outputs.Keys) {
@@ -538,8 +591,9 @@ try {
     foreach ($twsId in $twsIds) {
         $canonicalPath = Join-Path $root "local-content\canonical\game\$twsId\content.docx"
         $twsDocument = Split-BilingualDocx (Read-DocxDocument -Path $canonicalPath)
-        $twsEsModel = Convert-GameLanguage -Paragraphs $twsDocument.es -Language 'es' -GameId $twsId -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
-        $twsEnModel = Convert-GameLanguage -Paragraphs $twsDocument.en -Language 'en' -GameId $twsId -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
+        $twsPair = Convert-GameBilingual -Blocks $twsDocument -GameId $twsId -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
+        $twsEsModel = $twsPair.es
+        $twsEnModel = $twsPair.en
         Assert-GameParity -Spanish $twsEsModel -English $twsEnModel
         $twsGameItems += [pscustomobject]@{
             TargetKey = "game:$twsId"
@@ -582,21 +636,40 @@ try {
         $twsEs = [xml]$twsGame.Outputs["content/games/$twsId/es.html"]
         $twsEn = [xml]$twsGame.Outputs["content/games/$twsId/en.html"]
         Assert-ImportEngine ($twsGame.Summary.es.HeadingTopology -ceq 'h2[h3]' -and $twsGame.Summary.en.HeadingTopology -ceq 'h2[h3]') "game:$twsId TWS h2 to h3 topology"
-        Assert-ImportEngine ($twsEs.SelectNodes('//h3[text()="Main Features"]').Count -eq 1 -and $twsEn.SelectNodes('//h3[text()="Main Features"]').Count -eq 1 -and $twsEs.SelectNodes('//p[text()="Main Features"]').Count -eq 0 -and $twsEn.SelectNodes('//p[text()="Main Features"]').Count -eq 0) "game:$twsId schema Main Features output"
+        $acceptedTws = Split-BilingualDocx (Read-DocxDocument -Path (Join-Path $root "local-content\canonical\game\$twsId\content.docx"))
         foreach ($language in @('es', 'en')) {
+            $authored = @($twsGame.Summary.$language.SemanticNodes | Where-Object { $_.Kind -ceq 'h3' -and $_.SemanticId -ceq 'main-features' })
+            $sourceHeading = @($acceptedTws.$language | Where-Object { $_.ParagraphIndex -eq $authored[0].ParagraphIndex })
+            $rendered = @(([xml]$twsGame.Outputs["content/games/$twsId/$language.html"]).SelectNodes('/article/section[@id="overview"]/section/h3'))
+            Assert-ImportEngine ($authored.Count -eq 1 -and $rendered.Count -eq 1 -and $sourceHeading.Count -eq 1 -and $rendered[0].InnerText -ceq $sourceHeading[0].Text) "game:$twsId $language Main Features H3 preserves authored display text"
             $currentTwsOutput = Get-Content -LiteralPath (Join-Path $root "content\games\$twsId\$language.html") -Raw -Encoding UTF8
             Assert-ImportEngine ($currentTwsOutput -ceq $twsGame.Outputs["content/games/$twsId/$language.html"]) "game:$twsId current $language output matches compiler"
         }
     }
     foreach ($eaId in @('ea-sports-pga-tour', 'madden-nfl-25', 'madden-nfl-26', 'madden-nfl-27')) {
         $eaGame = $gameItems | Where-Object Id -CEQ $eaId
-        Assert-ImportEngine ($eaGame.Status -eq 'UNCHANGED' -and @($eaGame.Summary.en.Sections).Count -eq 2 -and @($eaGame.Summary.en.Subsections).Count -gt 0) "game:$eaId existing EA h2/h3 source remains unchanged"
+        Assert-ImportEngine ($eaGame.Status -in @('CHANGED', 'UNCHANGED') -and @($eaGame.Summary.en.Sections).Count -eq 2 -and @($eaGame.Summary.en.Subsections).Count -gt 0) "game:$eaId existing EA h2/h3 contract remains valid"
     }
     $registryWithEngineImages = @($compiledGameRegistry.Games.PSObject.Properties.Value | Where-Object { $null -ne $_.PSObject.Properties['engineId'] })
     Assert-ImportEngine ($registryWithEngineImages.Count -eq 0 -and -not (Test-Path -LiteralPath (Join-Path $root 'assets\engines'))) 'Engine image system remains absent'
     try { $parsedRegistry = $compiledGameRegistry.Json | ConvertFrom-Json; $jsonValid = $null -ne $parsedRegistry.games } catch { $jsonValid = $false }
     Assert-ImportEngine $jsonValid 'multi-Game registry JSON is valid'
-    Assert-ImportEngine ((Get-Content (Join-Path $root 'data\games.json') -Raw -Encoding UTF8) -ceq $compiledGameRegistry.Json) 'current Game registry matches the compiler'
+    $acceptedGameItems = @()
+    foreach ($entry in @($manifest.entries.PSObject.Properties.Value | Where-Object targetKey -Like 'game:*')) {
+        $id = $entry.targetKey.Split(':')[1]
+        $acceptedDoc = Split-BilingualDocx (Read-DocxDocument -Path (Join-Path $root $entry.canonicalFile))
+        $acceptedPair = Convert-GameBilingual -Blocks $acceptedDoc -GameId $id -Schema $gameSchema
+        $acceptedEs = $acceptedPair.es
+        $acceptedEn = $acceptedPair.en
+        Assert-GameParity -Spanish $acceptedEs -English $acceptedEn
+        foreach ($language in @('es', 'en')) {
+            $model = if ($language -eq 'es') { $acceptedEs } else { $acceptedEn }
+            Assert-ImportEngine ((Get-Content (Join-Path $root "content/games/$id/$language.html") -Raw -Encoding UTF8) -ceq $model.Html) "game:$id $language output matches accepted canonical"
+        }
+        $acceptedGameItems += [pscustomobject]@{ Id = $id; Summary = [pscustomobject]@{ es = $acceptedEs; en = $acceptedEn } }
+    }
+    $acceptedRegistry = New-UpdatedGameRegistry -RepositoryRoot $root -GameItems $acceptedGameItems -Config (Get-ContentPipelineConfig -RepositoryRoot $root)
+    Assert-ImportEngine ((Get-Content (Join-Path $root 'data\games.json') -Raw -Encoding UTF8) -ceq $acceptedRegistry.Json) 'current Game registry matches accepted canonicals'
 
     $after = Get-ContentTreeFingerprint -RepositoryRoot $root
     Assert-ImportEngine ($before -ceq $after) 'preflight does not mutate website files'

@@ -36,10 +36,11 @@ try {
     Write-Output $report
     exit $(if ($plan.Warnings.Count) { $codes.SuccessWithWarning } else { $codes.Success })
 } catch {
+    $failureCode = if ($_.Exception.Data.Contains('ContentPipelineExitCode')) { [int]$_.Exception.Data['ContentPipelineExitCode'] } else { $codes.ValidationFailure }
     try {
         $paths = Get-ContentPipelinePaths
         Write-Utf8NoBom -Path (Join-Path $paths.Reports 'latest-import-error.txt') -Content ("CONTENT IMPORT STOPPED`n$($_.Exception.Message)`n")
     } catch {}
-    Write-Error $_.Exception.Message
-    exit $codes.ValidationFailure
+    Write-Error $_.Exception.Message -ErrorAction Continue
+    exit $failureCode
 }
