@@ -9,6 +9,7 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
+      "coverPosition": "50% 0%",
       "year": "2016",
       "platform": "iOS / Android (Mobile \u0026 Tablet)",
       "accessUrl": "https://www.apkturbo.com/games/the-little-prince-bubble-pop/com.generamobile.thelittleprince",
@@ -210,7 +211,7 @@
         "es": "content/games/gold-rush-gus/es.html"
       },
       "assets": {
-        "cover": "assets/games/gold-rush-gus/cover/gold-rush-gus-cover.jpg",
+        "cover": "assets/games/gold-rush-gus/cover/gold-rush-gus-cover.png",
         "gallery": [
           "assets/games/gold-rush-gus/gallery/gold-rush-gus-01.jpg",
           "assets/games/gold-rush-gus/gallery/gold-rush-gus-02.png",
@@ -365,7 +366,7 @@
         "es": "content/games/gods-of-luxor/es.html"
       },
       "assets": {
-        "cover": "assets/games/gods-of-luxor/cover/gods-of-luxor-cover.jpg",
+        "cover": "assets/games/gods-of-luxor/cover/gods-of-luxor-cover.png",
         "gallery": [
           "assets/games/gods-of-luxor/gallery/gods-of-luxor-01.jpg",
           "assets/games/gods-of-luxor/gallery/gods-of-luxor-02.jpg",
@@ -420,7 +421,7 @@
         "es": "content/games/teen-patti/es.html"
       },
       "assets": {
-        "cover": "assets/games/teen-patti/cover/teen-patti-cover.jpg",
+        "cover": "assets/games/teen-patti/cover/teen-patti-cover.png",
         "gallery": [
           "assets/games/teen-patti/gallery/teen-patti-01.jpg",
           "assets/games/teen-patti/gallery/teen-patti-02.jpg",
@@ -600,7 +601,7 @@
         "es": "content/games/zombie-soccer/es.html"
       },
       "assets": {
-        "cover": "assets/games/zombie-soccer/cover/zombie-soccer-cover.jpg",
+        "cover": "assets/games/zombie-soccer/cover/zombie-soccer-cover.png",
         "gallery": [
           "assets/games/zombie-soccer/gallery/zombie-soccer-01.jpg",
           "assets/games/zombie-soccer/gallery/zombie-soccer-02.jpg",
