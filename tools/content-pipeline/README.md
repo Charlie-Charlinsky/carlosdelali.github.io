@@ -69,6 +69,8 @@ Importer version 9 adds Spanish aliases for the existing Game main-features and 
 
 Importer version 10 models Game structure as semantic nodes with stable section IDs, levels, parents, and sibling order. Bilingual parity compares those nodes independently of authored labels. A bounded three-pass repair loop may add an exact, already-known cross-locale alias to a document-local schema copy only when a unique mirrored Normal paragraph, enclosing section, body boundaries, and full reparsed parity agree. Unknown prose, duplicate or competing matches, missing nodes, and explicit heading conflicts remain blocking and produce node-level diagnostics. Repair reports include the pass, source and target locale, semantic ID, local alias, and document-only scope.
 
+Importer version 11 preserves CV rich authoring semantics. CV parsing retains blank Word paragraphs through structural analysis so a blank between numbered sequences closes the current list and the following sequence becomes an independent semantic block marked with `data-authored-break-before="true"`; it never emits empty paragraphs or spacing `<br>` elements. Normal paragraphs and list items preserve run-level bold and italic semantics, and adjacent runs with equivalent formatting and hyperlink targets are coalesced before semantic HTML is emitted. ES/EN CV parity includes authored break positions and list topology while leaving inline emphasis offsets language-specific.
+
 ## Media budget gate
 
 Foundation baseline: develop 90.09 MB; main 133.46 KB; difference 89.96 MB; Git objects approximately 86.20 MiB; local repository approximately 177.40 MB; approximate GitHub Pages budget use 9% of 1 GB.

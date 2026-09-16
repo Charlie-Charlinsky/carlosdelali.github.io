@@ -173,15 +173,17 @@ function Read-DocxDocument {
                     }
                 }
             }
+            $paragraphText = (@($runs | ForEach-Object Text) -join '')
             $blocks += [pscustomobject][ordered]@{
                 Kind = 'paragraph'
                 ParagraphIndex = $paragraphIndex
                 Style = $style
-                Text = (@($runs | ForEach-Object Text) -join '')
+                Text = $paragraphText
                 Runs = $runs
                 NumberId = $numberId
                 ListLevel = $level
                 ListFormat = $listFormat
+                IsBlank = [string]::IsNullOrWhiteSpace($paragraphText)
             }
             $paragraphIndex++
         }
@@ -192,7 +194,10 @@ function Read-DocxDocument {
 }
 
 function Split-BilingualDocx {
-    param([Parameter(Mandatory = $true)][object]$Document)
+    param(
+        [Parameter(Mandatory = $true)][object]$Document,
+        [switch]$PreserveBlankParagraphs
+    )
 
     if (@($Document.Blocks | Where-Object Kind -eq 'table').Count -gt 0) {
         throw 'Tables are not supported by the initial About/CV/Game schemas.'
@@ -207,8 +212,8 @@ function Split-BilingualDocx {
     $es = if ($markers[0] -gt 0) { @($paragraphs[0..($markers[0] - 1)]) } else { @() }
     $en = if ($markers[0] + 1 -lt $paragraphs.Count) { @($paragraphs[($markers[0] + 1)..($paragraphs.Count - 1)]) } else { @() }
     return [pscustomobject]@{
-        es = @($es | Where-Object { -not [string]::IsNullOrWhiteSpace($_.Text) })
-        en = @($en | Where-Object { -not [string]::IsNullOrWhiteSpace($_.Text) })
+        es = $(if ($PreserveBlankParagraphs) { @($es) } else { @($es | Where-Object { -not [string]::IsNullOrWhiteSpace($_.Text) }) })
+        en = $(if ($PreserveBlankParagraphs) { @($en) } else { @($en | Where-Object { -not [string]::IsNullOrWhiteSpace($_.Text) }) })
     }
 }
 
@@ -258,10 +263,35 @@ function Add-HtmlElement {
     return $element
 }
 
-function Add-InlineRuns {
-    param($Document, $Parent, [object[]]$Runs)
+function Merge-EquivalentInlineRuns {
+    param([object[]]$Runs)
+
+    $merged = New-Object System.Collections.ArrayList
     foreach ($run in $Runs) {
         if ([string]::IsNullOrEmpty($run.Text)) { continue }
+        $current = [pscustomobject][ordered]@{
+            Text = [string]$run.Text
+            Bold = [bool]$run.Bold
+            Italic = [bool]$run.Italic
+            Url = $run.Url
+        }
+        $previous = if ($merged.Count) { $merged[$merged.Count - 1] } else { $null }
+        $equivalent = $null -ne $previous `
+            -and $previous.Bold -eq $current.Bold `
+            -and $previous.Italic -eq $current.Italic `
+            -and [string]$previous.Url -ceq [string]$current.Url
+        if ($equivalent) {
+            $previous.Text += $current.Text
+        } else {
+            [void]$merged.Add($current)
+        }
+    }
+    return @($merged)
+}
+
+function Add-InlineRuns {
+    param($Document, $Parent, [object[]]$Runs)
+    foreach ($run in @(Merge-EquivalentInlineRuns -Runs $Runs)) {
         $container = $Parent
         if ($run.Url) {
             if (-not (Test-SafeContentUrl -Url $run.Url)) { throw "Unsafe or unsupported authored URL: $($run.Url)" }
@@ -286,6 +316,11 @@ function Add-SemanticParagraph {
         Add-InlineRuns -Document $Document -Parent $element -Runs @($Paragraph.Runs)
     }
     return $element
+}
+
+function Test-BlankParagraph {
+    param($Paragraph)
+    return [string]::IsNullOrWhiteSpace([string]$Paragraph.Text)
 }
 
 function Get-ListElementName {
@@ -384,17 +419,30 @@ function Add-ParagraphSequence {
     param($Document, $Parent, [object[]]$Paragraphs, [string]$Target = 'unknown', [string]$Language = 'unknown')
     $signature = @()
     $index = 0
+    $pendingAuthoredBreak = $false
     while ($index -lt $Paragraphs.Count) {
         $paragraph = $Paragraphs[$index]
+        if (Test-BlankParagraph -Paragraph $paragraph) {
+            if (-not $pendingAuthoredBreak) { $signature += 'break' }
+            $pendingAuthoredBreak = $true
+            $index++
+            continue
+        }
         if ($paragraph.Style -match '^Heading') { throw "Unexpected heading in paragraph sequence: $($paragraph.Text)" }
         if ($null -ne $paragraph.NumberId) {
             $listResult = Add-HierarchicalListSequence -Document $Document -Parent $Parent -Paragraphs $Paragraphs -StartIndex $index -Target $Target -Language $Language
+            if ($pendingAuthoredBreak -and $listResult.Roots.Count) {
+                $listResult.Roots[0].SetAttribute('data-authored-break-before', 'true')
+            }
             $signature += @($listResult.Signature)
             $index = $listResult.NextIndex
+            $pendingAuthoredBreak = $false
             continue
         }
-        Add-SemanticParagraph -Document $Document -Parent $Parent -Paragraph $paragraph | Out-Null
+        $element = Add-SemanticParagraph -Document $Document -Parent $Parent -Paragraph $paragraph
+        if ($pendingAuthoredBreak) { $element.SetAttribute('data-authored-break-before', 'true') }
         $signature += 'p'
+        $pendingAuthoredBreak = $false
         $index++
     }
     return $signature
@@ -458,7 +506,9 @@ function Split-TopSections {
     $sections = @()
     $current = $null
     foreach ($paragraph in $Paragraphs) {
-        if ($paragraph.Style -eq 'Heading2') {
+        if (Test-BlankParagraph -Paragraph $paragraph) {
+            if ($null -ne $current) { $current.Items += $paragraph }
+        } elseif ($paragraph.Style -eq 'Heading2') {
             $canonical = Get-MappedValue -Map $LabelMap -Label $paragraph.Text.Trim()
             if ($null -eq $canonical) { throw "Unknown $Language section heading: $($paragraph.Text)" }
             $current = [pscustomobject]@{ Id = $canonical; Heading = $paragraph; Items = @() }
@@ -476,7 +526,9 @@ function Split-Subsections {
     $sections = @()
     $current = $null
     foreach ($paragraph in $Paragraphs) {
-        if ($paragraph.Style -eq 'Heading3') {
+        if (Test-BlankParagraph -Paragraph $paragraph) {
+            if ($null -ne $current) { $current.Items += $paragraph }
+        } elseif ($paragraph.Style -eq 'Heading3') {
             $current = [pscustomobject]@{ Heading = $paragraph; Items = @() }
             $sections += $current
         } else {
@@ -919,7 +971,7 @@ function New-ContentImportPlan {
         $target = Resolve-ContentPipelineTarget -Identity $identity -RepositoryRoot $RepositoryRoot -Config $config
         if ($TargetKeys.Count -gt 0 -and $TargetKeys -cnotcontains $target.TargetKey) { continue }
         $sourcePath = Join-Path (Get-ContentPipelinePaths -RepositoryRoot $RepositoryRoot).Inbox $entry.Source
-        $blocks = Split-BilingualDocx (Read-DocxDocument -Path $sourcePath)
+        $blocks = Split-BilingualDocx (Read-DocxDocument -Path $sourcePath) -PreserveBlankParagraphs:($identity.Type -eq 'cv')
         $outputs = [ordered]@{}
         $summary = $null
         switch ($identity.Type) {

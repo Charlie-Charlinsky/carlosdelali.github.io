@@ -127,6 +127,26 @@ try {
     )
     Assert-ImportEngine ($numberBoundary.Signature -ceq 'ul[li]|ul[li]' -and $numberBoundary.Document.SelectNodes('/article/ul').Count -eq 2) 'numbering ID change creates a list boundary'
 
+    $authoredBreak = Invoke-ListFixture @(
+        (New-TestParagraph 'First group' '18' 0 'bullet' -ParagraphIndex 23),
+        (New-TestParagraph 'First child' '18' 1 'bullet' -ParagraphIndex 24),
+        (New-TestParagraph '' -ParagraphIndex 25),
+        (New-TestParagraph 'Second group' '18' 0 'bullet' -ParagraphIndex 26)
+    )
+    $authoredBreakLists = @($authoredBreak.Document.SelectNodes('/article/ul'))
+    Assert-ImportEngine ($authoredBreak.Signature -ceq 'ul[li[ul[li]]]|break|ul[li]') 'CV GROUP BREAKS: blank paragraph terminates the current list topology'
+    Assert-ImportEngine ($authoredBreakLists.Count -eq 2 -and $authoredBreakLists[1].GetAttribute('data-authored-break-before') -ceq 'true') 'CV GROUP BREAKS: following list begins as an independent authored block'
+    Assert-ImportEngine ($authoredBreak.Document.SelectNodes('//p[not(node())]').Count -eq 0 -and $authoredBreak.Document.SelectNodes('//br').Count -eq 0) 'CV GROUP BREAKS: blank paragraph does not emit empty paragraphs or br hacks'
+
+    $authoredParagraphBreak = Invoke-ListFixture @(
+        (New-TestParagraph 'Paragraph text before.' -ParagraphIndex 27),
+        (New-TestParagraph '' -ParagraphIndex 28),
+        (New-TestParagraph 'Paragraph text after.' -ParagraphIndex 29)
+    )
+    $authoredParagraphs = @($authoredParagraphBreak.Document.SelectNodes('/article/p'))
+    Assert-ImportEngine ($authoredParagraphBreak.Signature -ceq 'p|break|p' -and $authoredParagraphs[1].GetAttribute('data-authored-break-before') -ceq 'true') 'CV GROUP BREAKS: non-list authored boundary remains structural metadata'
+    Assert-ImportEngine (($authoredParagraphs.InnerText -join '|') -ceq 'Paragraph text before.|Paragraph text after.') 'CV RICH TEXT: paragraph text survives authored boundaries unchanged'
+
     $nestedOl = Invoke-ListFixture @(
         (New-TestParagraph 'Ordered parent' '10' 0 'decimal' -ParagraphIndex 23),
         (New-TestParagraph 'Ordered child' '10' 1 'lowerLetter' -ParagraphIndex 24)
@@ -426,6 +446,27 @@ try {
         $boldNormalParagraph
     )
     Assert-ImportEngine (([xml]$boldNormal.Html).SelectNodes('//h3').Count -eq 0) 'bold Normal prose is not promoted to h3'
+
+    $richTextParagraph = New-TestParagraph 'The team had two designers, built Battle Pass, and worked remotely.'
+    $richTextParagraph.Runs = @(
+        [pscustomobject]@{ Text = 'The team had '; Bold = $false; Italic = $false; Url = $null },
+        [pscustomobject]@{ Text = 'two designers'; Bold = $true; Italic = $false; Url = $null },
+        [pscustomobject]@{ Text = ', built '; Bold = $false; Italic = $false; Url = $null },
+        [pscustomobject]@{ Text = 'Battle'; Bold = $true; Italic = $false; Url = $null },
+        [pscustomobject]@{ Text = ' '; Bold = $true; Italic = $false; Url = $null },
+        [pscustomobject]@{ Text = 'Pass'; Bold = $true; Italic = $false; Url = $null },
+        [pscustomobject]@{ Text = ', and worked '; Bold = $false; Italic = $false; Url = $null },
+        [pscustomobject]@{ Text = 'remotely'; Bold = $true; Italic = $false; Url = $null },
+        [pscustomobject]@{ Text = '.'; Bold = $false; Italic = $false; Url = $null }
+    )
+    $richTextParagraph.Text = @($richTextParagraph.Runs | ForEach-Object Text) -join ''
+    $richTextFixture = Invoke-ListFixture @($richTextParagraph)
+    $richTextXml = [xml]$richTextFixture.Html
+    $richStrong = @($richTextXml.SelectNodes('/article/p/strong'))
+    Assert-ImportEngine ($richStrong.Count -eq 3 -and ($richStrong.InnerText -join '|') -ceq 'two designers|Battle Pass|remotely') 'CV RICH TEXT: partial and separated bold fragments render as strong'
+    Assert-ImportEngine ($richTextXml.SelectNodes('//h1 | //h2 | //h3 | //h4 | //h5 | //h6').Count -eq 0) 'CV RICH TEXT: bold text does not define heading structure'
+    Assert-ImportEngine ($richTextXml.SelectNodes('/article/p/strong[normalize-space(.)="Battle Pass"]').Count -eq 1) 'CV RICH TEXT: adjacent bold runs and bold whitespace coalesce into one phrase'
+    Assert-ImportEngine ($richTextXml.DocumentElement.InnerText -ceq $richTextParagraph.Text) 'CV RICH TEXT: authored plain text remains byte-for-character unchanged'
     $importEngineSource = Get-Content -LiteralPath (Join-Path $root 'tools\content-pipeline\lib\ImportEngine.ps1') -Raw -Encoding UTF8
     Assert-ImportEngine ($importEngineSource -notmatch 'w:sz|font-size|FontSize') 'I. heading levels do not use Word font or size inspection'
 
@@ -575,11 +616,19 @@ try {
         $generatedCv = [xml]$cv.Outputs[$relative]
         Assert-ImportEngine ($generatedCv.SelectNodes('/article/section[@id="work-experience"]/section/ul/li/ul').Count -gt 0) "$relative contains semantic nested Professional Experience lists"
     }
-    $cvDocument = Split-BilingualDocx (Read-DocxDocument -Path (Join-Path $root 'local-content\inbox\cv__main__ES-EN.docx'))
+    $cvDocument = Split-BilingualDocx (Read-DocxDocument -Path (Join-Path $root 'local-content\inbox\cv__main__ES-EN.docx')) -PreserveBlankParagraphs
     $cvEs = Convert-CvLanguage -Paragraphs $cvDocument.es -Language 'es' -CurrentHtmlPath (Join-Path $root 'content\cv\es.html') -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.cv
     $cvEn = Convert-CvLanguage -Paragraphs $cvDocument.en -Language 'en' -CurrentHtmlPath (Join-Path $root 'content\cv\en.html') -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.cv
     Assert-ImportEngine ($cvEs.Structure -ceq $cvEn.Structure) 'current CV ES/EN list topology parity'
+    Assert-ImportEngine (@($cvDocument.es | Where-Object { Test-BlankParagraph $_ }).Count -gt 0 -and @($cvDocument.es | Where-Object { Test-BlankParagraph $_ }).Count -eq @($cvDocument.en | Where-Object { Test-BlankParagraph $_ }).Count) 'current CV preserves bilingual authored blank-paragraph topology'
     Assert-ImportEngine ((@($cvEs.Ludography | ForEach-Object Games | ForEach-Object { $_ }) -join '|') -ceq (@($cvEn.Ludography | ForEach-Object Games | ForEach-Object { $_ }) -join '|')) 'CV Ludography ordering remains bilingual and unchanged'
+    foreach ($model in @($cvEs, $cvEn)) {
+        $generatedRichCv = [xml]$model.Html
+        Assert-ImportEngine ($generatedRichCv.SelectNodes('//strong').Count -gt 0) 'current CV preserves authored inline strong output'
+        Assert-ImportEngine ($generatedRichCv.SelectNodes('//*[@data-authored-break-before="true"]').Count -gt 0) 'current CV preserves authored group-boundary metadata'
+        Assert-ImportEngine ($model.Html -notmatch '</strong><strong>') 'current CV emits no adjacent fragmented strong elements'
+        Assert-ImportEngine ($generatedRichCv.SelectNodes('//p[not(node())] | //br/following-sibling::br').Count -eq 0) 'current CV emits no empty paragraph or br-br spacing hack'
+    }
     $cvSchema = (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.cv
     foreach ($language in @('es', 'en')) {
         $parsedSections = Split-TopSections -Paragraphs @($cvDocument.$language) -LabelMap $cvSchema.sections.$language -Language $language

@@ -10,7 +10,7 @@
     "writing",
     "oniric-journal"
   ],
-  "importerVersion": 10,
+  "importerVersion": 11,
   "importSchemas": {
     "about": {
       "title": {"es": "About", "en": "About"}
