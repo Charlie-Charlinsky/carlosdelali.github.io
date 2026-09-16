@@ -195,6 +195,53 @@ if (!gameOrderSource.includes("AUTHORITATIVE_GAME_ORDER")
     || !cvPageSource.includes("getOrderedGameStudios(ludography)")) {
     fail("Game order: Games y CV no consumen el helper compartido");
 }
+
+const publicationModule = await import(pathToFileURL(path.join(root, "js/core/publication.js")).href);
+const expectedSections = [
+    { id: 1, key: "ABOUT", route: "about", published: true },
+    { id: 2, key: "CV", route: "cv", published: true },
+    { id: 3, key: "GAMES", route: "games", published: true },
+    { id: 4, key: "PROJECTS", route: "projects", published: false },
+    { id: 5, key: "WRITING", route: "writing", published: false },
+    { id: 6, key: "ONIRIC_JOURNAL", route: "oniric-journal", published: false },
+    { id: 7, key: "CONTACT", route: "contact", published: true }
+];
+const declaredSections = publicationModule.SECTION_REGISTRY.map(({ id, key, route, published }) => ({
+    id,
+    key,
+    route,
+    published
+}));
+if (JSON.stringify(declaredSections) !== JSON.stringify(expectedSections)) {
+    fail("Publication: el registro estable 1-7 o su estado no coincide");
+}
+if (publicationModule.getPublishedSections().length !== 4) {
+    fail("Publication: deben existir exactamente cuatro secciones publicadas");
+}
+expectedSections.forEach((section) => {
+    if (publicationModule.getSectionById(section.id)?.route !== section.route) {
+        fail(`Publication: la seccion ${section.id} no resuelve a ${section.route}`);
+    }
+    if (publicationModule.isPagePublished(section.route) !== section.published) {
+        fail(`Publication: el acceso de ${section.route} no coincide con su estado`);
+    }
+});
+[
+    ["game-detail", true],
+    ["project-detail", false],
+    ["oniric-journal-detail", false]
+].forEach(([page, published]) => {
+    if (publicationModule.isPagePublished(page) !== published) {
+        fail(`Publication: la ruta derivada ${page} no hereda el estado de su seccion`);
+    }
+});
+if (!shellSource.includes("getPublishedSections().forEach(({ route })")
+    || shellSource.includes("const NAVIGATION")) {
+    fail("Publication: la navegacion no deriva exclusivamente del registro compartido");
+}
+if (!appSource.includes("if (!isPagePublished(context.page))")) {
+    fail("Publication: el gate de rutas no se ejecuta antes de cargar la pagina");
+}
 if (cvPageSource.includes("detailUrl") || /createElement\("a"/.test(cvPageSource)) {
     fail("CV Ludography: los enlaces a Game Detail no se eliminaron");
 }
@@ -264,8 +311,8 @@ if (!appSource.includes('contact: () => import("./pages/contact.js")')
     || !publicationSource.includes('"contact"')) {
     fail("Contact: ruta, modulo o publicacion no resueltos");
 }
-if (!/const NAVIGATION = \[[^\]]*"contact"\];/s.test(shellSource)
-    || !/"oniric-journal",\s*"contact"\]/s.test(shellSource)) {
+if (publicationModule.SECTION_REGISTRY.at(-1)?.route !== "contact"
+    || publicationModule.getSectionById(7)?.route !== "contact") {
     fail("Contact: no es el ultimo elemento de navegacion");
 }
 if (!/body\[data-page="contact"\] \.page-shell\s*\{[^}]*padding-top:\s*calc\(var\(--header-height\) \+ var\(--page-top-gap\)\)/s.test(frontendCss)

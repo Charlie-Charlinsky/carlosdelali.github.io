@@ -447,7 +447,7 @@ body[data-page="cv"] .page-shell {
     --cv-section-gap: 1.25rem;
     --cv-section-line-width: 954px;
     max-width: 76rem;
-    margin: 0 auto;
+    margin: 0;
 }
 
 .cv-content > section {

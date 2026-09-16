@@ -159,11 +159,9 @@ Canonical navigation for v0.2:
 - ABOUT
 - CV
 - GAMES
-- PROJECTS
-- WRITING
-- ONIRIC JOURNAL
+- CONTACT
 
-Do not add Narrative or Drawings to the current navigation.
+Projects, Writing, and Oniric Journal retain their page designs but remain unpublished until activated through the shared section registry. Do not add Narrative or Drawings to the current navigation.
 
 ---
 
@@ -484,11 +482,9 @@ English:
 - ABOUT
 - CV
 - GAMES
-- PROJECTS
-- WRITING
-- ONIRIC JOURNAL
+- CONTACT
 
-Spanish display strings may be localized where appropriate, with:
+Spanish display strings are localized where appropriate, including `CONTACTO`. The dormant journal label remains:
 
 - DIARIO ONÍRICO as the canonical journal label
 

@@ -8,7 +8,7 @@ The site remains a static GitHub Pages application with no build step or server 
 
 `js/app.js` dispatches each route shell to a page coordinator under `js/pages/`. Collection modules render from their canonical registries, while reusable detail shells resolve the selected item from a query parameter and then load its localized semantic fragment and registered assets. The English and Spanish trees share the same modules and preserve current game, project, story, or journal identity when switching language.
 
-`js/core/publication.js` is the public allowlist for top-level sections and individually gated UI groups. The global shell creates navigation links only for allowlisted sections, and `js/app.js` checks the page family before dynamically importing its page module. Marked unpublished controls are removed from detached content fragments before those fragments enter the document DOM; publication is never implemented with CSS hiding.
+`js/core/publication.js` is the single publication source of truth for top-level sections and individually gated UI groups. Its top-level registry assigns permanent IDs 1-7, route keys, navigation order, and explicit publication booleans. The global shell creates navigation links from the published registry entries, and `js/app.js` checks the page family before dynamically importing its page module. Marked unpublished controls are removed from detached content fragments before those fragments enter the document DOM; publication is never implemented with CSS hiding.
 
 `css/frontend.css` owns the v0.2 design tokens, shared geometry, responsive layout, focus/touch states, reduced-motion behaviour, galleries, reader treatment, and collection patterns. Repeated Games, Projects, Writing, and Journal elements use common component classes rather than item-specific rules, keeping later Visual QA adjustments centralized.
 
@@ -33,12 +33,9 @@ Public writes are a single rollback-capable transaction. Generated fragments and
 - ABOUT
 - CV
 - GAMES
-- PROJECTS
-- WRITING
-- ONIRIC JOURNAL / DIARIO ONÍRICO
 - CONTACT / CONTACTO
 
-Narrative and Drawings are future sections. They are not current routes and must not appear in the v0.2.0 main navigation.
+Projects, Writing, and Oniric Journal remain implemented but unpublished. Their top-level and detail/reader route families are gated before page modules or authored content load. Future activation requires changing only the matching `published` value in `SECTION_REGISTRY`: 4 is `PROJECTS`, 5 is `WRITING`, and 6 is `ONIRIC_JOURNAL`. Narrative and Drawings are future sections; they are not current routes and must not appear in the v0.2.0 main navigation.
 
 ## Bilingual Route System
 
@@ -88,7 +85,7 @@ The intended desktop header is fixed while page content scrolls.
 ```text
 Upper left:  ESP / ENG
 Below:       CARLOS J. L. SÁNCHEZ
-Right:       About / CV / Games / Projects / Writing / Oniric Journal / Contact
+Right:       About / CV / Games / Contact
 ```
 
 The language selector, designer name, and main navigation are global controls. The current language and page must be conveyed accessibly as well as visually.
