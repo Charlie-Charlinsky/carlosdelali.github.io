@@ -78,6 +78,7 @@ const routesSource = read("js/core/routes.js");
 const rootSource = read("js/root.js");
 const publicationSource = read("js/core/publication.js");
 const shellSource = read("js/core/shell.js");
+const languageScrollSource = read("js/core/language-scroll.js");
 const mediaGallerySource = read("js/core/media-gallery.js");
 const frontendCss = read("css/frontend.css");
 const obsoleteEngineKey = ["engine", "Id"].join("");
@@ -390,6 +391,193 @@ if (!esLandingSource.includes('data-lang="es"') || !esLandingSource.includes('..
 if (!enAboutRouteSource.includes('data-lang="en" data-page="about"')
     || !esAboutRouteSource.includes('data-lang="es" data-page="about"')) {
     fail("Routes: las rutas About explicitas no conservan su contexto semantico");
+}
+
+const languageScrollModule = await import(pathToFileURL(path.join(root, "js/core/language-scroll.js")).href);
+if (languageScrollModule.clampScrollProgress(-0.5) !== 0
+    || languageScrollModule.clampScrollProgress(1.5) !== 1
+    || languageScrollModule.clampScrollProgress(0.4) !== 0.4) {
+    fail("Language scroll: el progreso no se limita correctamente al intervalo 0..1");
+}
+if (languageScrollModule.getNormalizedScrollProgress({
+    scrollY: 1_000,
+    scrollHeight: 3_000,
+    viewportHeight: 1_000
+}) !== 0.5) {
+    fail("Language scroll: el fallback no usa progreso vertical normalizado");
+}
+const languageScrollNow = 1_000_000;
+const validLanguageScrollState = {
+    version: languageScrollModule.LANGUAGE_SCROLL_STATE_VERSION,
+    timestamp: languageScrollNow,
+    sourceLanguage: "en",
+    targetLanguage: "es",
+    sourceRoute: "cv",
+    targetRoute: "cv",
+    sourceUrl: "/en/cv/",
+    targetUrl: "/es/cv/",
+    progress: 0.75,
+    anchorId: "education",
+    anchorOffset: 200,
+    anchorProgress: 0.5,
+    viewportReference: 0.35
+};
+const validLanguageScrollContext = {
+    language: "es",
+    page: "cv",
+    currentUrl: "https://portfolio.test/es/cv/",
+    now: languageScrollNow
+};
+if (!languageScrollModule.isLanguageSwitchScrollStateValid(
+    validLanguageScrollState,
+    validLanguageScrollContext
+)) {
+    fail("Language scroll: un estado valido para la ruta traducida se rechaza");
+}
+if (languageScrollModule.isLanguageSwitchScrollStateValid(validLanguageScrollState, {
+    ...validLanguageScrollContext,
+    page: "games"
+})) {
+    fail("Language scroll: un estado pendiente se aplica a una ruta semantica distinta");
+}
+const gameDetailLanguageScrollState = {
+    ...validLanguageScrollState,
+    sourceRoute: "game-detail",
+    targetRoute: "game-detail",
+    sourceUrl: "/en/games/detail/?id=the-little-prince",
+    targetUrl: "/es/games/detail/?id=the-little-prince"
+};
+if (!languageScrollModule.isLanguageSwitchScrollStateValid(gameDetailLanguageScrollState, {
+    ...validLanguageScrollContext,
+    page: "game-detail",
+    currentUrl: "https://portfolio.test/es/games/detail/?id=the-little-prince"
+}) || languageScrollModule.isLanguageSwitchScrollStateValid(gameDetailLanguageScrollState, {
+    ...validLanguageScrollContext,
+    page: "game-detail",
+    currentUrl: "https://portfolio.test/es/games/detail/?id=another-game"
+})) {
+    fail("Language scroll: Game Detail no conserva/verifica la identidad del juego");
+}
+if (languageScrollModule.isLanguageSwitchScrollStateValid(validLanguageScrollState, {
+    ...validLanguageScrollContext,
+    now: languageScrollNow + languageScrollModule.LANGUAGE_SCROLL_TTL_MS + 1
+})) {
+    fail("Language scroll: un estado caducado no se rechaza");
+}
+const anchoredScrollTop = languageScrollModule.calculateLanguageSwitchScrollTop(validLanguageScrollState, {
+    maximumScroll: 4_000,
+    viewportHeight: 1_000,
+    anchorTop: 2_000,
+    anchorHeight: 1_000
+});
+const fallbackScrollTop = languageScrollModule.calculateLanguageSwitchScrollTop(validLanguageScrollState, {
+    maximumScroll: 4_000,
+    viewportHeight: 1_000
+});
+if (anchoredScrollTop !== 2_150 || fallbackScrollTop !== 3_000) {
+    fail("Language scroll: el ancla semantica no tiene prioridad sobre el fallback de progreso");
+}
+if (languageScrollModule.captureLanguageSwitchScrollState({
+    sourceLanguage: "en",
+    targetLanguage: "en",
+    page: "cv",
+    targetUrl: "https://portfolio.test/en/cv/"
+}) !== false) {
+    fail("Language scroll: un selector del idioma actual crea estado de restauracion");
+}
+const previousWindow = globalThis.window;
+const previousDocument = globalThis.document;
+const pendingLanguageScrollStorage = new Map();
+let restoredLanguageScroll = null;
+const sourceAnchor = {
+    id: "education",
+    dataset: {},
+    getBoundingClientRect: () => ({ top: 100, bottom: 1_100, height: 1_000 })
+};
+const targetAnchor = {
+    id: "education",
+    dataset: {},
+    getBoundingClientRect: () => ({ top: 800, bottom: 2_400, height: 1_600 })
+};
+globalThis.window = {
+    location: { href: "https://portfolio.test/en/cv/" },
+    innerHeight: 1_000,
+    scrollY: 650,
+    scrollX: 0,
+    sessionStorage: {
+        getItem: (key) => pendingLanguageScrollStorage.get(key) ?? null,
+        setItem: (key, value) => pendingLanguageScrollStorage.set(key, value),
+        removeItem: (key) => pendingLanguageScrollStorage.delete(key)
+    },
+    requestAnimationFrame: (callback) => callback(),
+    scrollTo: (options) => { restoredLanguageScroll = options; }
+};
+globalThis.document = {
+    documentElement: { scrollHeight: 5_000 },
+    body: { scrollHeight: 5_000 },
+    fonts: { ready: Promise.resolve() },
+    querySelectorAll: () => [sourceAnchor]
+};
+const capturedLanguageScroll = languageScrollModule.captureLanguageSwitchScrollState({
+    sourceLanguage: "en",
+    targetLanguage: "es",
+    page: "cv",
+    targetUrl: "https://portfolio.test/es/cv/"
+});
+globalThis.window.location.href = "https://portfolio.test/es/cv/";
+globalThis.window.scrollY = 0;
+globalThis.document.querySelectorAll = () => [targetAnchor];
+const restoredLanguageScrollOnce = await languageScrollModule.restoreLanguageSwitchScrollState({
+    language: "es",
+    page: "cv"
+});
+const restoredLanguageScrollTwice = await languageScrollModule.restoreLanguageSwitchScrollState({
+    language: "es",
+    page: "cv"
+});
+if (!capturedLanguageScroll
+    || !restoredLanguageScrollOnce
+    || restoredLanguageScrollTwice
+    || restoredLanguageScroll?.top !== 850
+    || restoredLanguageScroll?.behavior !== "auto"
+    || pendingLanguageScrollStorage.size !== 0) {
+    fail("Language scroll: la captura/restauracion real no es semantica, inmediata y one-shot");
+}
+if (previousWindow === undefined) delete globalThis.window;
+else globalThis.window = previousWindow;
+if (previousDocument === undefined) delete globalThis.document;
+else globalThis.document = previousDocument;
+const expectedCvAnchors = "work-experience|education|ludography|downloads";
+for (const language of ["en", "es"]) {
+    const cvAnchors = [...read(`content/cv/${language}.html`).matchAll(/<section id="([^"]+)"/g)]
+        .map((match) => match[1])
+        .join("|");
+    if (cvAnchors !== expectedCvAnchors) {
+        fail(`Language scroll: CV ${language.toUpperCase()} no expone anclas semanticas equivalentes`);
+    }
+}
+if (!languageScrollSource.includes("window.sessionStorage.setItem")
+    || !languageScrollSource.includes("window.sessionStorage.removeItem")
+    || languageScrollSource.includes("window.localStorage")) {
+    fail("Language scroll: el estado no es efimero y one-shot en sessionStorage");
+}
+if (!shellSource.includes("captureLanguageSwitchScrollState({")
+    || !shellSource.includes("targetLanguage !== language")
+    || (shellSource.match(/captureLanguageSwitchScrollState\(\{/g) ?? []).length !== 1) {
+    fail("Language scroll: la captura no esta aislada al selector de idioma");
+}
+if (appSource.indexOf("await restoreLanguageSwitchScrollState(context)")
+    < appSource.indexOf("await pageModule.render({ ...context, target })")) {
+    fail("Language scroll: la restauracion ocurre antes de completar el render de pagina");
+}
+if (!languageScrollSource.includes("requestAnimationFrame")
+    || !languageScrollSource.includes('behavior: "auto"')) {
+    fail("Language scroll: la restauracion no espera layout estable o introduce scroll animado");
+}
+if (languageScrollSource.includes("history.scrollRestoration")
+    || appSource.includes("history.scrollRestoration")
+    || shellSource.includes("history.scrollRestoration")) {
+    fail("Language scroll: se ha sobrescrito la restauracion nativa del historial");
 }
 if (cvPageSource.includes("detailUrl") || /createElement\("a"/.test(cvPageSource)) {
     fail("CV Ludography: los enlaces a Game Detail no se eliminaron");

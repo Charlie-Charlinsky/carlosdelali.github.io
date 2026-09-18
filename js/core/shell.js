@@ -3,6 +3,7 @@ import { resolveRoute } from "./paths.js";
 import { getEquivalentLanguageUrl } from "./routes.js";
 import { createElement } from "./dom.js";
 import { getDefaultPublishedSection, getPublishedSections, getSectionForPage } from "./publication.js";
+import { captureLanguageSwitchScrollState } from "./language-scroll.js";
 
 const LABELS = {
     en: {
@@ -55,18 +56,34 @@ export function buildShell(language, page) {
     });
 
     ["es", "en"].forEach((targetLanguage) => {
+        const targetUrl = targetLanguage === language
+            ? window.location.href
+            : getEquivalentLanguageUrl(targetLanguage, page);
         const link = createElement("a", {
             text: targetLanguage === "es" ? "ESP" : "ENG",
             attributes: {
-                href: targetLanguage === language
-                    ? window.location.href
-                    : getEquivalentLanguageUrl(targetLanguage, page),
+                href: targetUrl,
                 hreflang: targetLanguage,
                 lang: targetLanguage
             }
         });
         if (targetLanguage === language) link.setAttribute("aria-current", "true");
-        link.addEventListener("click", () => storeLanguage(targetLanguage));
+        link.addEventListener("click", (event) => {
+            if (targetLanguage !== language
+                && event.button === 0
+                && !event.metaKey
+                && !event.ctrlKey
+                && !event.shiftKey
+                && !event.altKey) {
+                captureLanguageSwitchScrollState({
+                    sourceLanguage: language,
+                    targetLanguage,
+                    page,
+                    targetUrl
+                });
+            }
+            storeLanguage(targetLanguage);
+        });
         languageNav.append(link);
     });
 

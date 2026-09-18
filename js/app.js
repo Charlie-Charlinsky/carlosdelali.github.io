@@ -4,6 +4,7 @@ import { renderError, renderLoading } from "./core/dom.js";
 import { storeLanguage } from "./core/language.js";
 import { resolveRoute } from "./core/paths.js";
 import { getDefaultPublishedSection, isPagePublished } from "./core/publication.js";
+import { restoreLanguageSwitchScrollState } from "./core/language-scroll.js";
 
 const PAGE_MODULES = {
     about: () => import("./pages/about.js"),
@@ -42,6 +43,7 @@ async function initialize() {
         const pageModule = await loadModule();
         await pageModule.render({ ...context, target });
         document.body.classList.add("is-ready");
+        await restoreLanguageSwitchScrollState(context);
     } catch (error) {
         console.error(error);
         renderError(target, error, context.language);
