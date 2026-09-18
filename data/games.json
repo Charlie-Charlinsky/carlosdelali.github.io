@@ -24,7 +24,11 @@
           "assets/games/the-little-prince/gallery/the-little-prince-01.jpg",
           "assets/games/the-little-prince/gallery/the-little-prince-02.png",
           "assets/games/the-little-prince/gallery/the-little-prince-03.png",
-          "assets/games/the-little-prince/gallery/the-little-prince-04.png"
+          "assets/games/the-little-prince/gallery/the-little-prince-04.png",
+          "assets/games/the-little-prince/gallery/the-little-prince-05.jpg",
+          "assets/games/the-little-prince/gallery/the-little-prince-06.jpg",
+          "assets/games/the-little-prince/gallery/the-little-prince-07.jpg",
+          "assets/games/the-little-prince/gallery/the-little-prince-08.jpg"
         ]
       },
       "media": [
@@ -43,6 +47,22 @@
         {
           "type": "image",
           "src": "assets/games/the-little-prince/gallery/the-little-prince-04.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/the-little-prince/gallery/the-little-prince-05.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/the-little-prince/gallery/the-little-prince-06.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/the-little-prince/gallery/the-little-prince-07.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/the-little-prince/gallery/the-little-prince-08.jpg"
         }
       ]
     },
@@ -66,33 +86,63 @@
       "assets": {
         "cover": "assets/games/runbot/cover/runbot-cover.png",
         "gallery": [
-          "assets/games/runbot/gallery/runbot-01.jpeg",
-          "assets/games/runbot/gallery/runbot-02.png",
-          "assets/games/runbot/gallery/runbot-03.png",
-          "assets/games/runbot/gallery/runbot-04.png",
-          "assets/games/runbot/gallery/runbot-05.png"
+          "assets/games/runbot/gallery/runbot-01.jpg",
+          "assets/games/runbot/gallery/runbot-02.jpg",
+          "assets/games/runbot/gallery/runbot-03.jpg",
+          "assets/games/runbot/gallery/runbot-04.jpg",
+          "assets/games/runbot/gallery/runbot-05.jpg",
+          "assets/games/runbot/gallery/runbot-06.jpg",
+          "assets/games/runbot/gallery/runbot-07.jpg",
+          "assets/games/runbot/gallery/runbot-08.jpg",
+          "assets/games/runbot/gallery/runbot-09.jpg",
+          "assets/games/runbot/gallery/runbot-10.jpg",
+          "assets/games/runbot/gallery/runbot-11.png"
         ]
       },
       "media": [
         {
           "type": "image",
-          "src": "assets/games/runbot/gallery/runbot-01.jpeg"
+          "src": "assets/games/runbot/gallery/runbot-01.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/runbot/gallery/runbot-02.png"
+          "src": "assets/games/runbot/gallery/runbot-02.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/runbot/gallery/runbot-03.png"
+          "src": "assets/games/runbot/gallery/runbot-03.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/runbot/gallery/runbot-04.png"
+          "src": "assets/games/runbot/gallery/runbot-04.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/runbot/gallery/runbot-05.png"
+          "src": "assets/games/runbot/gallery/runbot-05.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/runbot/gallery/runbot-06.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/runbot/gallery/runbot-07.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/runbot/gallery/runbot-08.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/runbot/gallery/runbot-09.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/runbot/gallery/runbot-10.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/runbot/gallery/runbot-11.png"
         }
       ]
     },
@@ -119,8 +169,16 @@
         "gallery": [
           "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-01.jpg",
           "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-02.jpg",
-          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-03.png",
-          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-04.png"
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-03.jpg",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-04.jpg",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-05.jpg",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-06.jpg",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-07.jpg",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-08.jpg",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-09.jpg",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-10.jpg",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-11.jpg",
+          "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-12.jpg"
         ]
       },
       "media": [
@@ -134,11 +192,43 @@
         },
         {
           "type": "image",
-          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-03.png"
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-03.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-04.png"
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-04.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-05.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-06.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-07.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-08.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-09.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-10.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-11.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/xtreme-racing-2/gallery/xtreme-racing-2-12.jpg"
         }
       ]
     },
@@ -163,33 +253,53 @@
       "assets": {
         "cover": "assets/games/skull-towers/cover/skull-towers-cover.jpeg",
         "gallery": [
-          "assets/games/skull-towers/gallery/skull-towers-01.png",
-          "assets/games/skull-towers/gallery/skull-towers-02.png",
-          "assets/games/skull-towers/gallery/skull-towers-03.png",
-          "assets/games/skull-towers/gallery/skull-towers-04.png",
-          "assets/games/skull-towers/gallery/skull-towers-05.png"
+          "assets/games/skull-towers/gallery/skull-towers-01.jpg",
+          "assets/games/skull-towers/gallery/skull-towers-02.jpg",
+          "assets/games/skull-towers/gallery/skull-towers-03.jpg",
+          "assets/games/skull-towers/gallery/skull-towers-04.jpg",
+          "assets/games/skull-towers/gallery/skull-towers-05.jpg",
+          "assets/games/skull-towers/gallery/skull-towers-06.jpg",
+          "assets/games/skull-towers/gallery/skull-towers-07.jpg",
+          "assets/games/skull-towers/gallery/skull-towers-08.jpg",
+          "assets/games/skull-towers/gallery/skull-towers-09.png"
         ]
       },
       "media": [
         {
           "type": "image",
-          "src": "assets/games/skull-towers/gallery/skull-towers-01.png"
+          "src": "assets/games/skull-towers/gallery/skull-towers-01.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/skull-towers/gallery/skull-towers-02.png"
+          "src": "assets/games/skull-towers/gallery/skull-towers-02.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/skull-towers/gallery/skull-towers-03.png"
+          "src": "assets/games/skull-towers/gallery/skull-towers-03.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/skull-towers/gallery/skull-towers-04.png"
+          "src": "assets/games/skull-towers/gallery/skull-towers-04.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/skull-towers/gallery/skull-towers-05.png"
+          "src": "assets/games/skull-towers/gallery/skull-towers-05.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/skull-towers/gallery/skull-towers-06.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/skull-towers/gallery/skull-towers-07.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/skull-towers/gallery/skull-towers-08.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/skull-towers/gallery/skull-towers-09.png"
         }
       ]
     },
@@ -368,16 +478,23 @@
       "assets": {
         "cover": "assets/games/cyberpunk-city/cover/cyberpunk-city-cover.png",
         "gallery": [
-          "assets/games/cyberpunk-city/gallery/cyberpunk-city-01.png",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-01.webp",
           "assets/games/cyberpunk-city/gallery/cyberpunk-city-02.png",
-          "assets/games/cyberpunk-city/gallery/cyberpunk-city-03.png",
-          "assets/games/cyberpunk-city/gallery/cyberpunk-city-04.png"
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-03.webp",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-04.png",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-05.png",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-06.png",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-07.webp",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-08.webp",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-09.webp",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-10.webp",
+          "assets/games/cyberpunk-city/gallery/cyberpunk-city-11.webp"
         ]
       },
       "media": [
         {
           "type": "image",
-          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-01.png"
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-01.webp"
         },
         {
           "type": "image",
@@ -385,11 +502,39 @@
         },
         {
           "type": "image",
-          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-03.png"
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-03.webp"
         },
         {
           "type": "image",
           "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-04.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-05.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-06.png"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-07.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-08.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-09.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-10.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cyberpunk-city/gallery/cyberpunk-city-11.webp"
         }
       ]
     },
@@ -556,35 +701,60 @@
         "es": "content/games/andar-bahar/es.html"
       },
       "assets": {
-        "cover": "assets/games/andar-bahar/cover/andar-bahar-cover.png",
+        "cover": "assets/games/andar-bahar/cover/andar-bahar-cover.jpg",
         "gallery": [
-          "assets/games/andar-bahar/gallery/andar-bahar-01.png",
-          "assets/games/andar-bahar/gallery/andar-bahar-02.png",
-          "assets/games/andar-bahar/gallery/andar-bahar-03.png",
-          "assets/games/andar-bahar/gallery/andar-bahar-04.png",
-          "assets/games/andar-bahar/gallery/andar-bahar-05.png"
+          "assets/games/andar-bahar/gallery/andar-bahar-01.jpg",
+          "assets/games/andar-bahar/gallery/andar-bahar-02.jpg",
+          "assets/games/andar-bahar/gallery/andar-bahar-03.jpg",
+          "assets/games/andar-bahar/gallery/andar-bahar-04.jpg",
+          "assets/games/andar-bahar/gallery/andar-bahar-05.jpg",
+          "assets/games/andar-bahar/gallery/andar-bahar-06.jpg",
+          "assets/games/andar-bahar/gallery/andar-bahar-07.jpg",
+          "assets/games/andar-bahar/gallery/andar-bahar-08.jpg",
+          "assets/games/andar-bahar/gallery/andar-bahar-09.jpg",
+          "assets/games/andar-bahar/gallery/andar-bahar-10.jpg"
         ]
       },
       "media": [
         {
           "type": "image",
-          "src": "assets/games/andar-bahar/gallery/andar-bahar-01.png"
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-01.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/andar-bahar/gallery/andar-bahar-02.png"
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-02.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/andar-bahar/gallery/andar-bahar-03.png"
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-03.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/andar-bahar/gallery/andar-bahar-04.png"
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-04.jpg"
         },
         {
           "type": "image",
-          "src": "assets/games/andar-bahar/gallery/andar-bahar-05.png"
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-05.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-06.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-07.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-08.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-09.jpg"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/andar-bahar/gallery/andar-bahar-10.jpg"
         }
       ]
     },
@@ -678,33 +848,63 @@
       "assets": {
         "cover": "assets/games/cricket-legends/cover/cricket-legends-cover.png",
         "gallery": [
-          "assets/games/cricket-legends/gallery/cricket-legends-01.png",
-          "assets/games/cricket-legends/gallery/cricket-legends-02.jpg",
-          "assets/games/cricket-legends/gallery/cricket-legends-03.png",
-          "assets/games/cricket-legends/gallery/cricket-legends-04.png",
-          "assets/games/cricket-legends/gallery/cricket-legends-05.png"
+          "assets/games/cricket-legends/gallery/cricket-legends-01.webp",
+          "assets/games/cricket-legends/gallery/cricket-legends-02.webp",
+          "assets/games/cricket-legends/gallery/cricket-legends-03.webp",
+          "assets/games/cricket-legends/gallery/cricket-legends-04.webp",
+          "assets/games/cricket-legends/gallery/cricket-legends-05.webp",
+          "assets/games/cricket-legends/gallery/cricket-legends-06.webp",
+          "assets/games/cricket-legends/gallery/cricket-legends-07.webp",
+          "assets/games/cricket-legends/gallery/cricket-legends-08.webp",
+          "assets/games/cricket-legends/gallery/cricket-legends-09.webp",
+          "assets/games/cricket-legends/gallery/cricket-legends-10.webp",
+          "assets/games/cricket-legends/gallery/cricket-legends-11.webp"
         ]
       },
       "media": [
         {
           "type": "image",
-          "src": "assets/games/cricket-legends/gallery/cricket-legends-01.png"
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-01.webp"
         },
         {
           "type": "image",
-          "src": "assets/games/cricket-legends/gallery/cricket-legends-02.jpg"
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-02.webp"
         },
         {
           "type": "image",
-          "src": "assets/games/cricket-legends/gallery/cricket-legends-03.png"
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-03.webp"
         },
         {
           "type": "image",
-          "src": "assets/games/cricket-legends/gallery/cricket-legends-04.png"
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-04.webp"
         },
         {
           "type": "image",
-          "src": "assets/games/cricket-legends/gallery/cricket-legends-05.png"
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-05.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-06.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-07.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-08.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-09.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-10.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/cricket-legends/gallery/cricket-legends-11.webp"
         }
       ]
     },
@@ -729,11 +929,16 @@
         "cover": "assets/games/zombie-soccer/cover/zombie-soccer-cover.png",
         "gallery": [
           "assets/games/zombie-soccer/gallery/zombie-soccer-01.jpg",
-          "assets/games/zombie-soccer/gallery/zombie-soccer-02.jpg",
-          "assets/games/zombie-soccer/gallery/zombie-soccer-03.jpg",
-          "assets/games/zombie-soccer/gallery/zombie-soccer-04.jpg",
-          "assets/games/zombie-soccer/gallery/zombie-soccer-05.jpg",
-          "assets/games/zombie-soccer/gallery/zombie-soccer-06.jpg"
+          "assets/games/zombie-soccer/gallery/zombie-soccer-02.webp",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-03.webp",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-04.webp",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-05.webp",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-06.webp",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-07.webp",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-08.webp",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-09.webp",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-10.webp",
+          "assets/games/zombie-soccer/gallery/zombie-soccer-11.webp"
         ]
       },
       "media": [
@@ -743,23 +948,43 @@
         },
         {
           "type": "image",
-          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-02.jpg"
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-02.webp"
         },
         {
           "type": "image",
-          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-03.jpg"
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-03.webp"
         },
         {
           "type": "image",
-          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-04.jpg"
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-04.webp"
         },
         {
           "type": "image",
-          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-05.jpg"
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-05.webp"
         },
         {
           "type": "image",
-          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-06.jpg"
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-06.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-07.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-08.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-09.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-10.webp"
+        },
+        {
+          "type": "image",
+          "src": "assets/games/zombie-soccer/gallery/zombie-soccer-11.webp"
         }
       ]
     },
