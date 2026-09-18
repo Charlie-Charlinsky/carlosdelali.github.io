@@ -217,11 +217,117 @@ function Split-BilingualDocx {
     }
 }
 
+function ConvertFrom-YouTubeVideoUrl {
+    param([Parameter(Mandatory = $true)][string]$Url)
+
+    $uri = $null
+    if (-not [Uri]::TryCreate($Url.Trim(), [UriKind]::Absolute, [ref]$uri) -or $uri.Scheme -notin @('http', 'https')) {
+        throw "INVALID_RESOURCE_URL: malformed YouTube URL '$Url'."
+    }
+
+    $domain = $uri.Host.ToLowerInvariant()
+    $videoId = $null
+    if ($domain -in @('youtube.com', 'www.youtube.com')) {
+        if ($uri.AbsolutePath -cne '/watch') {
+            throw "INVALID_RESOURCE_URL: YouTube URL is not a direct watch URL '$Url'."
+        }
+        foreach ($pair in $uri.Query.TrimStart('?').Split('&', [StringSplitOptions]::RemoveEmptyEntries)) {
+            $parts = $pair.Split('=', 2)
+            if ($parts[0] -ceq 'v' -and $parts.Count -eq 2) {
+                $videoId = [Uri]::UnescapeDataString($parts[1])
+                break
+            }
+        }
+    } elseif ($domain -ceq 'youtu.be') {
+        $videoId = $uri.AbsolutePath.Trim('/')
+        if ($videoId.Contains('/')) { $videoId = $null }
+    } else {
+        throw "INVALID_RESOURCE_URL: unsupported YouTube host '$($uri.Host)'."
+    }
+
+    if ([string]::IsNullOrWhiteSpace($videoId) -or $videoId -cnotmatch '^[A-Za-z0-9_-]{11}$') {
+        throw "INVALID_RESOURCE_URL: URL does not resolve to one concrete YouTube video ID '$Url'."
+    }
+    return [pscustomobject][ordered]@{ provider = 'youtube'; videoId = $videoId; sourceUrl = $Url.Trim() }
+}
+
+function Split-GameDocx {
+    param([Parameter(Mandatory = $true)][object]$Document)
+
+    if (@($Document.Blocks | Where-Object Kind -eq 'table').Count -gt 0) {
+        throw 'Tables are not supported by the Game schema.'
+    }
+    $paragraphs = @($Document.Blocks | Where-Object Kind -eq 'paragraph')
+    $englishMarker = @($paragraphs | Where-Object { $_.Text.Trim() -ceq 'ENGLISH VERSION' })
+    if ($englishMarker.Count -ne 1) { throw "Expected exactly one ENGLISH VERSION marker; found $($englishMarker.Count)." }
+
+    $resourceIndexes = @()
+    for ($index = 0; $index -lt $paragraphs.Count; $index++) {
+        if ($paragraphs[$index].Style -eq 'Heading2' -and $paragraphs[$index].Text.Trim() -ceq 'Resources') { $resourceIndexes += $index }
+    }
+    if ($resourceIndexes.Count -gt 1) { throw 'Game DOCX may contain at most one reserved Resources section.' }
+
+    $resources = [pscustomobject][ordered]@{ Present = $false; YouTubeVideos = @(); EmptyLinks = 0 }
+    $editorialParagraphs = $paragraphs
+    if ($resourceIndexes.Count -eq 1) {
+        $resourceIndex = $resourceIndexes[0]
+        $englishIndex = [Array]::IndexOf($paragraphs, $englishMarker[0])
+        if ($resourceIndex -le $englishIndex) { throw 'Reserved Resources must appear after the bilingual editorial blocks.' }
+        $resourceBody = if ($resourceIndex + 1 -lt $paragraphs.Count) { @($paragraphs[($resourceIndex + 1)..($paragraphs.Count - 1)]) } else { @() }
+        $subsectionSeen = $false
+        $videos = @()
+        $emptyLinks = 0
+        $linkNumbers = @{}
+        foreach ($paragraph in $resourceBody) {
+            $text = $paragraph.Text.Trim()
+            if ([string]::IsNullOrWhiteSpace($text)) { continue }
+            if ($text -match '^(?i:youtube\s+videos)\s*:\s*$') {
+                if ($subsectionSeen) { throw 'Duplicate Resources Youtube Videos subsection.' }
+                $subsectionSeen = $true
+                continue
+            }
+            if (-not $subsectionSeen) { throw "Unsupported Resources content before Youtube Videos: $text" }
+            if ($text -notmatch '^(?i:link)\s+([1-9][0-9]*)\s*:\s*(.*)$') { throw "Unsupported Resources entry: $text" }
+            $linkNumber = [int]$Matches[1]
+            $inlineValue = $Matches[2].Trim()
+            if ($linkNumber -gt 4) { throw "Resources Link $linkNumber exceeds the four-video authoring limit." }
+            if ($linkNumbers.ContainsKey($linkNumber)) { throw "Duplicate Resources Link number: $linkNumber" }
+            $linkNumbers[$linkNumber] = $true
+            $targets = @($paragraph.Runs | Where-Object { -not [string]::IsNullOrWhiteSpace([string]$_.Url) } | ForEach-Object { [string]$_.Url } | Select-Object -Unique)
+            if ($targets.Count -gt 1) { throw "Resources Link $linkNumber contains multiple hyperlink targets." }
+            $url = if ($targets.Count -eq 1) { $targets[0] } else { $inlineValue }
+            if ([string]::IsNullOrWhiteSpace($url)) { $emptyLinks++; continue }
+            try { $video = ConvertFrom-YouTubeVideoUrl -Url $url } catch { throw "game resource Link ${linkNumber}: $($_.Exception.Message)" }
+            if (@($videos | Where-Object videoId -CEQ $video.videoId).Count -gt 0) { throw "Duplicate Resources YouTube video ID at Link ${linkNumber}: $($video.videoId)" }
+            $videos += $video
+        }
+        if (-not $subsectionSeen) { throw 'Resources section is missing Youtube Videos:.' }
+        if ($videos.Count -gt 4) { throw 'Resources contains more than four YouTube videos.' }
+        $resources = [pscustomobject][ordered]@{ Present = $true; YouTubeVideos = @($videos); EmptyLinks = $emptyLinks }
+        $editorialParagraphs = if ($resourceIndex -gt 0) { @($paragraphs[0..($resourceIndex - 1)]) } else { @() }
+        while ($editorialParagraphs.Count -gt 0 -and (Test-BlankParagraph -Paragraph $editorialParagraphs[-1])) {
+            $editorialParagraphs = @($editorialParagraphs[0..($editorialParagraphs.Count - 2)])
+        }
+    }
+
+    $split = Split-BilingualDocx -Document ([pscustomobject]@{ Blocks = $editorialParagraphs })
+    return [pscustomobject][ordered]@{ es = $split.es; en = $split.en; Resources = $resources }
+}
+
 function Get-MappedValue {
     param($Map, [string]$Label)
     $property = $Map.PSObject.Properties[$Label]
     if ($null -eq $property) { return $null }
     return [string]$property.Value
+}
+
+function Get-GameMetadataField {
+    param($Map, [string]$Label)
+    $mapped = Get-MappedValue -Map $Map -Label $Label
+    if ($null -ne $mapped) { return $mapped }
+    $baseLabel = [regex]::Replace($Label, '\s*\([^()]+\)\s*$', '').Trim()
+    if ($baseLabel -ceq $Label) { return $null }
+    return Get-MappedValue -Map $Map -Label $baseLabel
 }
 
 function Test-SafeContentUrl {
@@ -567,8 +673,10 @@ function Get-OnlyDocxLink {
 function Convert-CvLanguage {
     param([object[]]$Paragraphs, [string]$Language, [string]$CurrentHtmlPath, $Schema)
     $sections = Split-TopSections -Paragraphs $Paragraphs -LabelMap $Schema.sections.$Language -Language $Language
-    $expected = @('education', 'work-experience', 'ludography', 'downloads')
-    if (($sections.Id -join '|') -cne ($expected -join '|')) { throw "CV $Language section order does not match the schema." }
+    $expected = @('work-experience', 'education', 'ludography', 'downloads')
+    if ($sections.Count -ne $expected.Count -or @($expected | Where-Object { @($sections | Where-Object Id -CEQ $_).Count -ne 1 }).Count -gt 0) {
+        throw "CV $Language must contain each required section exactly once."
+    }
 
     $html = New-HtmlDocument -AttributeName 'data-page-id' -AttributeValue 'cv'
     $signature = @()
@@ -647,7 +755,7 @@ function Convert-GameLanguage {
     $index = $titleIndex + 1
     while ($index -lt $Paragraphs.Count) {
         $labelParagraph = $Paragraphs[$index]
-        $field = Get-MappedValue -Map $metadataMap -Label $labelParagraph.Text.Trim()
+        $field = Get-GameMetadataField -Map $metadataMap -Label $labelParagraph.Text.Trim()
         if ($null -eq $field) { break }
         if ($labelParagraph.Style -ne 'Heading2') { throw "Game $Language metadata label '$($labelParagraph.Text)' must use Heading 2." }
         if ($metadata.Contains($field)) { throw "Duplicate Game $Language metadata field: $field" }
@@ -657,13 +765,13 @@ function Convert-GameLanguage {
         $valueParagraph = $Paragraphs[$index]
         Set-GameNodeRole $nodes[$index] 'metadata-value' $field $null 'game.root' 'game.root'
         $link = @($valueParagraph.Runs | Where-Object Url | Select-Object -First 1)
-        $metadata[$field] = [pscustomobject]@{ Value = $valueParagraph.Text.Trim(); Url = if ($link.Count) { $link[0].Url } else { $null } }
+        $metadata[$field] = [pscustomobject]@{ Label = $labelParagraph.Text.Trim(); Value = $valueParagraph.Text.Trim(); Url = if ($link.Count) { $link[0].Url } else { $null } }
         $metadataOrder += $field
         $sourcePresence[$field] = $true
         $index++
     }
     foreach ($field in @('year', 'company', 'platform', 'access', 'engine')) {
-        if (-not $metadata.Contains($field)) { $metadata[$field] = [pscustomobject]@{ Value = '?'; Url = $null } }
+        if (-not $metadata.Contains($field)) { $metadata[$field] = [pscustomobject]@{ Label = $null; Value = '?'; Url = $null } }
     }
 
     $sections = @()
@@ -917,15 +1025,31 @@ function New-UpdatedGameRegistry {
             accessUrl = $accessUrl
             engineName = if ($metadata.engine.Value -eq '?') { $null } else { $metadata.engine.Value }
         }
+        $resourcesProperty = $item.Summary.PSObject.Properties['Resources']
+        if ($null -ne $resourcesProperty -and $resourcesProperty.Value.Present) {
+            $updates.youtubeVideos = @($resourcesProperty.Value.YouTubeVideos)
+        }
+        $authoredAccessLabels = [ordered]@{
+            es = [string]$item.Summary.es.Metadata.access.Label
+            en = [string]$item.Summary.en.Metadata.access.Label
+        }
+        if ($authoredAccessLabels.es -cne 'Acceso' -or $authoredAccessLabels.en -cne 'Access') {
+            $updates.metadataLabels = [ordered]@{
+                es = [ordered]@{ access = $authoredAccessLabels.es }
+                en = [ordered]@{ access = $authoredAccessLabels.en }
+            }
+        }
         $updated = [ordered]@{}
         foreach ($property in $current.PSObject.Properties) {
-            if ($property.Name -in @('year', 'platform', 'accessUrl', 'engineName')) { continue }
+            if ($property.Name -in @('year', 'platform', 'accessUrl', 'engineName', 'metadataLabels', 'youtubeVideos')) { continue }
             if ($updates.Contains($property.Name)) { $updated[$property.Name] = $updates[$property.Name] } else { $updated[$property.Name] = $property.Value }
             if ($property.Name -eq 'published') {
                 $updated.year = $updates.year
                 $updated.platform = $updates.platform
                 $updated.accessUrl = $updates.accessUrl
                 $updated.engineName = $updates.engineName
+                if ($updates.Contains('metadataLabels')) { $updated.metadataLabels = $updates.metadataLabels }
+                if ($updates.Contains('youtubeVideos')) { $updated.youtubeVideos = $updates.youtubeVideos }
             }
         }
         $updatedGame = [pscustomobject]$updated
@@ -971,7 +1095,12 @@ function New-ContentImportPlan {
         $target = Resolve-ContentPipelineTarget -Identity $identity -RepositoryRoot $RepositoryRoot -Config $config
         if ($TargetKeys.Count -gt 0 -and $TargetKeys -cnotcontains $target.TargetKey) { continue }
         $sourcePath = Join-Path (Get-ContentPipelinePaths -RepositoryRoot $RepositoryRoot).Inbox $entry.Source
-        $blocks = Split-BilingualDocx (Read-DocxDocument -Path $sourcePath) -PreserveBlankParagraphs:($identity.Type -eq 'cv')
+        $document = Read-DocxDocument -Path $sourcePath
+        $blocks = if ($identity.Type -eq 'game') {
+            Split-GameDocx -Document $document
+        } else {
+            Split-BilingualDocx -Document $document -PreserveBlankParagraphs:($identity.Type -eq 'cv')
+        }
         $outputs = [ordered]@{}
         $summary = $null
         switch ($identity.Type) {

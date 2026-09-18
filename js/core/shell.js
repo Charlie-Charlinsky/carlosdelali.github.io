@@ -2,7 +2,7 @@ import { alternateLanguage, storeLanguage } from "./language.js";
 import { resolveRoute } from "./paths.js";
 import { getEquivalentLanguageUrl } from "./routes.js";
 import { createElement } from "./dom.js";
-import { getPublishedSections, getSectionForPage } from "./publication.js";
+import { getDefaultPublishedSection, getPublishedSections, getSectionForPage } from "./publication.js";
 
 const LABELS = {
     en: {
@@ -42,6 +42,7 @@ const LABELS = {
 export function buildShell(language, page) {
     const strings = LABELS[language];
     const activePage = getSectionForPage(page);
+    const defaultSection = getDefaultPublishedSection();
     const headerMount = document.querySelector("#site-header");
     const skipLink = document.querySelector(".skip-link");
     if (skipLink) skipLink.textContent = strings.skip;
@@ -71,7 +72,7 @@ export function buildShell(language, page) {
 
     const brand = createElement("a", {
         className: "site-brand",
-        attributes: { href: resolveRoute(language, "about"), "aria-label": "Carlos J. L. Sánchez" }
+        attributes: { href: resolveRoute(language, defaultSection.route), "aria-label": "Carlos J. L. Sánchez" }
     });
     brand.append(
         createElement("span", { className: "site-brand__name", text: "CARLOS J. L. SÁNCHEZ" }),

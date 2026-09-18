@@ -113,7 +113,7 @@ Game Detail architecture introduced:
 - Long-form contribution content is separated into semantic HTML.
 - Game media is separated into dedicated asset structures.
 - The shared Game Detail model supports multiple feature/system contribution sections.
-- The visible gallery is capped at six images.
+- The shared viewer is capped at 12 images, four combined videos, and 16 total media items.
 
 ### First Professional Game Detail Content
 

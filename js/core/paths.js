@@ -45,9 +45,9 @@ export function resolveContent(path) {
     return resolveSiteUrl(path.startsWith("content/") ? path : `content/${path}`);
 }
 
-export function resolveRoute(language, page = "about", options = {}) {
+export function resolveRoute(language, page, options = {}) {
     const routeMap = {
-        about: "",
+        about: "about/",
         cv: "cv/",
         games: "games/",
         "game-detail": "games/detail/",
@@ -58,7 +58,8 @@ export function resolveRoute(language, page = "about", options = {}) {
         "oniric-journal-detail": "oniric-journal/detail/",
         contact: "contact/"
     };
-    const route = routeMap[page] ?? "";
+    const route = routeMap[page];
+    if (route === undefined) throw new Error(`Unknown route: ${page}`);
     const url = new URL(`${language}/${route}`, SITE_ROOT);
 
     Object.entries(options.query ?? {}).forEach(([key, value]) => {

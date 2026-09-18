@@ -50,6 +50,27 @@ function Invoke-GameFixture {
     return Convert-GameLanguage -Paragraphs $paragraphs -Language $Language -GameId $GameId -Schema $schema
 }
 
+function New-GameResourceFixture {
+    param([object[]]$Entries = @(), [switch]$NoResources)
+    $blocks = @(
+        (New-TestParagraph 'Fixture Game' -Style 'Heading1'),
+        (New-TestParagraph 'El juego' -Style 'Heading2'),
+        (New-TestParagraph 'Texto de prueba'),
+        (New-TestParagraph 'ENGLISH VERSION'),
+        (New-TestParagraph 'Fixture Game' -Style 'Heading1'),
+        (New-TestParagraph 'The game' -Style 'Heading2'),
+        (New-TestParagraph 'Fixture text')
+    )
+    if (-not $NoResources) {
+        $blocks += @(
+            (New-TestParagraph 'Resources' -Style 'Heading2'),
+            (New-TestParagraph 'Youtube Videos:' -Style 'Heading2')
+        )
+        $blocks += $Entries
+    }
+    return [pscustomobject]@{ Blocks = $blocks }
+}
+
 try {
     $before = Get-ContentTreeFingerprint -RepositoryRoot $root
     Invoke-GameParityMatrix
@@ -65,6 +86,64 @@ try {
     } finally {
         if (Test-Path -LiteralPath $temporaryRoot) { [IO.Directory]::Delete([IO.Path]::GetFullPath($temporaryRoot), $true) }
     }
+
+    $noResources = Split-GameDocx (New-GameResourceFixture -NoResources)
+    $noResourcesPair = Convert-GameBilingual -Blocks $noResources -GameId 'fixture-no-resources' -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
+    Assert-ImportEngine (-not $noResources.Resources.Present -and @($noResources.Resources.YouTubeVideos).Count -eq 0 -and $noResourcesPair.es.Html -match 'Texto de prueba') 'Resources: Game without Resources imports normally'
+
+    $emptyResources = Split-GameDocx (New-GameResourceFixture -Entries @(
+        (New-TestParagraph 'Link 1:' -Style 'Heading2'),
+        (New-TestParagraph 'Link 2:' -Style 'Heading2'),
+        (New-TestParagraph 'Link 3:' -Style 'Heading2'),
+        (New-TestParagraph 'Link 4:' -Style 'Heading2')
+    ))
+    Assert-ImportEngine ($emptyResources.Resources.Present -and @($emptyResources.Resources.YouTubeVideos).Count -eq 0 -and $emptyResources.Resources.EmptyLinks -eq 4) 'Resources: empty links import as zero videos'
+
+    $watchUrl = 'https://www.youtube.com/watch?v=AAAAAAAAAAA'
+    $watchResources = Split-GameDocx (New-GameResourceFixture -Entries @(
+        (New-TestParagraph "Link 1: $watchUrl" -Style 'Heading2' -Url $watchUrl)
+    ))
+    Assert-ImportEngine ($watchResources.Resources.YouTubeVideos[0].videoId -ceq 'AAAAAAAAAAA') 'Resources: direct youtube.com watch URL extracts videoId'
+
+    $shortUrl = 'https://youtu.be/BBBBBBBBBBB?si=share-token'
+    $orderedResources = Split-GameDocx (New-GameResourceFixture -Entries @(
+        (New-TestParagraph "Link 1: $watchUrl" -Style 'Heading2' -Url $watchUrl),
+        (New-TestParagraph 'Link 2:' -Style 'Heading2'),
+        (New-TestParagraph "Link 3: $shortUrl" -Style 'Heading2' -Url $shortUrl)
+    ))
+    Assert-ImportEngine ((@($orderedResources.Resources.YouTubeVideos | ForEach-Object videoId) -join '|') -ceq 'AAAAAAAAAAA|BBBBBBBBBBB') 'Resources: youtu.be query parsing and authored Link order'
+    Assert-ImportEngine ($orderedResources.Resources.EmptyLinks -eq 1) 'Resources: empty intermediate links are ignored'
+
+    $fourResources = Split-GameDocx (New-GameResourceFixture -Entries @(
+        (New-TestParagraph 'Link 1: https://youtu.be/AAAAAAAAAAA' -Style 'Heading2'),
+        (New-TestParagraph 'Link 2: https://youtu.be/BBBBBBBBBBB' -Style 'Heading2'),
+        (New-TestParagraph 'Link 3: https://youtu.be/CCCCCCCCCCC' -Style 'Heading2'),
+        (New-TestParagraph 'Link 4: https://youtu.be/DDDDDDDDDDD' -Style 'Heading2')
+    ))
+    Assert-ImportEngine (@($fourResources.Resources.YouTubeVideos).Count -eq 4) 'Resources: four authored videos are accepted'
+
+    $fiveResourcesRejected = $false
+    try {
+        [void](Split-GameDocx (New-GameResourceFixture -Entries @(
+            (New-TestParagraph 'Link 1: https://youtu.be/AAAAAAAAAAA' -Style 'Heading2'),
+            (New-TestParagraph 'Link 2: https://youtu.be/BBBBBBBBBBB' -Style 'Heading2'),
+            (New-TestParagraph 'Link 3: https://youtu.be/CCCCCCCCCCC' -Style 'Heading2'),
+            (New-TestParagraph 'Link 4: https://youtu.be/DDDDDDDDDDD' -Style 'Heading2'),
+            (New-TestParagraph 'Link 5: https://youtu.be/EEEEEEEEEEE' -Style 'Heading2')
+        )))
+    } catch { $fiveResourcesRejected = $_.Exception.Message -match 'four-video authoring limit' }
+    Assert-ImportEngine $fiveResourcesRejected 'Resources: a fifth authored video is rejected'
+
+    foreach ($invalidUrl in @('https://www.youtube.com/results?search_query=fixture', 'not-a-youtube-url')) {
+        $invalidResourceRejected = $false
+        try { [void](Split-GameDocx (New-GameResourceFixture -Entries @((New-TestParagraph "Link 1: $invalidUrl" -Style 'Heading2')))) } catch { $invalidResourceRejected = $_.Exception.Message -match 'INVALID_RESOURCE_URL' }
+        Assert-ImportEngine $invalidResourceRejected "Resources: invalid direct-video URL rejected ($invalidUrl)"
+    }
+
+    $resourcePair = Convert-GameBilingual -Blocks $orderedResources -GameId 'fixture-media' -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
+    Assert-ImportEngine ($resourcePair.es.Html -notmatch 'Resources|Youtube Videos|Link 1' -and $resourcePair.en.Html -notmatch 'Resources|Youtube Videos|Link 1') 'Resources: technical block is absent from ES and EN HTML'
+    Assert-GameParity -Spanish $resourcePair.es -English $resourcePair.en
+    Assert-ImportEngine ($resourcePair.es.Structure -ceq $resourcePair.en.Structure) 'Resources: technical metadata is excluded from bilingual parity'
 
     $flatUl = Invoke-ListFixture @(
         (New-TestParagraph 'Alpha' '1' 0 'bullet' -ParagraphIndex 1),
@@ -308,7 +387,7 @@ try {
     $localizedStylesXml = [xml]'<?xml version="1.0"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:styleId="Ttulo1"><w:name w:val="heading 1" /></w:style><w:style w:type="paragraph" w:styleId="LocalizedChild"><w:name w:val="Localized Child" /><w:basedOn w:val="Ttulo1" /></w:style></w:styles>'
     $localizedStyleMap = Get-WordParagraphStyleMap -StylesXml $localizedStylesXml
     Assert-ImportEngine ($localizedStyleMap['Ttulo1'] -ceq 'Heading1' -and $localizedStyleMap['LocalizedChild'] -ceq 'Heading1') 'Open XML style declarations resolve localized and based-on Heading 1 styles'
-    $localizedGameDocument = Split-BilingualDocx (Read-DocxDocument -Path (Join-Path $root 'local-content\inbox\game__a-night-with-cleo__ES-EN.docx'))
+    $localizedGameDocument = Split-GameDocx (Read-DocxDocument -Path (Join-Path $root 'local-content\inbox\game__a-night-with-cleo__ES-EN.docx'))
     Assert-ImportEngine ($localizedGameDocument.es[0].Style -ceq 'Heading1' -and $localizedGameDocument.en[0].Style -ceq 'Heading1') 'real localized Game title styles normalize to Heading 1'
 
     $currentContactPlan = New-ContentImportPlan -RepositoryRoot $root -IncludeUnchanged -TargetKeys @('contact:main')
@@ -523,6 +602,20 @@ try {
     )
     Assert-GameParity -Spanish $accessSpanish -English $accessEnglish
     Assert-ImportEngine ((Get-GameAccessTarget $accessSpanish.Metadata.access) -ceq $accessTarget -and (Get-GameAccessTarget $accessEnglish.Metadata.access) -ceq $accessTarget) 'Access parity resolves an authored relationship or identical safe visible URL'
+    $qualifiedAccessSpanish = Invoke-GameFixture @(
+        (New-TestParagraph 'Acceso(VPN requerida)' -Style 'Heading2'),
+        (New-TestParagraph $accessTarget -Url $accessTarget),
+        (New-TestParagraph 'El Juego' -Style 'Heading2'),
+        (New-TestParagraph 'Texto')
+    ) -Language 'es'
+    $qualifiedAccessEnglish = Invoke-GameFixture @(
+        (New-TestParagraph 'Access(VPN required)' -Style 'Heading2'),
+        (New-TestParagraph $accessTarget -Url $accessTarget),
+        (New-TestParagraph 'The Game' -Style 'Heading2'),
+        (New-TestParagraph 'Text')
+    )
+    Assert-GameParity -Spanish $qualifiedAccessSpanish -English $qualifiedAccessEnglish
+    Assert-ImportEngine ($qualifiedAccessSpanish.Metadata.access.Label -ceq 'Acceso(VPN requerida)' -and $qualifiedAccessEnglish.Metadata.access.Label -ceq 'Access(VPN required)') 'Access qualifier maps to access while preserving exact authored labels'
     $differentAccessEnglish = Invoke-GameFixture @(
         (New-TestParagraph 'Access' -Style 'Heading2'),
         (New-TestParagraph $accessTarget -Url 'https://example.com/different-target'),
@@ -565,7 +658,7 @@ try {
     }
     $gameSchema = (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
     foreach ($generaId in $generaExpected.Keys) {
-        $generaDocument = Split-BilingualDocx (Read-DocxDocument -Path (Join-Path $root "local-content\inbox\game__${generaId}__ES-EN.docx"))
+        $generaDocument = Split-GameDocx (Read-DocxDocument -Path (Join-Path $root "local-content\inbox\game__${generaId}__ES-EN.docx"))
         $generaEs = Convert-GameLanguage -Paragraphs $generaDocument.es -Language 'es' -GameId $generaId -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
         $generaEn = Convert-GameLanguage -Paragraphs $generaDocument.en -Language 'en' -GameId $generaId -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
         Assert-GameParity -Spanish $generaEs -English $generaEn
@@ -620,6 +713,7 @@ try {
     $cvEs = Convert-CvLanguage -Paragraphs $cvDocument.es -Language 'es' -CurrentHtmlPath (Join-Path $root 'content\cv\es.html') -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.cv
     $cvEn = Convert-CvLanguage -Paragraphs $cvDocument.en -Language 'en' -CurrentHtmlPath (Join-Path $root 'content\cv\en.html') -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.cv
     Assert-ImportEngine ($cvEs.Structure -ceq $cvEn.Structure) 'current CV ES/EN list topology parity'
+    Assert-ImportEngine (($cvEs.Structure -split '\|')[0] -like 'work-experience:*' -and ($cvEn.Structure -split '\|')[0] -like 'work-experience:*') 'CV source-authored Professional Experience section remains first'
     Assert-ImportEngine (@($cvDocument.es | Where-Object { Test-BlankParagraph $_ }).Count -gt 0 -and @($cvDocument.es | Where-Object { Test-BlankParagraph $_ }).Count -eq @($cvDocument.en | Where-Object { Test-BlankParagraph $_ }).Count) 'current CV preserves bilingual authored blank-paragraph topology'
     Assert-ImportEngine ((@($cvEs.Ludography | ForEach-Object Games | ForEach-Object { $_ }) -join '|') -ceq (@($cvEn.Ludography | ForEach-Object Games | ForEach-Object { $_ }) -join '|')) 'CV Ludography ordering remains bilingual and unchanged'
     foreach ($model in @($cvEs, $cvEn)) {
@@ -639,7 +733,7 @@ try {
     $twsGameItems = @()
     foreach ($twsId in $twsIds) {
         $canonicalPath = Join-Path $root "local-content\canonical\game\$twsId\content.docx"
-        $twsDocument = Split-BilingualDocx (Read-DocxDocument -Path $canonicalPath)
+        $twsDocument = Split-GameDocx (Read-DocxDocument -Path $canonicalPath)
         $twsPair = Convert-GameBilingual -Blocks $twsDocument -GameId $twsId -Schema (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.game
         $twsEsModel = $twsPair.es
         $twsEnModel = $twsPair.en
@@ -653,7 +747,7 @@ try {
                 "content/games/$twsId/es.html" = $twsEsModel.Html
                 "content/games/$twsId/en.html" = $twsEnModel.Html
             }
-            Summary = [pscustomobject]@{ es = $twsEsModel; en = $twsEnModel }
+            Summary = [pscustomobject]@{ es = $twsEsModel; en = $twsEnModel; Resources = $twsPair.Resources }
         }
     }
     Assert-ImportEngine ($twsGameItems.Count -eq 11) 'all accepted real TWS DOCX files parse'
@@ -685,7 +779,7 @@ try {
         $twsEs = [xml]$twsGame.Outputs["content/games/$twsId/es.html"]
         $twsEn = [xml]$twsGame.Outputs["content/games/$twsId/en.html"]
         Assert-ImportEngine ($twsGame.Summary.es.HeadingTopology -ceq 'h2[h3]' -and $twsGame.Summary.en.HeadingTopology -ceq 'h2[h3]') "game:$twsId TWS h2 to h3 topology"
-        $acceptedTws = Split-BilingualDocx (Read-DocxDocument -Path (Join-Path $root "local-content\canonical\game\$twsId\content.docx"))
+        $acceptedTws = Split-GameDocx (Read-DocxDocument -Path (Join-Path $root "local-content\canonical\game\$twsId\content.docx"))
         foreach ($language in @('es', 'en')) {
             $authored = @($twsGame.Summary.$language.SemanticNodes | Where-Object { $_.Kind -ceq 'h3' -and $_.SemanticId -ceq 'main-features' })
             $sourceHeading = @($acceptedTws.$language | Where-Object { $_.ParagraphIndex -eq $authored[0].ParagraphIndex })
@@ -706,7 +800,7 @@ try {
     $acceptedGameItems = @()
     foreach ($entry in @($manifest.entries.PSObject.Properties.Value | Where-Object targetKey -Like 'game:*')) {
         $id = $entry.targetKey.Split(':')[1]
-        $acceptedDoc = Split-BilingualDocx (Read-DocxDocument -Path (Join-Path $root $entry.canonicalFile))
+        $acceptedDoc = Split-GameDocx (Read-DocxDocument -Path (Join-Path $root $entry.canonicalFile))
         $acceptedPair = Convert-GameBilingual -Blocks $acceptedDoc -GameId $id -Schema $gameSchema
         $acceptedEs = $acceptedPair.es
         $acceptedEn = $acceptedPair.en
@@ -715,10 +809,23 @@ try {
             $model = if ($language -eq 'es') { $acceptedEs } else { $acceptedEn }
             Assert-ImportEngine ((Get-Content (Join-Path $root "content/games/$id/$language.html") -Raw -Encoding UTF8) -ceq $model.Html) "game:$id $language output matches accepted canonical"
         }
-        $acceptedGameItems += [pscustomobject]@{ Id = $id; Summary = [pscustomobject]@{ es = $acceptedEs; en = $acceptedEn } }
+        $acceptedGameItems += [pscustomobject]@{ Id = $id; Summary = [pscustomobject]@{ es = $acceptedEs; en = $acceptedEn; Resources = $acceptedPair.Resources } }
     }
     $acceptedRegistry = New-UpdatedGameRegistry -RepositoryRoot $root -GameItems $acceptedGameItems -Config (Get-ContentPipelineConfig -RepositoryRoot $root)
-    Assert-ImportEngine ((Get-Content (Join-Path $root 'data\games.json') -Raw -Encoding UTF8) -ceq $acceptedRegistry.Json) 'current Game registry matches accepted canonicals'
+    $currentRegistryModel = Get-Content (Join-Path $root 'data\games.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+    $acceptedRegistryModel = $acceptedRegistry.Json | ConvertFrom-Json
+    $registryEquivalent = @($currentRegistryModel.games).Count -eq @($acceptedRegistryModel.games).Count
+    for ($registryIndex = 0; $registryEquivalent -and $registryIndex -lt @($currentRegistryModel.games).Count; $registryIndex++) {
+        $currentGame = $currentRegistryModel.games[$registryIndex]
+        $acceptedGame = $acceptedRegistryModel.games[$registryIndex]
+        $currentNames = @($currentGame.PSObject.Properties.Name | Sort-Object)
+        $acceptedNames = @($acceptedGame.PSObject.Properties.Name | Sort-Object)
+        $registryEquivalent = ($currentNames -join '|') -ceq ($acceptedNames -join '|')
+        foreach ($name in $currentNames) {
+            if (-not $registryEquivalent -or (ConvertTo-StableJson $currentGame.$name) -cne (ConvertTo-StableJson $acceptedGame.$name)) { $registryEquivalent = $false; break }
+        }
+    }
+    Assert-ImportEngine $registryEquivalent 'current Game registry matches accepted canonicals semantically'
 
     $after = Get-ContentTreeFingerprint -RepositoryRoot $root
     Assert-ImportEngine ($before -ceq $after) 'preflight does not mutate website files'

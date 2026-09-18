@@ -4,6 +4,28 @@ import { resolveAsset } from "./paths.js";
 
 export const MEDIA_LIMITS = Object.freeze({ images: 12, videos: 4, total: 16 });
 
+export function youtubeEmbedUrl(videoId) {
+    return `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}`;
+}
+
+function youtubeThumbnailUrl(videoId) {
+    return `https://i.ytimg.com/vi/${encodeURIComponent(videoId)}/hqdefault.jpg`;
+}
+
+export function composeGameMedia(youtubeVideos = [], localMedia = []) {
+    const youtube = youtubeVideos
+        .filter((item) => item?.provider === "youtube" && /^[A-Za-z0-9_-]{11}$/.test(item.videoId ?? ""))
+        .map((item) => ({ ...item, type: "youtube" }));
+    const localVideos = localMedia.filter((item) => item?.type === "video");
+    const images = localMedia.filter((item) => item?.type === "image");
+    const remainingVideoSlots = Math.max(0, MEDIA_LIMITS.videos - youtube.length);
+    return limitMedia([
+        ...youtube,
+        ...localVideos.slice(0, remainingVideoSlots),
+        ...images
+    ]);
+}
+
 const LABELS = {
     en: {
         gallery: "Media gallery",
@@ -47,11 +69,14 @@ const CONTEXT_LABELS = {
 export function limitMedia(source = []) {
     const counts = { image: 0, video: 0 };
     return source.reduce((items, item) => {
-        if (!item?.src || !["image", "video"].includes(item.type)) return items;
+        if (!item || !["image", "video", "youtube"].includes(item.type)) return items;
+        if (item.type === "youtube" && !/^[A-Za-z0-9_-]{11}$/.test(item.videoId ?? "")) return items;
+        if (item.type !== "youtube" && !item.src) return items;
         if (items.length >= MEDIA_LIMITS.total) return items;
-        const limit = item.type === "image" ? MEDIA_LIMITS.images : MEDIA_LIMITS.videos;
-        if (counts[item.type] >= limit) return items;
-        counts[item.type] += 1;
+        const category = item.type === "image" ? "image" : "video";
+        const limit = category === "image" ? MEDIA_LIMITS.images : MEDIA_LIMITS.videos;
+        if (counts[category] >= limit) return items;
+        counts[category] += 1;
         items.push(item);
         return items;
     }, []);
@@ -95,8 +120,10 @@ export function createMediaGallery(sourceMedia, { language, title, context = "ge
     });
     const closeTheaterButton = createControl("×", labels.exitTheater, "media-viewer-theater__close");
 
-    function pauseCurrentVideo() {
+    function stopCurrentMedia() {
         viewport.querySelector("video")?.pause();
+        const youtube = viewport.querySelector(".media-viewer__youtube");
+        if (youtube) youtube.src = "about:blank";
     }
 
     function openTheater() {
@@ -142,6 +169,19 @@ export function createMediaGallery(sourceMedia, { language, title, context = "ge
                 }
             });
         }
+        if (item.type === "youtube") {
+            return createElement("iframe", {
+                className: "media-viewer__youtube",
+                attributes: {
+                    src: youtubeEmbedUrl(item.videoId),
+                    title: localizedValue(item.label, language, `${title} - ${labels.video} ${index + 1}`),
+                    loading: "lazy",
+                    allow: "accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share",
+                    allowfullscreen: "",
+                    referrerpolicy: "strict-origin-when-cross-origin"
+                }
+            });
+        }
 
         const button = createElement("button", {
             className: "media-viewer__image-button",
@@ -156,7 +196,7 @@ export function createMediaGallery(sourceMedia, { language, title, context = "ge
 
     function selectMedia(index, scrollThumbnail = true) {
         if (!media.length || index < 0 || index >= media.length) return;
-        pauseCurrentVideo();
+        stopCurrentMedia();
         selectedIndex = index;
         viewport.replaceChildren(createPrimaryMedia(media[index], index));
         thumbnails.forEach((thumbnail, thumbnailIndex) => {
@@ -174,7 +214,8 @@ export function createMediaGallery(sourceMedia, { language, title, context = "ge
     }
 
     media.forEach((item, index) => {
-        const mediaLabel = item.type === "video" ? labels.video : labels.image;
+        const isVideo = item.type === "video" || item.type === "youtube";
+        const mediaLabel = isVideo ? labels.video : labels.image;
         const thumbnail = createElement("button", {
             className: `media-viewer__thumbnail media-viewer__thumbnail--${item.type}`,
             attributes: {
@@ -183,9 +224,9 @@ export function createMediaGallery(sourceMedia, { language, title, context = "ge
                 "aria-pressed": String(index === selectedIndex)
             }
         });
-        const previewPath = item.type === "video" ? item.poster : item.src;
+        const previewPath = item.type === "youtube" ? youtubeThumbnailUrl(item.videoId) : (item.type === "video" ? item.poster : item.src);
         if (previewPath) thumbnail.append(createMediaImage(previewPath, "", "media-viewer__thumbnail-image"));
-        if (item.type === "video") {
+        if (isVideo) {
             thumbnail.append(createElement("span", {
                 className: "media-viewer__video-badge",
                 text: "▶",
@@ -215,7 +256,7 @@ export function createMediaGallery(sourceMedia, { language, title, context = "ge
     });
 
     root.addEventListener("keydown", (event) => {
-        if (event.target.closest("video")) return;
+        if (event.target.closest("video, iframe")) return;
         if (event.key === "ArrowLeft") {
             event.preventDefault();
             selectMedia(selectedIndex - 1);

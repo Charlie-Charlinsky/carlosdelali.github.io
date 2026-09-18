@@ -2,7 +2,8 @@ import { buildShell } from "./core/shell.js";
 import { getPageContext } from "./core/routes.js";
 import { renderError, renderLoading } from "./core/dom.js";
 import { storeLanguage } from "./core/language.js";
-import { isPagePublished } from "./core/publication.js";
+import { resolveRoute } from "./core/paths.js";
+import { getDefaultPublishedSection, isPagePublished } from "./core/publication.js";
 
 const PAGE_MODULES = {
     about: () => import("./pages/about.js"),
@@ -22,12 +23,17 @@ async function initialize() {
     const target = document.querySelector("#app-content");
     document.documentElement.lang = context.language;
     storeLanguage(context.language);
-    buildShell(context.language, context.page);
     if (!isPagePublished(context.page)) {
-        renderError(target, { resource: context.page }, context.language);
-        document.body.classList.add("is-ready");
+        const defaultSection = getDefaultPublishedSection();
+        if (!defaultSection) {
+            renderError(target, { resource: context.page }, context.language);
+            document.body.classList.add("is-ready");
+            return;
+        }
+        window.location.replace(resolveRoute(context.language, defaultSection.route));
         return;
     }
+    buildShell(context.language, context.page);
     renderLoading(target, context.language === "es" ? "Cargando..." : "Loading...");
 
     try {

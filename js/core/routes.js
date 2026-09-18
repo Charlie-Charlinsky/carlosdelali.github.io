@@ -1,9 +1,11 @@
 import { resolveRoute } from "./paths.js";
+import { getDefaultPublishedSection } from "./publication.js";
 
 export function getPageContext() {
+    const defaultSection = getDefaultPublishedSection();
     return {
         language: document.body.dataset.lang || document.documentElement.lang || "en",
-        page: document.body.dataset.page || "about"
+        page: document.body.dataset.page || defaultSection?.route
     };
 }
 

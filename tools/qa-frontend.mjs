@@ -43,6 +43,7 @@ function walk(directory, extensions) {
 
 const canonicalRoutes = [
     "index.html", "en/index.html", "es/index.html",
+    "en/about/index.html", "es/about/index.html",
     "en/cv/index.html", "es/cv/index.html",
     "en/contact/index.html", "es/contact/index.html",
     "en/games/index.html", "es/games/index.html",
@@ -73,8 +74,11 @@ const cvPageSource = read("js/pages/cv.js");
 const aboutPageSource = read("js/pages/about.js");
 const appSource = read("js/app.js");
 const pathsSource = read("js/core/paths.js");
+const routesSource = read("js/core/routes.js");
+const rootSource = read("js/root.js");
 const publicationSource = read("js/core/publication.js");
 const shellSource = read("js/core/shell.js");
+const mediaGallerySource = read("js/core/media-gallery.js");
 const frontendCss = read("css/frontend.css");
 const obsoleteEngineKey = ["engine", "Id"].join("");
 const obsoleteEnginePresentationTokens = [
@@ -109,7 +113,7 @@ obsoleteEnginePresentationTokens.forEach((token) => {
 if (!gameDetailSource.includes("createGameNavigation(orderedGames, currentIndex, language)")) {
     fail("Game Detail: navegación Previous/Next no resuelta");
 }
-if (!gameDetailSource.includes("createMediaGallery(game.media")) {
+if (!gameDetailSource.includes("createMediaGallery(media")) {
     fail("Game Detail: galería de medios no resuelta");
 }
 const metadataOrderTokens = [
@@ -151,11 +155,94 @@ games.forEach((game) => {
     assertFile(game.content.en, `${game.id}: contenido EN`);
     assertFile(game.content.es, `${game.id}: contenido ES`);
     assertFile(game.assets.cover, `${game.id}: cover`);
-    if (!game.assets.gallery?.length || game.assets.gallery.length > 6) {
-        fail(`${game.id}: galería fuera del rango 1–6`);
+    if (!game.assets.gallery?.length || game.assets.gallery.length > 12) {
+        fail(`${game.id}: galería fuera del rango 1-12`);
     }
     game.assets.gallery?.forEach((asset) => assertFile(asset, `${game.id}: galería`));
 });
+
+const mediaGalleryModule = await import(pathToFileURL(path.join(root, "js/core/media-gallery.js")).href);
+if (JSON.stringify(mediaGalleryModule.MEDIA_LIMITS) !== JSON.stringify({ images: 12, videos: 4, total: 16 })) {
+    fail("Media Gallery: el contrato debe ser 12 imagenes, 4 videos y 16 elementos totales");
+}
+const priorityFixture = mediaGalleryModule.composeGameMedia(
+    ["AAAAAAAAAAA", "BBBBBBBBBBB", "CCCCCCCCCCC"].map((videoId) => ({ provider: "youtube", videoId })),
+    [
+        { type: "image", src: "image-1.jpg" },
+        { type: "video", src: "local-1.mp4" },
+        { type: "video", src: "local-2.mp4" },
+        ...Array.from({ length: 13 }, (_, index) => ({ type: "image", src: `image-${index + 2}.jpg` }))
+    ]
+);
+if (priorityFixture.length !== 16
+    || priorityFixture.slice(0, 3).some((item) => item.type !== "youtube")
+    || priorityFixture[3]?.type !== "video"
+    || priorityFixture.slice(4).some((item) => item.type !== "image")) {
+    fail("Media Gallery: prioridad YouTube > video local > imagen no resuelta");
+}
+if (priorityFixture.filter((item) => item.type !== "image").length !== 4
+    || priorityFixture.filter((item) => item.type === "image").length !== 12) {
+    fail("Media Gallery: limites combinados 4/12/16 no resueltos");
+}
+const noYoutubeFixture = mediaGalleryModule.composeGameMedia([], [
+    ...Array.from({ length: 5 }, (_, index) => ({ type: "video", src: `local-${index + 1}.mp4` })),
+    { type: "image", src: "image-1.jpg" }
+]);
+if (noYoutubeFixture.filter((item) => item.type === "video").length !== 4
+    || noYoutubeFixture[0]?.src !== "local-1.mp4"
+    || noYoutubeFixture[4]?.src !== "image-1.jpg") {
+    fail("Media Gallery: juegos sin YouTube deben conservar el comportamiento local");
+}
+const youtubeOnlyFixture = mediaGalleryModule.composeGameMedia(
+    ["AAAAAAAAAAA", "BBBBBBBBBBB", "CCCCCCCCCCC", "DDDDDDDDDDD"].map((videoId) => ({ provider: "youtube", videoId })),
+    [{ type: "video", src: "excluded-local.mp4" }, { type: "image", src: "image-1.jpg" }]
+);
+if (youtubeOnlyFixture.slice(0, 4).some((item) => item.type !== "youtube")
+    || youtubeOnlyFixture.some((item) => item.src === "excluded-local.mp4")) {
+    fail("Media Gallery: cuatro YouTube deben consumir todos los slots de video");
+}
+if (mediaGalleryModule.youtubeEmbedUrl("AAAAAAAAAAA") !== "https://www.youtube-nocookie.com/embed/AAAAAAAAAAA") {
+    fail("Media Gallery: URL youtube-nocookie no resuelta");
+}
+games.forEach((game) => {
+    const youtubeVideos = game.youtubeVideos ?? [];
+    const ids = youtubeVideos.map((item) => item.videoId);
+    if (youtubeVideos.some((item) => item.provider !== "youtube" || !/^[A-Za-z0-9_-]{11}$/.test(item.videoId ?? ""))) {
+        fail(`${game.id}: metadatos YouTube invalidos`);
+    }
+    if (new Set(ids).size !== ids.length) fail(`${game.id}: IDs YouTube duplicados`);
+    const composed = mediaGalleryModule.composeGameMedia(youtubeVideos, game.media ?? []);
+    const videoCount = composed.filter((item) => item.type !== "image").length;
+    const imageCount = composed.filter((item) => item.type === "image").length;
+    if (videoCount > 4 || imageCount > 12 || composed.length > 16) {
+        fail(`${game.id}: medios fuera de los limites 4/12/16`);
+    }
+    const firstImage = composed.findIndex((item) => item.type === "image");
+    if (firstImage >= 0 && composed.slice(firstImage).some((item) => item.type !== "image")) {
+        fail(`${game.id}: las imagenes deben aparecer despues de todos los videos`);
+    }
+});
+if (!mediaGallerySource.includes('youtube.src = "about:blank"')
+    || !mediaGallerySource.includes("viewport.replaceChildren(createPrimaryMedia")) {
+    fail("Media Gallery: el iframe YouTube inactivo no se destruye de forma determinista");
+}
+if (!/\.media-viewer__image,\s*\.media-viewer__video\s*\{[^}]*object-fit:\s*contain;/s.test(frontendCss)
+    || !/\.media-viewer__image-button\s*\{[^}]*display:\s*grid;[^}]*min-width:\s*0;[^}]*min-height:\s*0;[^}]*place-items:\s*center;[^}]*overflow:\s*hidden;/s.test(frontendCss)
+    || !/\.media-viewer__image-button > \.media-viewer__image\s*\{[^}]*width:\s*auto;[^}]*height:\s*auto;[^}]*max-width:\s*100%;[^}]*max-height:\s*100%;[^}]*object-position:\s*center center;/s.test(frontendCss)) {
+    fail("Media Gallery: la imagen principal debe encajar completa dentro de un wrapper centrado");
+}
+if (!/\.media-viewer__thumbnail-image\s*\{[^}]*object-fit:\s*cover;/s.test(frontendCss)) {
+    fail("Media Gallery: el recorte de miniaturas debe permanecer independiente");
+}
+if (!/\.media-viewer-theater \.media-viewer__stage\s*\{[^}]*aspect-ratio:\s*auto;/s.test(frontendCss)
+    || !/\.media-viewer:fullscreen \.media-viewer__stage\s*\{[^}]*height:\s*100%;[^}]*aspect-ratio:\s*auto;/s.test(frontendCss)
+    || !frontendCss.includes(".media-viewer__youtube")) {
+    fail("Media Gallery: Theater/fullscreen no conservan una etapa estable para imagen y video");
+}
+if (!mediaGallerySource.includes("https://www.youtube-nocookie.com/embed/")
+    || /iframe[^\n]+(?:youtube\.com\/watch|youtu\.be)/.test(mediaGallerySource)) {
+    fail("Media Gallery: el iframe debe usar exclusivamente youtube-nocookie embed");
+}
 
 (ludography.studios ?? []).forEach((studio) => {
     studio.games.forEach((id) => {
@@ -198,18 +285,19 @@ if (!gameOrderSource.includes("AUTHORITATIVE_GAME_ORDER")
 
 const publicationModule = await import(pathToFileURL(path.join(root, "js/core/publication.js")).href);
 const expectedSections = [
-    { id: 1, key: "ABOUT", route: "about", published: true },
-    { id: 2, key: "CV", route: "cv", published: true },
-    { id: 3, key: "GAMES", route: "games", published: true },
-    { id: 4, key: "PROJECTS", route: "projects", published: false },
-    { id: 5, key: "WRITING", route: "writing", published: false },
-    { id: 6, key: "ONIRIC_JOURNAL", route: "oniric-journal", published: false },
-    { id: 7, key: "CONTACT", route: "contact", published: true }
+    { id: 1, key: "ABOUT", route: "about", navOrder: 3, published: true },
+    { id: 2, key: "CV", route: "cv", navOrder: 2, published: true },
+    { id: 3, key: "GAMES", route: "games", navOrder: 1, published: true },
+    { id: 4, key: "PROJECTS", route: "projects", navOrder: 4, published: false },
+    { id: 5, key: "WRITING", route: "writing", navOrder: 5, published: false },
+    { id: 6, key: "ONIRIC_JOURNAL", route: "oniric-journal", navOrder: 6, published: false },
+    { id: 7, key: "CONTACT", route: "contact", navOrder: 7, published: true }
 ];
-const declaredSections = publicationModule.SECTION_REGISTRY.map(({ id, key, route, published }) => ({
+const declaredSections = publicationModule.SECTION_REGISTRY.map(({ id, key, route, navOrder, published }) => ({
     id,
     key,
     route,
+    navOrder,
     published
 }));
 if (JSON.stringify(declaredSections) !== JSON.stringify(expectedSections)) {
@@ -217,6 +305,26 @@ if (JSON.stringify(declaredSections) !== JSON.stringify(expectedSections)) {
 }
 if (publicationModule.getPublishedSections().length !== 4) {
     fail("Publication: deben existir exactamente cuatro secciones publicadas");
+}
+if (publicationModule.getPublishedSections().map((section) => section.route).join("|") !== "games|cv|about|contact") {
+    fail("Publication: el orden visible debe ser Games, CV, About, Contact");
+}
+if (publicationModule.getDefaultPublishedSection()?.route !== "games") {
+    fail("Publication: la ruta inicial debe ser la primera seccion publicada por navOrder");
+}
+const futureSections = expectedSections.map((section) => ({
+    ...section,
+    navOrder: ({ projects: 1, games: 2, cv: 3, about: 4, contact: 5 })[section.route] ?? section.navOrder,
+    published: section.route === "projects" ? true : section.published
+}));
+if (publicationModule.getDefaultPublishedSection(futureSections)?.route !== "projects") {
+    fail("Publication: el resolver inicial no responde a una futura seccion publicada con navOrder prioritario");
+}
+const futureProjectsHidden = futureSections.map((section) => section.route === "projects"
+    ? { ...section, published: false }
+    : section);
+if (publicationModule.getDefaultPublishedSection(futureProjectsHidden)?.route !== "games") {
+    fail("Publication: el resolver inicial no omite una primera seccion no publicada");
 }
 expectedSections.forEach((section) => {
     if (publicationModule.getSectionById(section.id)?.route !== section.route) {
@@ -239,8 +347,49 @@ if (!shellSource.includes("getPublishedSections().forEach(({ route })")
     || shellSource.includes("const NAVIGATION")) {
     fail("Publication: la navegacion no deriva exclusivamente del registro compartido");
 }
+if (!shellSource.includes('if (route === activePage) link.setAttribute("aria-current", "page")')) {
+    fail("Publication: el estado activo debe resolverse por ruta y no por indice");
+}
+if (!shellSource.includes("getEquivalentLanguageUrl(targetLanguage, page)")) {
+    fail("Publication: el cambio de idioma debe conservar la ruta actual");
+}
 if (!appSource.includes("if (!isPagePublished(context.page))")) {
     fail("Publication: el gate de rutas no se ejecuta antes de cargar la pagina");
+}
+if (!appSource.includes("getDefaultPublishedSection()")
+    || !appSource.includes("resolveRoute(context.language, defaultSection.route)")) {
+    fail("Publication: el fallback no publicado no consume el resolver inicial compartido");
+}
+if (!rootSource.includes("getDefaultPublishedSection()")
+    || !rootSource.includes("resolveRoute(language, defaultSection.route)")
+    || /resolveRoute\(language,\s*["'](?:about|games)["']/.test(rootSource)) {
+    fail("Routes: la entrada raiz no deriva del primer elemento publicado por navOrder");
+}
+if (!routesSource.includes("document.body.dataset.page || defaultSection?.route")
+    || routesSource.includes('document.body.dataset.page || "about"')) {
+    fail("Routes: el contexto implicito conserva un default de About hardcodeado");
+}
+if (!shellSource.includes("resolveRoute(language, defaultSection.route)")) {
+    fail("Routes: el enlace de identidad no consume el resolver inicial compartido");
+}
+if (!/about:\s*["']about\/["']/.test(pathsSource)) {
+    fail("Routes: About no dispone de una ruta propia tras separar el landing localizado");
+}
+const enLandingSource = read("en/index.html");
+const esLandingSource = read("es/index.html");
+const enAboutRouteSource = read("en/about/index.html");
+const esAboutRouteSource = read("es/about/index.html");
+if (!enLandingSource.includes('data-lang="en"') || !enLandingSource.includes('../js/root.js')
+    || enLandingSource.includes('data-page="about"')) {
+    fail("Routes: /en/ no funciona como entrada localizada dinamica");
+}
+if (!esLandingSource.includes('data-lang="es"') || !esLandingSource.includes('../js/root.js')
+    || esLandingSource.includes('data-page="about"')) {
+    fail("Routes: /es/ no funciona como entrada localizada dinamica");
+}
+if (!enAboutRouteSource.includes('data-lang="en" data-page="about"')
+    || !esAboutRouteSource.includes('data-lang="es" data-page="about"')) {
+    fail("Routes: las rutas About explicitas no conservan su contexto semantico");
 }
 if (cvPageSource.includes("detailUrl") || /createElement\("a"/.test(cvPageSource)) {
     fail("CV Ludography: los enlaces a Game Detail no se eliminaron");

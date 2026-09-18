@@ -224,13 +224,13 @@ Game
 └── Media
 ```
 
-`data/games.json` owns one ordered `media` collection per Game using the same item contract as Projects. New Game media belongs under `assets/games/<game-id>/media/images/` and `assets/games/<game-id>/media/videos/`. Existing registered screenshots may remain in the legacy `gallery/` directory until a deliberate asset migration; registry paths, rather than folder discovery, determine what the viewer displays. Game Detail and Project Detail both consume the single interaction engine at `js/core/media-gallery.js`, while page-scoped CSS controls their independent geometry. The Game stage uses `1112 / 628`; Game images use `object-fit: cover`, while videos retain safe `contain` fitting and the Project viewer remains unchanged.
+`data/games.json` owns one ordered `media` collection per Game using the same item contract as Projects, plus optional structured `youtubeVideos` metadata imported from the DOCX Resources block. New Game media belongs under `assets/games/<game-id>/media/images/` and `assets/games/<game-id>/media/videos/`. Existing registered screenshots may remain in the legacy `gallery/` directory until a deliberate asset migration; registry paths, rather than folder discovery, determine what the viewer displays. Game Detail and Project Detail both consume the single interaction engine at `js/core/media-gallery.js`, while page-scoped CSS controls their independent geometry. Game media order is YouTube, remaining local-video slots, then images. The Game stage uses `1112 / 628`; selected images use centered `object-fit: contain`, videos remain contained, and compact thumbnails retain cover cropping.
 
 Game metadata may include optional `year`, `platform`, `engineName`, and `accessUrl` values. Missing values render as `?`. `accessUrl` is the single structured purchase/play/access target and is rendered as a safe external link when present. `engineName` is rendered as textual metadata only.
 
 Game Detail Previous/Next controls are circular. Games Index grouping, Game Detail navigation, and CV Ludography consume the same authoritative studio/game order from `js/core/game-order.js`, so all three views remain aligned without duplicated order arrays.
 
-On desktop, the visual gallery is positioned alongside the written content. A maximum of six gallery images may be available for the visible page, while game metadata and professional contribution remain the primary information. The layout becomes responsive on tablet and mobile. Final CSS dimensions are intentionally undefined at this architecture stage.
+On desktop, the visual gallery is positioned alongside the written content. A maximum of 12 images and four combined YouTube/local videos may be available, capped at 16 total media items, while game metadata and professional contribution remain the primary information. The layout becomes responsive on tablet and mobile.
 
 ### PROJECTS (I+D+I)
 

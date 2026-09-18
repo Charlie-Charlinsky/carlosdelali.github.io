@@ -2,7 +2,7 @@ import { loadJson, loadSemanticFragment } from "../core/loaders.js";
 import { createElement, setPageTitle } from "../core/dom.js";
 import { createBackLink, createMediaImage } from "../core/components.js";
 import { getOrderedPublishedGames } from "../core/game-order.js";
-import { createMediaGallery } from "../core/media-gallery.js";
+import { composeGameMedia, createMediaGallery } from "../core/media-gallery.js";
 import { resolveRoute, resolveSiteUrl } from "../core/paths.js";
 import { detailUrl } from "../core/routes.js";
 
@@ -37,7 +37,7 @@ function metadataValue(value) {
 }
 
 function createGameMetadata(game, language) {
-    const labels = METADATA_LABELS[language];
+    const labels = { ...METADATA_LABELS[language], ...game.metadataLabels?.[language] };
     const metadata = createElement("dl", { className: "game-detail__meta" });
     const access = game.accessUrl
         ? createElement("a", {
@@ -123,7 +123,8 @@ export async function render({ language, target }) {
     hero.append(cover, heroCopy);
 
     const body = createElement("div", { className: "game-detail__body" });
-    body.append(createMediaGallery(game.media, { language, title: game.title, context: "game" }), article);
+    const media = composeGameMedia(game.youtubeVideos, game.media);
+    body.append(createMediaGallery(media, { language, title: game.title, context: "game" }), article);
     page.append(hero, body);
     setPageTitle(game.title);
     target.replaceChildren(page);

@@ -255,7 +255,7 @@ The structural reading style is inspired by the reference site but adapted to th
 
 Media/content relationship:
 
-- maximum 6 highlighted gallery images
+- maximum 12 gallery images, 4 combined videos, and 16 total media items
 - visual gallery associated with the written content
 - layout should preserve the sketch's clear separation between media and text
 

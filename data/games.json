@@ -9,11 +9,18 @@
       "detailStatus": "content-ready",
       "assetsStatus": "ready",
       "published": true,
-      "coverPosition": "50% 0%",
       "year": "2016",
       "platform": "iOS / Android (Mobile \u0026 Tablet)",
       "accessUrl": "https://www.apkturbo.com/games/the-little-prince-bubble-pop/com.generamobile.thelittleprince",
       "engineName": "Unity",
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "oWdITze9Lik",
+          "sourceUrl": "https://www.youtube.com/watch?v=oWdITze9Lik"
+        }
+      ],
+      "coverPosition": "50% 0%",
       "content": {
         "en": "content/games/the-little-prince/en.html",
         "es": "content/games/the-little-prince/es.html"
@@ -79,6 +86,13 @@
       "platform": "iOS / Android",
       "accessUrl": "https://runbot.uptodown.com/android/descargar",
       "engineName": "Unity",
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "V_pFEazciAk",
+          "sourceUrl": "https://www.youtube.com/watch?v=V_pFEazciAk"
+        }
+      ],
       "content": {
         "en": "content/games/runbot/en.html",
         "es": "content/games/runbot/es.html"
@@ -159,6 +173,23 @@
       "platform": "Android",
       "accessUrl": "https://www.mobygames.com/game/84656/xtreme-racing-2/",
       "engineName": "Unity",
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "tdQKHqksB9w",
+          "sourceUrl": "https://www.youtube.com/watch?v=tdQKHqksB9w"
+        },
+        {
+          "provider": "youtube",
+          "videoId": "szQgappkZq8",
+          "sourceUrl": "https://youtu.be/szQgappkZq8?si=aW0aGQZXV2csce83"
+        },
+        {
+          "provider": "youtube",
+          "videoId": "99cNnFe9Mgs",
+          "sourceUrl": "https://www.youtube.com/watch?v=99cNnFe9Mgs"
+        }
+      ],
       "coverPosition": "50% 10%",
       "content": {
         "en": "content/games/xtreme-racing-2/en.html",
@@ -245,6 +276,13 @@
       "platform": "iOS / Android",
       "accessUrl": "https://apps.apple.com/es/app/skull-towers-defensa-de-torre/id1126772151",
       "engineName": "Unity",
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "S9uDnAC2BOY",
+          "sourceUrl": "https://www.youtube.com/watch?v=S9uDnAC2BOY"
+        }
+      ],
       "coverPosition": "50% 0%",
       "content": {
         "en": "content/games/skull-towers/en.html",
@@ -316,6 +354,21 @@
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://slotcatalog.com/en/slots/Gold-Rush-Gus",
       "engineName": "Unity + Private Engine",
+      "metadataLabels": {
+        "es": {
+          "access": "Acceso(VPN requerida)"
+        },
+        "en": {
+          "access": "Access(VPN required)"
+        }
+      },
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "sCUN1IF9M2I",
+          "sourceUrl": "https://www.youtube.com/watch?v=sCUN1IF9M2I"
+        }
+      ],
       "content": {
         "en": "content/games/gold-rush-gus/en.html",
         "es": "content/games/gold-rush-gus/es.html"
@@ -401,6 +454,21 @@
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.bovada.lv/casino/slots/5-reel/777-deluxe-hot-drop-jackpots",
       "engineName": "Private Engine",
+      "metadataLabels": {
+        "es": {
+          "access": "Acceso(VPN requerida)"
+        },
+        "en": {
+          "access": "Access(VPN required)"
+        }
+      },
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "L-X3jTAFCjs",
+          "sourceUrl": "https://www.youtube.com/watch?v=L-X3jTAFCjs"
+        }
+      ],
       "content": {
         "en": "content/games/777-deluxe/en.html",
         "es": "content/games/777-deluxe/es.html"
@@ -471,6 +539,21 @@
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.vegasslotsonline.com/qora-games/cyberpunk-city/",
       "engineName": "Unity + Private Engine",
+      "metadataLabels": {
+        "es": {
+          "access": "Acceso(VPN requerida)"
+        },
+        "en": {
+          "access": "Access(VPN required)"
+        }
+      },
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "4wFOP6w38n4",
+          "sourceUrl": "https://www.youtube.com/watch?v=4wFOP6w38n4"
+        }
+      ],
       "content": {
         "en": "content/games/cyberpunk-city/en.html",
         "es": "content/games/cyberpunk-city/es.html"
@@ -551,6 +634,21 @@
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.slotstemple.com/free-slots/gods-of-luxor/",
       "engineName": "Unity + Private Engine",
+      "metadataLabels": {
+        "es": {
+          "access": "Acceso(VPN requerida)"
+        },
+        "en": {
+          "access": "Access(VPN required)"
+        }
+      },
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "EFT_KsGS64k",
+          "sourceUrl": "https://youtu.be/EFT_KsGS64k?si=gtxoBISGfrvGw1dd"
+        }
+      ],
       "content": {
         "en": "content/games/gods-of-luxor/en.html",
         "es": "content/games/gods-of-luxor/es.html"
@@ -621,6 +719,15 @@
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.qoragames.com/games/teen-patti-pro/",
       "engineName": "Private Engine",
+      "metadataLabels": {
+        "es": {
+          "access": "Acceso(VPN requerida)"
+        },
+        "en": {
+          "access": "Access(VPN required)"
+        }
+      },
+      "youtubeVideos": [],
       "content": {
         "en": "content/games/teen-patti/en.html",
         "es": "content/games/teen-patti/es.html"
@@ -696,6 +803,15 @@
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://templeofgames.com/game/andar-bahar-demo-play-free-1",
       "engineName": "Private Engine",
+      "metadataLabels": {
+        "es": {
+          "access": "Acceso(VPN requerida)"
+        },
+        "en": {
+          "access": "Access(VPN required)"
+        }
+      },
+      "youtubeVideos": [],
       "content": {
         "en": "content/games/andar-bahar/en.html",
         "es": "content/games/andar-bahar/es.html"
@@ -771,6 +887,15 @@
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://casino.guru/free-casino-games/other-gambling-games/spin-the-wheel-play-free",
       "engineName": "Private Engine",
+      "metadataLabels": {
+        "es": {
+          "access": "Acceso(VPN requerida)"
+        },
+        "en": {
+          "access": "Access(VPN required)"
+        }
+      },
+      "youtubeVideos": [],
       "content": {
         "en": "content/games/wheel-of-fortune/en.html",
         "es": "content/games/wheel-of-fortune/es.html"
@@ -841,6 +966,21 @@
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.slotstemple.com/free-slots/cricket-legends/",
       "engineName": "Unity + Private Engine",
+      "metadataLabels": {
+        "es": {
+          "access": "Acceso(VPN requerida)"
+        },
+        "en": {
+          "access": "Access(VPN required)"
+        }
+      },
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "fl7fuEFexCM",
+          "sourceUrl": "https://www.youtube.com/watch?v=fl7fuEFexCM"
+        }
+      ],
       "content": {
         "en": "content/games/cricket-legends/en.html",
         "es": "content/games/cricket-legends/es.html"
@@ -921,6 +1061,21 @@
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://slotcatalog.com/en/slots/Zombie-FC",
       "engineName": "Unity + Private Engine",
+      "metadataLabels": {
+        "es": {
+          "access": "Acceso(VPN requerida)"
+        },
+        "en": {
+          "access": "Access(VPN required)"
+        }
+      },
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "1njqI8OIlok",
+          "sourceUrl": "https://www.youtube.com/watch?v=1njqI8OIlok"
+        }
+      ],
       "content": {
         "en": "content/games/zombie-soccer/en.html",
         "es": "content/games/zombie-soccer/es.html"
@@ -1001,6 +1156,21 @@
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.bovada.lv/casino/slots/progressive-jackpot/mystic-elements",
       "engineName": "Unity + Private Engine",
+      "metadataLabels": {
+        "es": {
+          "access": "Acceso(VPN requerida)"
+        },
+        "en": {
+          "access": "Access(VPN required)"
+        }
+      },
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "3XYzMGCPBOI",
+          "sourceUrl": "https://www.youtube.com/watch?v=3XYzMGCPBOI"
+        }
+      ],
       "content": {
         "en": "content/games/mystic-elements/en.html",
         "es": "content/games/mystic-elements/es.html"
@@ -1076,6 +1246,21 @@
       "platform": "Web / Browser (PC \u0026 Mobile)",
       "accessUrl": "https://www.ignitioncasino.eu/casino/slots/progressive-jackpot/night-cleo",
       "engineName": "Unity + Private Engine",
+      "metadataLabels": {
+        "es": {
+          "access": "Acceso(VPN requerida)"
+        },
+        "en": {
+          "access": "Access(VPN required)"
+        }
+      },
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "B1RafoN-RYE",
+          "sourceUrl": "https://www.youtube.com/watch?v=B1RafoN-RYE"
+        }
+      ],
       "content": {
         "en": "content/games/a-night-with-cleo/en.html",
         "es": "content/games/a-night-with-cleo/es.html"
@@ -1161,6 +1346,13 @@
       "platform": "PC Steam/PS5/XBOX Series X|S",
       "accessUrl": "https://store.steampowered.com/app/1677350/EA_SPORTS_PGA_TOUR/?l=english",
       "engineName": "Frostbite",
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "fCK1sNnrZdg",
+          "sourceUrl": "https://www.youtube.com/watch?v=fCK1sNnrZdg"
+        }
+      ],
       "content": {
         "en": "content/games/ea-sports-pga-tour/en.html",
         "es": "content/games/ea-sports-pga-tour/es.html"
@@ -1216,6 +1408,13 @@
       "platform": "PC Steam/PS5/XBOX Series X|S",
       "accessUrl": "https://store.steampowered.com/app/2582560/EA_SPORTS_Madden_NFL_25/?l=english",
       "engineName": "Frostbite",
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "5BhEjuyF6xw",
+          "sourceUrl": "https://www.youtube.com/watch?v=5BhEjuyF6xw"
+        }
+      ],
       "coverPosition": "50% 0%",
       "content": {
         "en": "content/games/madden-nfl-25/en.html",
@@ -1257,6 +1456,13 @@
       "platform": "PC Steam/PS5/XBOX Series X|S",
       "accessUrl": "https://store.steampowered.com/app/3230400/EA_SPORTS_Madden_NFL_26/?l=english",
       "engineName": "Frostbite",
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "MovLQF-FY2s",
+          "sourceUrl": "https://youtu.be/MovLQF-FY2s?si=FQt9sBz66yQ0FKqv"
+        }
+      ],
       "content": {
         "en": "content/games/madden-nfl-26/en.html",
         "es": "content/games/madden-nfl-26/es.html"
@@ -1317,6 +1523,13 @@
       "platform": "PC Steam/PS5/XBOX Series X|S",
       "accessUrl": "https://store.steampowered.com/app/3940610/EA_SPORTS_Madden_NFL_27/?l=english",
       "engineName": "Frostbite",
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "u6noFuEQxsw",
+          "sourceUrl": "https://www.youtube.com/watch?v=u6noFuEQxsw"
+        }
+      ],
       "coverPosition": "50% 20%",
       "content": {
         "en": "content/games/madden-nfl-27/en.html",

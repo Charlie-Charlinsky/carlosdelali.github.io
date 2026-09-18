@@ -1,11 +1,11 @@
 export const SECTION_REGISTRY = Object.freeze([
-    Object.freeze({ id: 1, key: "ABOUT", route: "about", published: true }),
-    Object.freeze({ id: 2, key: "CV", route: "cv", published: true }),
-    Object.freeze({ id: 3, key: "GAMES", route: "games", published: true }),
-    Object.freeze({ id: 4, key: "PROJECTS", route: "projects", published: false }),
-    Object.freeze({ id: 5, key: "WRITING", route: "writing", published: false }),
-    Object.freeze({ id: 6, key: "ONIRIC_JOURNAL", route: "oniric-journal", published: false }),
-    Object.freeze({ id: 7, key: "CONTACT", route: "contact", published: true })
+    Object.freeze({ id: 1, key: "ABOUT", route: "about", navOrder: 3, published: true }),
+    Object.freeze({ id: 2, key: "CV", route: "cv", navOrder: 2, published: true }),
+    Object.freeze({ id: 3, key: "GAMES", route: "games", navOrder: 1, published: true }),
+    Object.freeze({ id: 4, key: "PROJECTS", route: "projects", navOrder: 4, published: false }),
+    Object.freeze({ id: 5, key: "WRITING", route: "writing", navOrder: 5, published: false }),
+    Object.freeze({ id: 6, key: "ONIRIC_JOURNAL", route: "oniric-journal", navOrder: 6, published: false }),
+    Object.freeze({ id: 7, key: "CONTACT", route: "contact", navOrder: 7, published: true })
 ]);
 
 export const PUBLICATION_POLICY = Object.freeze({
@@ -32,8 +32,14 @@ export function getSectionById(sectionId) {
     return SECTION_BY_ID.get(Number(sectionId)) ?? null;
 }
 
-export function getPublishedSections() {
-    return SECTION_REGISTRY.filter((section) => section.published);
+export function getPublishedSections(sections = SECTION_REGISTRY) {
+    return sections
+        .filter((section) => section.published)
+        .sort((left, right) => left.navOrder - right.navOrder);
+}
+
+export function getDefaultPublishedSection(sections = SECTION_REGISTRY) {
+    return getPublishedSections(sections)[0] ?? null;
 }
 
 export function isSectionPublished(sectionRoute) {

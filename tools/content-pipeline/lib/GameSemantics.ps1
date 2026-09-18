@@ -200,6 +200,12 @@ function Get-GameAliasRepair {
 
 function Convert-GameBilingual {
     param($Blocks, [string]$GameId, $Schema)
+    $resourcesProperty = $Blocks.PSObject.Properties['Resources']
+    $resources = if ($null -ne $resourcesProperty) {
+        $resourcesProperty.Value
+    } else {
+        [pscustomobject][ordered]@{ Present = $false; YouTubeVideos = @(); EmptyLinks = 0 }
+    }
     # Repairs are source-local overlays, never persistent learning from arbitrary editorial text.
     $workingSchema = $Schema | ConvertTo-Json -Depth 30 | ConvertFrom-Json
     if (-not $Schema.semanticRepair.knownAliasesOnly) { throw 'Game self-repair requires exact known-alias evidence.' }
@@ -210,7 +216,15 @@ function Convert-GameBilingual {
         $es = Convert-GameLanguage -Paragraphs $Blocks.es -Language es -GameId $GameId -Schema $workingSchema
         $en = Convert-GameLanguage -Paragraphs $Blocks.en -Language en -GameId $GameId -Schema $workingSchema
         $diagnostic = Get-GameAliasRepair -Spanish $es -English $en -Schema $workingSchema -Blocks $Blocks
-        if ($diagnostic.Success) { return [pscustomobject]@{ es = $es; en = $en; Repairs = $repairs; RepairPasses = $pass } }
+        if ($diagnostic.Success) {
+            return [pscustomobject]@{
+                es = $es
+                en = $en
+                Resources = $resources
+                Repairs = $repairs
+                RepairPasses = $pass
+            }
+        }
         if ($diagnostic.Classification -cne 'SAFE_REPAIRABLE' -or $pass -eq $limit) { Throw-GameParityDiagnostic $diagnostic }
         $repair = $diagnostic.Repair
         $signature = "$($repair.TargetLocale)|$(ConvertTo-GameAliasKey $repair.LocalAlias)|$($repair.Field)"
