@@ -749,6 +749,10 @@
       },
       "media": [
         {
+          "type": "video",
+          "src": "assets/games/teen-patti/media/videos/teen-patti-gameplay.mp4"
+        },
+        {
           "type": "image",
           "src": "assets/games/teen-patti/gallery/teen-patti-01.webp"
         },
@@ -833,6 +837,10 @@
       },
       "media": [
         {
+          "type": "video",
+          "src": "assets/games/andar-bahar/media/videos/andar-bahar-gameplay.mp4"
+        },
+        {
           "type": "image",
           "src": "assets/games/andar-bahar/gallery/andar-bahar-01.jpg"
         },
@@ -915,6 +923,10 @@
         ]
       },
       "media": [
+        {
+          "type": "video",
+          "src": "assets/games/wheel-of-fortune/media/videos/wheel-of-fortune-gameplay.mp4"
+        },
         {
           "type": "image",
           "src": "assets/games/wheel-of-fortune/gallery/wheel-of-fortune-01.png"

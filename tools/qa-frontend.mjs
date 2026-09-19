@@ -160,6 +160,9 @@ games.forEach((game) => {
         fail(`${game.id}: galería fuera del rango 1-12`);
     }
     game.assets.gallery?.forEach((asset) => assertFile(asset, `${game.id}: galería`));
+    (game.media ?? [])
+        .filter((item) => item.type !== "youtube")
+        .forEach((item) => assertFile(item.src, `${game.id}: medio local`));
 });
 
 const mediaGalleryModule = await import(pathToFileURL(path.join(root, "js/core/media-gallery.js")).href);
@@ -205,6 +208,23 @@ if (youtubeOnlyFixture.slice(0, 4).some((item) => item.type !== "youtube")
 if (mediaGalleryModule.youtubeEmbedUrl("AAAAAAAAAAA") !== "https://www.youtube-nocookie.com/embed/AAAAAAAAAAA") {
     fail("Media Gallery: URL youtube-nocookie no resuelta");
 }
+const expectedGameplayVideos = new Map([
+    ["andar-bahar", "assets/games/andar-bahar/media/videos/andar-bahar-gameplay.mp4"],
+    ["teen-patti", "assets/games/teen-patti/media/videos/teen-patti-gameplay.mp4"],
+    ["wheel-of-fortune", "assets/games/wheel-of-fortune/media/videos/wheel-of-fortune-gameplay.mp4"]
+]);
+expectedGameplayVideos.forEach((videoPath, gameId) => {
+    const game = gameMap.get(gameId);
+    const localVideos = (game?.media ?? []).filter((item) => item.type === "video");
+    const composed = mediaGalleryModule.composeGameMedia(game?.youtubeVideos, game?.media);
+    if ((game?.youtubeVideos ?? []).length !== 0
+        || localVideos.length !== 1
+        || localVideos[0]?.src !== videoPath
+        || composed[0]?.type !== "video"
+        || composed[0]?.src !== videoPath) {
+        fail(`${gameId}: el gameplay local debe ser el primer medio sin duplicados`);
+    }
+});
 games.forEach((game) => {
     const youtubeVideos = game.youtubeVideos ?? [];
     const ids = youtubeVideos.map((item) => item.videoId);
@@ -691,7 +711,7 @@ entries.forEach((entry, index) => {
 [
     "content/about/en.html", "content/about/es.html",
     "content/cv/en.html", "content/cv/es.html",
-    "assets/about/profile/carlos-lopez-profile.png",
+    "assets/about/profile/carlos-lopez-profile.jpg",
     "assets/downloads/cv/carlos-lopez-cv.pdf",
     "assets/downloads/portfolio/carlos-lopez-portfolio.pdf"
 ].forEach((filePath) => assertFile(filePath));

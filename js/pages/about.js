@@ -19,7 +19,7 @@ export async function render({ language, target }) {
     const page = createElement("div", { className: "about-layout" });
     const portrait = createElement("figure", { className: "about-portrait" });
     portrait.append(createMediaImage(
-        "assets/about/profile/carlos-lopez-profile.png",
+        "assets/about/profile/carlos-lopez-profile.jpg",
         language === "es" ? "Retrato de Carlos J. L. Sánchez" : "Portrait of Carlos J. L. Sánchez",
         "about-portrait__image"
     ));
