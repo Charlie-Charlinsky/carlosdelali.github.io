@@ -208,21 +208,21 @@ if (youtubeOnlyFixture.slice(0, 4).some((item) => item.type !== "youtube")
 if (mediaGalleryModule.youtubeEmbedUrl("AAAAAAAAAAA") !== "https://www.youtube-nocookie.com/embed/AAAAAAAAAAA") {
     fail("Media Gallery: URL youtube-nocookie no resuelta");
 }
-const expectedGameplayVideos = new Map([
-    ["andar-bahar", "assets/games/andar-bahar/media/videos/andar-bahar-gameplay.mp4"],
-    ["teen-patti", "assets/games/teen-patti/media/videos/teen-patti-gameplay.mp4"],
-    ["wheel-of-fortune", "assets/games/wheel-of-fortune/media/videos/wheel-of-fortune-gameplay.mp4"]
+const expectedYoutubeGameplays = new Map([
+    ["andar-bahar", "aMd8EAMDYRk"],
+    ["teen-patti", "mAL-eL7A8oc"],
+    ["wheel-of-fortune", "LjQdas4Nq3A"]
 ]);
-expectedGameplayVideos.forEach((videoPath, gameId) => {
+expectedYoutubeGameplays.forEach((videoId, gameId) => {
     const game = gameMap.get(gameId);
     const localVideos = (game?.media ?? []).filter((item) => item.type === "video");
     const composed = mediaGalleryModule.composeGameMedia(game?.youtubeVideos, game?.media);
-    if ((game?.youtubeVideos ?? []).length !== 0
-        || localVideos.length !== 1
-        || localVideos[0]?.src !== videoPath
-        || composed[0]?.type !== "video"
-        || composed[0]?.src !== videoPath) {
-        fail(`${gameId}: el gameplay local debe ser el primer medio sin duplicados`);
+    if ((game?.youtubeVideos ?? []).length !== 1
+        || game.youtubeVideos[0]?.videoId !== videoId
+        || localVideos.length !== 0
+        || composed[0]?.type !== "youtube"
+        || composed[0]?.videoId !== videoId) {
+        fail(`${gameId}: el gameplay YouTube debe ser el primer medio sin duplicados`);
     }
 });
 games.forEach((game) => {

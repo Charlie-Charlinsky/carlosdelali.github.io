@@ -727,7 +727,13 @@
           "access": "Access(VPN required)"
         }
       },
-      "youtubeVideos": [],
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "mAL-eL7A8oc",
+          "sourceUrl": "https://youtu.be/mAL-eL7A8oc"
+        }
+      ],
       "content": {
         "en": "content/games/teen-patti/en.html",
         "es": "content/games/teen-patti/es.html"
@@ -748,10 +754,6 @@
         ]
       },
       "media": [
-        {
-          "type": "video",
-          "src": "assets/games/teen-patti/media/videos/teen-patti-gameplay.mp4"
-        },
         {
           "type": "image",
           "src": "assets/games/teen-patti/gallery/teen-patti-01.webp"
@@ -815,7 +817,13 @@
           "access": "Access(VPN required)"
         }
       },
-      "youtubeVideos": [],
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "aMd8EAMDYRk",
+          "sourceUrl": "https://youtu.be/aMd8EAMDYRk"
+        }
+      ],
       "content": {
         "en": "content/games/andar-bahar/en.html",
         "es": "content/games/andar-bahar/es.html"
@@ -836,10 +844,6 @@
         ]
       },
       "media": [
-        {
-          "type": "video",
-          "src": "assets/games/andar-bahar/media/videos/andar-bahar-gameplay.mp4"
-        },
         {
           "type": "image",
           "src": "assets/games/andar-bahar/gallery/andar-bahar-01.jpg"
@@ -903,7 +907,13 @@
           "access": "Access(VPN required)"
         }
       },
-      "youtubeVideos": [],
+      "youtubeVideos": [
+        {
+          "provider": "youtube",
+          "videoId": "LjQdas4Nq3A",
+          "sourceUrl": "https://youtu.be/LjQdas4Nq3A"
+        }
+      ],
       "content": {
         "en": "content/games/wheel-of-fortune/en.html",
         "es": "content/games/wheel-of-fortune/es.html"
@@ -923,10 +933,6 @@
         ]
       },
       "media": [
-        {
-          "type": "video",
-          "src": "assets/games/wheel-of-fortune/media/videos/wheel-of-fortune-gameplay.mp4"
-        },
         {
           "type": "image",
           "src": "assets/games/wheel-of-fortune/gallery/wheel-of-fortune-01.png"
