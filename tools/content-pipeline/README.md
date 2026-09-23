@@ -73,7 +73,7 @@ Importer version 11 preserves CV rich authoring semantics. CV parsing retains bl
 
 Importer version 12 recognizes a trailing Game `Resources` block before bilingual parsing. `Youtube Videos:` entries accept up to four direct YouTube watch/share URLs, normalize them to provider/video-ID/source-URL metadata, ignore empty Link fields, reject duplicate or non-video URLs, and never enter visible HTML or ES/EN parity. Parenthetical qualifiers on Game metadata labels resolve through the existing semantic field while their exact authored labels remain available to presentation. CV compilation validates each required top-level section exactly once and preserves the source-authored section order.
 
-Importer version 13 adds the fixed `copyright:main` target for `copyright__main__ES-EN.docx`. Each language requires a Heading 1 title, one unnumbered short line, and one or more unnumbered legal paragraphs. The short line is marked for the shared footer while the same generated fragment supplies the full auxiliary Copyright page; ES/EN parity requires matching legal-paragraph topology without comparing translated text.
+Importer version 13 adds the fixed `copyright:main` target for `copyright__main__ES-EN.docx`. Each language requires a Heading 2 source title, one unnumbered short line, and one or more unnumbered legal paragraphs. The title compiles to the page's semantic `<h1>`, the short line is marked for the shared footer, and the same generated fragment supplies the full auxiliary Copyright page; ES/EN parity requires matching legal-paragraph topology without comparing translated text.
 
 ## Media budget gate
 

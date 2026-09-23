@@ -77,13 +77,13 @@ try {
 
     $copyrightSchema = (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.copyright
     $copyrightEs = Convert-CopyrightLanguage -Paragraphs @(
-        (New-TestParagraph 'Derechos de autor' -Style 'Heading1'),
+        (New-TestParagraph 'Derechos de autor' -Style 'Heading2'),
         (New-TestParagraph 'Aviso breve'),
         (New-TestParagraph 'Primer parrafo legal.'),
         (New-TestParagraph 'Segundo parrafo legal.')
     ) -Language 'es' -Schema $copyrightSchema
     $copyrightEn = Convert-CopyrightLanguage -Paragraphs @(
-        (New-TestParagraph 'Copyright' -Style 'Heading1'),
+        (New-TestParagraph 'Copyright' -Style 'Heading2'),
         (New-TestParagraph 'Short notice'),
         (New-TestParagraph 'First legal paragraph.'),
         (New-TestParagraph 'Second legal paragraph.')
@@ -95,7 +95,7 @@ try {
     $copyrightMismatchRejected = $false
     try {
         $copyrightShort = Convert-CopyrightLanguage -Paragraphs @(
-            (New-TestParagraph 'Copyright' -Style 'Heading1'),
+            (New-TestParagraph 'Copyright' -Style 'Heading2'),
             (New-TestParagraph 'Short notice'),
             (New-TestParagraph 'Only one legal paragraph.')
         ) -Language 'en' -Schema $copyrightSchema
@@ -714,7 +714,7 @@ try {
     $manifest = Read-ContentPipelineManifest -Path (Get-ContentPipelinePaths -RepositoryRoot $root).Manifest
     $previousAcceptedTargetKeys = @($manifest.entries.PSObject.Properties | Where-Object Name -CNE 'contact:main' | ForEach-Object Name)
     $previousAcceptedPlan = New-ContentImportPlan -RepositoryRoot $root -IncludeUnchanged -TargetKeys $previousAcceptedTargetKeys
-    Assert-ImportEngine ($previousAcceptedTargetKeys.Count -eq 21 -and $previousAcceptedPlan.Items.Count -eq 21) 'all 21 existing non-Contact targets parse with pending editorial updates'
+    Assert-ImportEngine ($previousAcceptedTargetKeys.Count -eq 22 -and $previousAcceptedPlan.Items.Count -eq 22) 'all 22 existing non-Contact targets parse with pending editorial updates'
     foreach ($entry in $manifest.entries.PSObject.Properties.Value) {
         Assert-ImportEngine ((Get-ContentFileSha256 -Path (Join-Path $root $entry.canonicalFile)) -ceq $entry.sha256) "$($entry.targetKey) canonical matches accepted hash independently of inbox edits"
     }

@@ -715,13 +715,24 @@ if (publicationModule.SECTION_REGISTRY.at(-1)?.route !== "contact"
     || publicationModule.getSectionById(7)?.route !== "contact") {
     fail("Contact: no es el ultimo elemento de navegacion");
 }
-if (!/body\[data-page="contact"\] \.page-shell\s*\{[^}]*padding-top:\s*calc\(var\(--header-height\) \+ var\(--page-top-gap\)\)/s.test(frontendCss)
+if (!/body\[data-page="contact"\] \.page-shell\s*,\s*body\[data-page="copyright"\] \.page-shell\s*\{[^}]*padding-top:\s*calc\(var\(--header-height\) \+ var\(--page-top-gap\)\)/s.test(frontendCss)
     || !frontendCss.includes("--page-top-gap: 1.25rem;")) {
-    fail("Contact: separacion superior de 20px no resuelta");
+    fail("Contact/Copyright: separacion superior compartida de 20px no resuelta");
 }
 if (!frontendCss.includes("--contact-heading-size: 1.75rem;")
     || !frontendCss.includes("--contact-subheading-size: 1.375rem;")) {
     fail("Contact: tipografia H2/H3 de 28px/22px no resuelta");
+}
+if (!/\.contact-content\s*,\s*\.copyright-content\s*\{[^}]*max-width:\s*52rem;/s.test(frontendCss)
+    || !/\.contact-content > #contact > h2\s*,\s*\.copyright-content > header > h1\s*\{[^}]*font-size:\s*var\(--contact-heading-size\);[^}]*font-style:\s*normal;[^}]*line-height:\s*1\.15;/s.test(frontendCss)) {
+    fail("Copyright: ancho y heading no reutilizan el tratamiento de Contact");
+}
+if (!/\.copyright-content > header\s*\{[^}]*padding:\s*0;[^}]*border:\s*0;/s.test(frontendCss)
+    || !/\.copyright-content > #legal-content\s*\{[^}]*padding:\s*0;[^}]*border:\s*0;/s.test(frontendCss)) {
+    fail("Copyright: el tratamiento especial o el separador interno siguen presentes");
+}
+if (!/\.site-footer\s*\{[^}]*color:\s*var\(--text-primary\);[^}]*font-size:\s*calc\(0\.75rem \+ 4px\);/s.test(frontendCss)) {
+    fail("Copyright: el footer no aplica exactamente +4px y el color de texto principal");
 }
 if (!/\.contact-field p\s*\{[^}]*overflow-wrap:\s*anywhere/s.test(frontendCss)) {
     fail("Contact: los valores largos no protegen el viewport");
