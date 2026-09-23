@@ -56,7 +56,8 @@ export function resolveRoute(language, page, options = {}) {
         writing: "writing/",
         "oniric-journal": "oniric-journal/",
         "oniric-journal-detail": "oniric-journal/detail/",
-        contact: "contact/"
+        contact: "contact/",
+        copyright: "copyright/"
     };
     const route = routeMap[page];
     if (route === undefined) throw new Error(`Unknown route: ${page}`);

@@ -4,6 +4,7 @@ import { getEquivalentLanguageUrl } from "./routes.js";
 import { createElement } from "./dom.js";
 import { getDefaultPublishedSection, getPublishedSections, getSectionForPage } from "./publication.js";
 import { captureLanguageSwitchScrollState } from "./language-scroll.js";
+import { buildFooter } from "./footer.js";
 
 const LABELS = {
     en: {
@@ -146,4 +147,5 @@ export function buildShell(language, page) {
         attributes: { rel: "alternate", hreflang: alternate, href: getEquivalentLanguageUrl(alternate, page) }
     });
     document.head.append(alternateLink);
+    buildFooter(language);
 }

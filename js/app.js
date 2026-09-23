@@ -3,7 +3,7 @@ import { getPageContext } from "./core/routes.js";
 import { renderError, renderLoading } from "./core/dom.js";
 import { storeLanguage } from "./core/language.js";
 import { resolveRoute } from "./core/paths.js";
-import { getDefaultPublishedSection, isPagePublished } from "./core/publication.js";
+import { getDefaultPublishedSection, isPageAccessible } from "./core/publication.js";
 import { restoreLanguageSwitchScrollState } from "./core/language-scroll.js";
 
 const PAGE_MODULES = {
@@ -16,7 +16,8 @@ const PAGE_MODULES = {
     writing: () => import("./pages/writing.js"),
     "oniric-journal": () => import("./pages/oniric-journal.js"),
     "oniric-journal-detail": () => import("./pages/oniric-journal-detail.js"),
-    contact: () => import("./pages/contact.js")
+    contact: () => import("./pages/contact.js"),
+    copyright: () => import("./pages/copyright.js")
 };
 
 async function initialize() {
@@ -24,7 +25,7 @@ async function initialize() {
     const target = document.querySelector("#app-content");
     document.documentElement.lang = context.language;
     storeLanguage(context.language);
-    if (!isPagePublished(context.page)) {
+    if (!isPageAccessible(context.page)) {
         const defaultSection = getDefaultPublishedSection();
         if (!defaultSection) {
             renderError(target, { resource: context.page }, context.language);

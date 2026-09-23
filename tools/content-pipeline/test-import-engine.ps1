@@ -74,6 +74,34 @@ function New-GameResourceFixture {
 try {
     $before = Get-ContentTreeFingerprint -RepositoryRoot $root
     Invoke-GameParityMatrix
+
+    $copyrightSchema = (Get-ContentPipelineConfig -RepositoryRoot $root).importSchemas.copyright
+    $copyrightEs = Convert-CopyrightLanguage -Paragraphs @(
+        (New-TestParagraph 'Derechos de autor' -Style 'Heading1'),
+        (New-TestParagraph 'Aviso breve'),
+        (New-TestParagraph 'Primer parrafo legal.'),
+        (New-TestParagraph 'Segundo parrafo legal.')
+    ) -Language 'es' -Schema $copyrightSchema
+    $copyrightEn = Convert-CopyrightLanguage -Paragraphs @(
+        (New-TestParagraph 'Copyright' -Style 'Heading1'),
+        (New-TestParagraph 'Short notice'),
+        (New-TestParagraph 'First legal paragraph.'),
+        (New-TestParagraph 'Second legal paragraph.')
+    ) -Language 'en' -Schema $copyrightSchema
+    Assert-CopyrightParity -Spanish $copyrightEs -English $copyrightEn
+    $copyrightXml = [xml]$copyrightEn.Html
+    Assert-ImportEngine ($copyrightXml.SelectNodes('/article/header/h1').Count -eq 1 -and $copyrightXml.SelectNodes('/article/header/p[@data-copyright-summary="true"]').Count -eq 1) 'Copyright title and short footer line compile from authored content'
+    Assert-ImportEngine ($copyrightXml.SelectNodes('/article/section[@id="legal-content"]/p').Count -eq 2) 'Copyright legal paragraphs compile as full-page authored content'
+    $copyrightMismatchRejected = $false
+    try {
+        $copyrightShort = Convert-CopyrightLanguage -Paragraphs @(
+            (New-TestParagraph 'Copyright' -Style 'Heading1'),
+            (New-TestParagraph 'Short notice'),
+            (New-TestParagraph 'Only one legal paragraph.')
+        ) -Language 'en' -Schema $copyrightSchema
+        Assert-CopyrightParity -Spanish $copyrightEs -English $copyrightShort
+    } catch { $copyrightMismatchRejected = $_.Exception.Message -match 'semantic structures are not equivalent' }
+    Assert-ImportEngine $copyrightMismatchRejected 'Copyright ES/EN legal paragraph parity is enforced'
     $temporaryRoot = Join-Path ([IO.Path]::GetTempPath()) ('portfolio-import-engine-' + [Guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $temporaryRoot -Force | Out-Null
     try {

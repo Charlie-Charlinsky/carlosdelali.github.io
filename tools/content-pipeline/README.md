@@ -73,6 +73,8 @@ Importer version 11 preserves CV rich authoring semantics. CV parsing retains bl
 
 Importer version 12 recognizes a trailing Game `Resources` block before bilingual parsing. `Youtube Videos:` entries accept up to four direct YouTube watch/share URLs, normalize them to provider/video-ID/source-URL metadata, ignore empty Link fields, reject duplicate or non-video URLs, and never enter visible HTML or ES/EN parity. Parenthetical qualifiers on Game metadata labels resolve through the existing semantic field while their exact authored labels remain available to presentation. CV compilation validates each required top-level section exactly once and preserves the source-authored section order.
 
+Importer version 13 adds the fixed `copyright:main` target for `copyright__main__ES-EN.docx`. Each language requires a Heading 1 title, one unnumbered short line, and one or more unnumbered legal paragraphs. The short line is marked for the shared footer while the same generated fragment supplies the full auxiliary Copyright page; ES/EN parity requires matching legal-paragraph topology without comparing translated text.
+
 ## Media budget gate
 
 Foundation baseline: develop 90.09 MB; main 133.46 KB; difference 89.96 MB; Git objects approximately 86.20 MiB; local repository approximately 177.40 MB; approximate GitHub Pages budget use 9% of 1 GB.

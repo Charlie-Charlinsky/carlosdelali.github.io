@@ -46,6 +46,7 @@ const canonicalRoutes = [
     "en/about/index.html", "es/about/index.html",
     "en/cv/index.html", "es/cv/index.html",
     "en/contact/index.html", "es/contact/index.html",
+    "en/copyright/index.html", "es/copyright/index.html",
     "en/games/index.html", "es/games/index.html",
     "en/games/detail/index.html", "es/games/detail/index.html",
     "en/projects/index.html", "es/projects/index.html",
@@ -78,9 +79,13 @@ const routesSource = read("js/core/routes.js");
 const rootSource = read("js/root.js");
 const publicationSource = read("js/core/publication.js");
 const shellSource = read("js/core/shell.js");
+const footerSource = read("js/core/footer.js");
+const copyrightContentSource = read("js/core/copyright-content.js");
+const copyrightPageSource = read("js/pages/copyright.js");
 const languageScrollSource = read("js/core/language-scroll.js");
 const mediaGallerySource = read("js/core/media-gallery.js");
 const frontendCss = read("css/frontend.css");
+const contentTypesConfig = readJson("tools/content-pipeline/config/content-types.json");
 const obsoleteEngineKey = ["engine", "Id"].join("");
 const obsoleteEnginePresentationTokens = [
     ["assets", "engines"].join("/"),
@@ -333,6 +338,12 @@ if (publicationModule.getPublishedSections().map((section) => section.route).joi
 if (publicationModule.getDefaultPublishedSection()?.route !== "games") {
     fail("Publication: la ruta inicial debe ser la primera seccion publicada por navOrder");
 }
+if (publicationModule.SECTION_REGISTRY.some((section) => section.route === "copyright")
+    || publicationModule.isPagePublished("copyright")
+    || !publicationModule.isAuxiliaryPage("copyright")
+    || !publicationModule.isPageAccessible("copyright")) {
+    fail("Copyright: la ruta auxiliar no debe alterar el registro de publicacion");
+}
 const futureSections = expectedSections.map((section) => ({
     ...section,
     navOrder: ({ projects: 1, games: 2, cv: 3, about: 4, contact: 5 })[section.route] ?? section.navOrder,
@@ -374,8 +385,8 @@ if (!shellSource.includes('if (route === activePage) link.setAttribute("aria-cur
 if (!shellSource.includes("getEquivalentLanguageUrl(targetLanguage, page)")) {
     fail("Publication: el cambio de idioma debe conservar la ruta actual");
 }
-if (!appSource.includes("if (!isPagePublished(context.page))")) {
-    fail("Publication: el gate de rutas no se ejecuta antes de cargar la pagina");
+if (!appSource.includes("if (!isPageAccessible(context.page))")) {
+    fail("Publication: el gate de rutas publicadas y auxiliares no se ejecuta antes de cargar la pagina");
 }
 if (!appSource.includes("getDefaultPublishedSection()")
     || !appSource.includes("resolveRoute(context.language, defaultSection.route)")) {
@@ -396,10 +407,38 @@ if (!shellSource.includes("resolveRoute(language, defaultSection.route)")) {
 if (!/about:\s*["']about\/["']/.test(pathsSource)) {
     fail("Routes: About no dispone de una ruta propia tras separar el landing localizado");
 }
+if (!/copyright:\s*["']copyright\/["']/.test(pathsSource)
+    || !appSource.includes('copyright: () => import("./pages/copyright.js")')) {
+    fail("Copyright: la ruta auxiliar no resuelve su modulo de pagina");
+}
+const pathsModule = await import(pathToFileURL(path.join(root, "js/core/paths.js")).href);
+if (!new URL(pathsModule.resolveRoute("es", "copyright")).pathname.endsWith("/es/copyright/")
+    || !new URL(pathsModule.resolveRoute("en", "copyright")).pathname.endsWith("/en/copyright/")) {
+    fail("Copyright: las rutas ES/EN no conservan la resolucion portable del sitio");
+}
+const copyrightType = contentTypesConfig.contentTypes?.copyright;
+if (!contentTypesConfig.supportedTypes?.includes("copyright")
+    || copyrightType?.fixedIds?.join("|") !== "main"
+    || copyrightType?.registry !== null
+    || copyrightType?.publicOutputs?.join("|") !== "content/copyright/en.html|content/copyright/es.html") {
+    fail("Copyright: copyright:main no cumple el contrato singleton sin registro");
+}
+if (!shellSource.includes("buildFooter(language)")
+    || !footerSource.includes('loadCopyrightArticle(language)')
+    || !footerSource.includes('resolveRoute(language, "copyright")')
+    || !copyrightContentSource.includes('content/copyright/${language}.html')
+    || !copyrightPageSource.includes("loadCopyrightArticle(language)")) {
+    fail("Copyright: pagina y footer no comparten la fuente copyright:main mediante el shell");
+}
+if (!/\.site-footer\s*\{[^}]*border-top:[^}]*font-family:[^}]*text-align:\s*center;/s.test(frontendCss)) {
+    fail("Copyright: el footer global no conserva el estilo discreto y responsive del shell");
+}
 const enLandingSource = read("en/index.html");
 const esLandingSource = read("es/index.html");
 const enAboutRouteSource = read("en/about/index.html");
 const esAboutRouteSource = read("es/about/index.html");
+const enCopyrightRouteSource = read("en/copyright/index.html");
+const esCopyrightRouteSource = read("es/copyright/index.html");
 if (!enLandingSource.includes('data-lang="en"') || !enLandingSource.includes('../js/root.js')
     || enLandingSource.includes('data-page="about"')) {
     fail("Routes: /en/ no funciona como entrada localizada dinamica");
@@ -411,6 +450,10 @@ if (!esLandingSource.includes('data-lang="es"') || !esLandingSource.includes('..
 if (!enAboutRouteSource.includes('data-lang="en" data-page="about"')
     || !esAboutRouteSource.includes('data-lang="es" data-page="about"')) {
     fail("Routes: las rutas About explicitas no conservan su contexto semantico");
+}
+if (!enCopyrightRouteSource.includes('data-lang="en" data-page="copyright"')
+    || !esCopyrightRouteSource.includes('data-lang="es" data-page="copyright"')) {
+    fail("Copyright: las rutas ES/EN no conservan su contexto auxiliar");
 }
 
 const languageScrollModule = await import(pathToFileURL(path.join(root, "js/core/language-scroll.js")).href);

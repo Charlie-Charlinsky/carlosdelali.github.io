@@ -5,12 +5,13 @@
     "about",
     "cv",
     "contact",
+    "copyright",
     "game",
     "project",
     "writing",
     "oniric-journal"
   ],
-  "importerVersion": 12,
+  "importerVersion": 13,
   "importSchemas": {
     "about": {
       "title": {"es": "About", "en": "About"}
@@ -58,6 +59,10 @@
           "linkedin": "LinkedIn"
         }
       }
+    },
+    "copyright": {
+      "titleStyle": "Heading1",
+      "shortLineStyle": "Normal"
     },
     "game": {
       "metadata": {
@@ -159,6 +164,14 @@
       "mirror": "local-content/contact/content.docx",
       "docxOwnedFields": ["email", "linkedin"],
       "protectedFields": ["route", "publication"]
+    },
+    "copyright": {
+      "fixedIds": ["main"],
+      "registry": null,
+      "publicOutputs": ["content/copyright/en.html", "content/copyright/es.html"],
+      "mirror": "local-content/copyright/content.docx",
+      "docxOwnedFields": ["title", "shortLine", "legalProse"],
+      "protectedFields": ["route"]
     },
     "game": {
       "fixedIds": [],

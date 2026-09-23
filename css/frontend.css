@@ -232,6 +232,26 @@ a {
     min-height: 60vh;
 }
 
+.site-footer {
+    width: 100%;
+    padding: var(--space-md) var(--shell-inline-padding);
+    border-top: 1px solid var(--line);
+    color: var(--text-muted);
+    font-family: Courier, "Courier New", monospace;
+    font-size: 0.75rem;
+    text-align: center;
+}
+
+.site-footer[hidden] {
+    display: none;
+}
+
+.site-footer__copyright {
+    display: inline-block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
 .system-message {
     padding-top: var(--space-xl);
     color: var(--text-muted);
@@ -603,6 +623,40 @@ body[data-page="contact"] .page-shell {
 .contact-field p {
     margin: 0;
     overflow-wrap: anywhere;
+}
+
+/* COPYRIGHT */
+body[data-page="copyright"] .page-shell {
+    padding-top: calc(var(--header-height) + var(--page-top-gap));
+}
+
+.copyright-content {
+    max-width: 70rem;
+}
+
+.copyright-content > header {
+    padding: var(--space-lg) 0 var(--space-xl);
+    border-bottom: 1px solid var(--line-strong);
+}
+
+.copyright-content > header h1 {
+    max-width: 18ch;
+    margin: 0 0 var(--space-lg);
+    font-size: 4.5rem;
+    font-style: italic;
+    line-height: 0.95;
+    overflow-wrap: anywhere;
+}
+
+.copyright-content > header p {
+    max-width: 76ch;
+    margin: 0;
+    color: var(--text-secondary);
+}
+
+.copyright-content > #legal-content {
+    padding-top: var(--space-xl);
+    border-top: 0;
 }
 
 /* GAMES */
@@ -1735,6 +1789,7 @@ body[data-page="oniric-journal"] .page-shell {
     .page-header h1,
     .detail-hero h1,
     .journal-detail__header h1,
+    .copyright-content > header h1,
     .not-found h1,
     .error-state h1 {
         font-size: 4.5rem;
@@ -1861,6 +1916,7 @@ body[data-page="oniric-journal"] .page-shell {
     .page-header h1,
     .detail-hero h1,
     .journal-detail__header h1,
+    .copyright-content > header h1,
     .not-found h1,
     .error-state h1 {
         font-size: 3rem;

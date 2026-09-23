@@ -15,6 +15,8 @@ export const PUBLICATION_POLICY = Object.freeze({
     })
 });
 
+export const AUXILIARY_ROUTES = Object.freeze(["copyright"]);
+
 const SECTION_BY_ID = new Map(SECTION_REGISTRY.map((section) => [section.id, section]));
 const SECTION_BY_ROUTE = new Map(SECTION_REGISTRY.map((section) => [section.route, section]));
 
@@ -48,6 +50,14 @@ export function isSectionPublished(sectionRoute) {
 
 export function isPagePublished(pageId) {
     return isSectionPublished(getSectionForPage(pageId));
+}
+
+export function isAuxiliaryPage(pageId) {
+    return AUXILIARY_ROUTES.includes(pageId);
+}
+
+export function isPageAccessible(pageId) {
+    return isPagePublished(pageId) || isAuxiliaryPage(pageId);
 }
 
 export function isItemPublished(groupId, itemId) {

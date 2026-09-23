@@ -607,6 +607,48 @@ function Convert-AboutLanguage {
     return [pscustomobject]@{ Html = ConvertTo-SemanticHtml $html.Document; Structure = 'about|p:4'; ParagraphCount = 4 }
 }
 
+function Convert-CopyrightLanguage {
+    param([object[]]$Paragraphs, [string]$Language, $Schema)
+    if ($Paragraphs.Count -lt 3) { throw "Copyright $Language requires a title, short line, and legal prose." }
+    if ($Paragraphs[0].Style -cne [string]$Schema.titleStyle) {
+        throw "Copyright $Language title must use $($Schema.titleStyle)."
+    }
+    if ($Paragraphs[1].Style -cne [string]$Schema.shortLineStyle -or $null -ne $Paragraphs[1].NumberId) {
+        throw "Copyright $Language short line must be an unnumbered $($Schema.shortLineStyle) paragraph."
+    }
+
+    $legalParagraphs = @($Paragraphs[2..($Paragraphs.Count - 1)])
+    if (@($legalParagraphs | Where-Object { $_.Style -cne 'Normal' -or $null -ne $_.NumberId }).Count -gt 0) {
+        throw "Copyright $Language legal content must contain only unnumbered Normal paragraphs."
+    }
+
+    $html = New-HtmlDocument -AttributeName 'data-page-id' -AttributeValue 'copyright'
+    $header = Add-HtmlElement -Document $html.Document -Parent $html.Article -Name 'header' -Text $null
+    Add-HtmlElement -Document $html.Document -Parent $header -Name 'h1' -Text $Paragraphs[0].Text | Out-Null
+    $summary = Add-SemanticParagraph -Document $html.Document -Parent $header -Paragraph $Paragraphs[1]
+    $summary.SetAttribute('data-copyright-summary', 'true')
+    $legal = Add-HtmlElement -Document $html.Document -Parent $html.Article -Name 'section' -Text $null -Attributes @{ id = 'legal-content' }
+    foreach ($paragraph in $legalParagraphs) {
+        Add-SemanticParagraph -Document $html.Document -Parent $legal -Paragraph $paragraph | Out-Null
+    }
+
+    $structure = "copyright|h1|summary:p|legal:p:$($legalParagraphs.Count)"
+    return [pscustomobject]@{
+        Html = ConvertTo-SemanticHtml $html.Document
+        Title = $Paragraphs[0].Text
+        ShortLine = $Paragraphs[1].Text
+        LegalParagraphCount = $legalParagraphs.Count
+        Structure = $structure
+    }
+}
+
+function Assert-CopyrightParity {
+    param($Spanish, $English)
+    if ($Spanish.Structure -cne $English.Structure) {
+        throw "Copyright ES/EN semantic structures are not equivalent: $($Spanish.Structure) vs $($English.Structure)."
+    }
+}
+
 function Split-TopSections {
     param([object[]]$Paragraphs, $LabelMap, [string]$Language)
     $sections = @()
@@ -1136,6 +1178,14 @@ function New-ContentImportPlan {
                 $outputs['content/contact/en.html'] = $en.Html
                 $summary = [pscustomobject]@{ es = $es; en = $en; structure = $es.Structure }
             }
+            'copyright' {
+                $es = Convert-CopyrightLanguage -Paragraphs $blocks.es -Language 'es' -Schema $config.importSchemas.copyright
+                $en = Convert-CopyrightLanguage -Paragraphs $blocks.en -Language 'en' -Schema $config.importSchemas.copyright
+                Assert-CopyrightParity -Spanish $es -English $en
+                $outputs['content/copyright/es.html'] = $es.Html
+                $outputs['content/copyright/en.html'] = $en.Html
+                $summary = [pscustomobject]@{ es = $es; en = $en; structure = $es.Structure }
+            }
             'game' {
                 $bilingual = Convert-GameBilingual -Blocks $blocks -GameId $identity.Id -Schema $config.importSchemas.game
                 $es = $bilingual.es
@@ -1217,6 +1267,9 @@ function Format-ContentImportPlan {
         } elseif ($item.Type -eq 'contact') {
             $lines += "EMAIL: $($item.Summary.en.Values.email.Text)"
             $lines += "LINKEDIN: $($item.Summary.en.Values.linkedin.Text)"
+            $lines += "STRUCTURE: $($item.Summary.structure)"
+        } elseif ($item.Type -eq 'copyright') {
+            $lines += "LEGAL PARAGRAPHS: ES $($item.Summary.es.LegalParagraphCount) / EN $($item.Summary.en.LegalParagraphCount)"
             $lines += "STRUCTURE: $($item.Summary.structure)"
         } else {
             $metadata = $item.Summary.en.Metadata
